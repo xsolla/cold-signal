@@ -23,8 +23,12 @@ export class Sound {
     else if (beat % 2 === 0) this.tone(180, .065, .025, 'triangle', 65);
     else this.tone(1800, .02, .009, 'square', 900);
   }
-  event(type) {
-    if (type === 'special') this.tone(160, .22, .055, 'triangle', 620);
+  event(event) {
+    const type = typeof event === 'string' ? event : event.type;
+    if (type === 'special') {
+      this.tone(event.character === 'ivo' ? 82 : 160, .22, .055, 'triangle', 620);
+      this.tone(1200, .045, .014, 'square', 260);
+    }
     if (type === 'shield') this.tone(260, .12, .045, 'sine', 100);
     if (type === 'kill') this.tone(440, .045, .022, 'triangle', 190);
     if (type === 'down') this.tone(155, .35, .07, 'sawtooth', 45);

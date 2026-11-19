@@ -5,6 +5,34 @@ rescue any downed crew member. A/D or Left/Right orbits; W/Up jumps inward,
 S/Down jumps outward between three rings. Press Space for your
 character's special ability. Every pilot must be active at the final clear.
 
+The playable client now uses **Cold Signal**: Cold Front's navy/cyan/violet
+palette with Black Signal's forked ships, open rescue markers, radial instruments,
+and angular geometry. Streaming tunnel lines, projectile and movement trails,
+hit fragments, rescue bursts, and bounded camera punch respond to live play.
+The approved scripted motion study remains separate in `../art-direction/`.
+
+## Play without Docker
+
+With dependencies already installed, run the same authoritative game locally:
+
+```sh
+HOST=127.0.0.1 PORT=5176 DEV_TOOLS=1 npm start
+```
+
+Open [Cold Signal / Delve Together](http://localhost:5176). For one human,
+create a room, open **Local test tools**, add three controlled crew members,
+and ready up. Keep their tabs open. **Reduce motion** removes camera movement,
+streaming depth, speed lines, movement ghosts, and fragmentation while retaining
+ability, warning, and rescue feedback. The initial setting respects the OS preference;
+click **Motion reduced** to enable the full arcade effects.
+
+Rules, collision geometry, enemy timing, network authority, and controls are
+unchanged. Ships use the original perspective scale and fit the original painted
+envelope; Shockwave's effect follows its actual sector. Presentation effects use
+real time, stop during a shared pause, and reset when a room or run restarts.
+See [integration verification](evidence/cold-signal/README.md) for runtime captures
+and the scope of the checks.
+
 ## Run with Docker
 
 ```sh
@@ -26,7 +54,7 @@ required local runtime. The running game needs no AGS, account, or cloud access.
 4. Ready up. Orbit with A/D or Left/Right. Tap W/Up to jump one ring inward
    or S/Down to jump one ring outward; holding does not keep jumping. Firing is automatic. Press and release Space to
    activate your special when its cooldown is ready. Escape pauses.
-5. To rescue, match the crossed-out crew marker’s ring, then stay close until its progress ring
+5. To rescue, match the open circular crew marker’s ring, then stay close until its progress ring
    completes. Any active pilot can do this while continuing to fire.
 
 ## Three depths and the bullseye

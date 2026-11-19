@@ -1,0 +1,254 @@
+
+> delve-together@0.3.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: network replays emit each presentation event once without changing authoritative state
+ok 1 - network replays emit each presentation event once without changing authoritative state
+  ---
+  duration_ms: 5.55875
+  ...
+# Subtest: pausing freezes effects and trails; resuming does not accumulate wall time
+ok 2 - pausing freezes effects and trails; resuming does not accumulate wall time
+  ---
+  duration_ms: 2.08225
+  ...
+# Subtest: retry resets event IDs, transient particles, trails, and observed bullet origins
+ok 3 - retry resets event IDs, transient particles, trails, and observed bullet origins
+  ---
+  duration_ms: 0.658667
+  ...
+# Subtest: reduced motion immediately removes camera impulse and movement ghosts
+ok 4 - reduced motion immediately removes camera impulse and movement ghosts
+  ---
+  duration_ms: 0.11375
+  ...
+# Subtest: projectile trails retain their first observed depth and release vanished IDs
+ok 5 - projectile trails retain their first observed depth and release vanished IDs
+  ---
+  duration_ms: 0.103917
+  ...
+# Subtest: presentation history is bounded and the fork fits the previous painted ship envelope
+ok 6 - presentation history is bounded and the fork fits the previous painted ship envelope
+  ---
+  duration_ms: 8.255
+  ...
+# Subtest: inputs accept explicit booleans and tolerate malformed payloads
+ok 7 - inputs accept explicit booleans and tolerate malformed payloads
+  ---
+  duration_ms: 6.048334
+  ...
+# Subtest: steering starts, stops, reverses, and cancels conflicting keys
+ok 8 - steering starts, stops, reverses, and cancels conflicting keys
+  ---
+  duration_ms: 4.854125
+  ...
+# Subtest: proximity rescue completes while the survivor continues firing
+ok 9 - proximity rescue completes while the survivor continues firing
+  ---
+  duration_ms: 6.703333
+  ...
+# Subtest: leaving the rescue arc resets uncompleted progress
+ok 10 - leaving the rescue arc resets uncompleted progress
+  ---
+  duration_ms: 1.369333
+  ...
+# Subtest: revival protection blocks an immediate repeat hit then expires
+ok 11 - revival protection blocks an immediate repeat hit then expires
+  ---
+  duration_ms: 5.548125
+  ...
+# Subtest: both down at the finish is a loss, never a victory
+ok 12 - both down at the finish is a loss, never a victory
+  ---
+  duration_ms: 0.85725
+  ...
+# Subtest: the final clear waits for both ships; the survivor can rescue in overtime
+ok 13 - the final clear waits for both ships; the survivor can rescue in overtime
+  ---
+  duration_ms: 2.326958
+  ...
+# Subtest: hazard gaps wrap through zero and warning zones do not hit early
+ok 14 - hazard gaps wrap through zero and warning zones do not hit early
+  ---
+  duration_ms: 4.191375
+  ...
+# Subtest: fixed seed and recorded inputs reproduce all authoritative state
+ok 15 - fixed seed and recorded inputs reproduce all authoritative state
+  ---
+  duration_ms: 138.536333
+  ...
+# Subtest: diagnostic control policy uses the current state without mutating it
+ok 16 - diagnostic control policy uses the current state without mutating it
+  ---
+  duration_ms: 0.877125
+  ...
+# Subtest: four pilots shoot automatically; downed pilots stop firing
+ok 17 - four pilots shoot automatically; downed pilots stop firing
+  ---
+  duration_ms: 0.137125
+  ...
+# Subtest: global half-speed scales movement, projectiles, timers, and match duration
+ok 18 - global half-speed scales movement, projectiles, timers, and match duration
+  ---
+  duration_ms: 0.129208
+  ...
+# Subtest: Space is edge-triggered and holding it does not recast after cooldown
+ok 19 - Space is edge-triggered and holding it does not recast after cooldown
+  ---
+  duration_ms: 7.534792
+  ...
+# Subtest: Mara wards nearby crew; one absorbed hit grants brief repeat-hit protection
+ok 20 - Mara wards nearby crew; one absorbed hit grants brief repeat-hit protection
+  ---
+  duration_ms: 0.972166
+  ...
+# Subtest: Ivo clears a sector of enemies and zones and opens a shared wall gap
+ok 21 - Ivo clears a sector of enemies and zones and opens a shared wall gap
+  ---
+  duration_ms: 0.996917
+  ...
+# Subtest: any pilot can rescue any downed crew member; Sana accelerates it without a required healer
+ok 22 - any pilot can rescue any downed crew member; Sana accelerates it without a required healer
+  ---
+  duration_ms: 2.922459
+  ...
+# Subtest: Rook shares faster movement and brief cover with nearby crew
+ok 23 - Rook shares faster movement and brief cover with nearby crew
+  ---
+  duration_ms: 0.821666
+  ...
+# Subtest: four-player victory needs all four; the last survivor can keep a rescue alive
+ok 24 - four-player victory needs all four; the last survivor can keep a rescue alive
+  ---
+  duration_ms: 3.768208
+  ...
+# Subtest: all four down loses and walls track collision independently for four slots
+ok 25 - all four down loses and walls track collision independently for four slots
+  ---
+  duration_ms: 0.132292
+  ...
+# Subtest: unknown characters fall back to a valid choice and downed pilots cannot cast
+ok 26 - unknown characters fall back to a valid choice and downed pilots cannot cast
+  ---
+  duration_ms: 0.772083
+  ...
+# Subtest: depth keys hop one rail per press, clamp at both ends, and cancel opposing keys
+ok 27 - depth keys hop one rail per press, clamp at both ends, and cancel opposing keys
+  ---
+  duration_ms: 0.979458
+  ...
+# Subtest: a downed jumper settles on their target ring and fires no further shots
+ok 28 - a downed jumper settles on their target ring and fires no further shots
+  ---
+  duration_ms: 0.170625
+  ...
+# Subtest: automatic fire originates at the actual depth, including during a hop
+ok 29 - automatic fire originates at the actual depth, including during a hop
+  ---
+  duration_ms: 0.082125
+  ...
+# Subtest: rescue requires matching depth and completes after reaching that rail
+ok 30 - rescue requires matching depth and completes after reaching that rail
+  ---
+  duration_ms: 2.142084
+  ...
+# Subtest: support abilities reach an adjacent rail but not through two depths
+ok 31 - support abilities reach an adjacent rail but not through two depths
+  ---
+  duration_ms: 0.099208
+  ...
+# Subtest: walls survive the outer rim and threaten all three rails
+ok 32 - walls survive the outer rim and threaten all three rails
+  ---
+  duration_ms: 0.477208
+  ...
+# Subtest: jumping across a solid wall cannot tunnel through its collision
+ok 33 - jumping across a solid wall cannot tunnel through its collision
+  ---
+  duration_ms: 0.086833
+  ...
+# Subtest: both new enemies approach a rail, patrol it, and mark danger at that depth
+ok 34 - both new enemies approach a rail, patrol it, and mark danger at that depth
+  ---
+  duration_ms: 0.83525
+  ...
+# Subtest: patrol contact and warning zones threaten the occupied rail, not a distant one
+ok 35 - patrol contact and warning zones threaten the occupied rail, not a distant one
+  ---
+  duration_ms: 0.602625
+  ...
+# Subtest: projection and silhouettes grow continuously toward the player
+ok 36 - projection and silhouettes grow continuously toward the player
+  ---
+  duration_ms: 0.32825
+  ...
+# Subtest: swept bullets hit small distant targets without skipping them
+ok 37 - swept bullets hit small distant targets without skipping them
+  ---
+  duration_ms: 0.164042
+  ...
+# Subtest: distant silhouettes have a narrower angular hit window than near targets
+ok 38 - distant silhouettes have a narrower angular hit window than near targets
+  ---
+  duration_ms: 0.286625
+  ...
+# Subtest: bullseye absorbs every bullet, protects preview enemies from all attacks, and allows emergence
+ok 39 - bullseye absorbs every bullet, protects preview enemies from all attacks, and allows emergence
+  ---
+  duration_ms: 0.369208
+  ...
+# Subtest: a release and new press between ticks still jumps when the previous tick held inward
+ok 40 - a release and new press between ticks still jumps when the previous tick held inward
+  ---
+  duration_ms: 0.067625
+  ...
+# Subtest: normal spawning previews all five enemy behaviors during the gauntlet
+ok 41 - normal spawning previews all five enemy behaviors during the gauntlet
+  ---
+  duration_ms: 154.4065
+  ...
+# Subtest: two real sockets join one room; invalid/full rooms are recoverable
+ok 42 - two real sockets join one room; invalid/full rooms are recoverable
+  ---
+  duration_ms: 119.235625
+  ...
+# Subtest: ready, shared movement, pause, wipe, and retry use authoritative room state
+ok 43 - ready, shared movement, pause, wipe, and retry use authoritative room state
+  ---
+  duration_ms: 391.95975
+  ...
+# Subtest: disconnect interrupts the run instead of silently playing on
+ok 44 - disconnect interrupts the run instead of silently playing on
+  ---
+  duration_ms: 48.520709
+  ...
+# Subtest: diagnostic commands are ineffective when server test tools are disabled
+ok 45 - diagnostic commands are ineffective when server test tools are disabled
+  ---
+  duration_ms: 119.851709
+  ...
+# Subtest: a recorded live server input tape agrees with headless replay at every tick
+ok 46 - a recorded live server input tape agrees with headless replay at every tick
+  ---
+  duration_ms: 1423.507666
+  ...
+# Subtest: four sockets select characters, all ready, cast abilities, and reject a fifth pilot
+ok 47 - four sockets select characters, all ready, cast abilities, and reject a fifth pilot
+  ---
+  duration_ms: 352.84225
+  ...
+# Subtest: brief depth key taps reach all four clients and retry resets everyone to the outer rail
+ok 48 - brief depth key taps reach all four clients and retry resets everyone to the outer rail
+  ---
+  duration_ms: 1495.422875
+  ...
+1..48
+# tests 48
+# suites 0
+# pass 48
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4338.947292

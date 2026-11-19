@@ -20,6 +20,7 @@ function entryOptions() {
   $('size-label').textContent = `${count} PLAYERS`;
 }
 function resetRoom() {
+  renderer.resetEffects();
   code = ''; snapshot = null; predicted = null; ready = []; connected = []; characters = [];
   lastEvent = 0; pauses = []; userPaused = false; input = cleanInput(); controlled = false; openedClients = 0; notice = '';
   document.body.classList.remove('in-room'); $('entry').hidden = false; $('hud').hidden = true;
@@ -46,6 +47,7 @@ function connect() {
     }
     if (msg.type === 'state') {
       if (snapshot?.status !== 'playing' && msg.state?.status === 'playing') {
+        renderer.resetEffects();
         predicted = null; lastEvent = 0; userPaused = false; canvas.focus();
       }
       snapshot = msg.state; ready = msg.ready; connected = msg.connected; pauses = msg.paused;
@@ -55,7 +57,7 @@ function connect() {
         if (predicted === null || Math.abs(delta(a, predicted)) > .35 || snapshot.players[slot].down) predicted = a;
         else predicted = wrap(predicted + delta(a, predicted) * .22);
         for (const e of snapshot.events) {
-          if (e.id > lastEvent) { if (!pauses.some(Boolean)) sound.event(e.type); lastEvent = e.id; }
+          if (e.id > lastEvent) { if (!pauses.some(Boolean)) sound.event(e); lastEvent = e.id; }
         }
       }
       if (controlled && diagnostics && connected[slot] && !ready[slot] && snapshot?.status !== 'playing') send({ type: 'ready' });
@@ -160,8 +162,8 @@ function frame(now) {
     if (predicted !== null && !snapshot.players[slot].down) predicted = wrap(predicted + ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * moveSpeed(snapshot.players[slot]) * snapshot.timeScale * dt);
     sound.tick(snapshot, false);
   }
-  renderer.render(snapshot, { joined: !!code, slot, reduced, now, predicted, roster: characters, crewCount: config.count }); requestAnimationFrame(frame);
+  renderer.render(snapshot, { joined: !!code, slot, reduced, paused: pauses.some(Boolean), now, predicted, roster: characters, crewCount: config.count }); requestAnimationFrame(frame);
 }
 $('crew-count').onchange = entryOptions; $('pace').onchange = entryOptions;
-$('motion').setAttribute('aria-pressed', String(reduced)); entryOptions(); showAudio();
+$('motion').setAttribute('aria-pressed', String(reduced)); $('motion').textContent = reduced ? 'MOTION REDUCED' : 'REDUCE MOTION'; entryOptions(); showAudio();
 $('create').disabled = true; $('join').disabled = true; connect(); requestAnimationFrame(frame);
