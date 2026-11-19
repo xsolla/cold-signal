@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-19",
+  "branch": "codex/tempest-art-direction-evaluation",
+  "parent_commit": "9e466e1",
+  "skill_version": "1.1.0",
+  "user_decision": "Develop Vector Relay; more motion graphics examples and visual variations that feel dynamic and dramatic.",
+  "preserved": {
+    "identity": "Original relay pilotGlyph and threatGlyph imported directly from ../scene.js",
+    "layout": "Frozen fixture geometry and HUD copy/positions shared by arena previews",
+    "game_rules": "No simulation or source game files changed"
+  },
+  "lineage": {
+    "../scene.js": "0760a597ecb548fe6038e3467f974c120cab299423de341b68dba351e47284ae",
+    "../baseline/rules.js": "ea17e0aada39d41c6f4db096c34fef30aa2a38823ee95bb78458c92dc0547f3e",
+    "../../../../skills/art-direction/SKILL.md": "5fa56ce66c64e6a5eefbd603dd44ed02b28bc51bc3d0e5895c37168ded51058d"
+  },
+  "references": [
+    {
+      "url": "https://www.behance.net/gallery/77323971/iQOO-Artists-Motions",
+      "evidence": "Collection trailer and Hiraoka motion sequence inspected in previous pass",
+      "role": "Contained energy and silhouette change, reinterpreted as relay machinery"
+    },
+    {
+      "url": "https://www.michaelrigley.com/work/marathon/",
+      "evidence": "Process text and actual study images inspected this pass; film not played",
+      "role": "Fine operational layers against bolder graphic masses"
+    },
+    {
+      "url": "https://antibody.tv/works/marathon-context/",
+      "evidence": "Studio project description read; film not played",
+      "role": "Bolder scale and graphic mass; further viewing link"
+    }
+  ],
+  "source_media_bundled": false
+}

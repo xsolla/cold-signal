@@ -1,0 +1,133 @@
+{
+  "date": "2026-11-19",
+  "method": "Producing-agent visual review and technical checks; not independently graded",
+  "scope": "Develop the selected Vector Relay identity into three visual treatments and six dramatic motion examples",
+  "treatments": [
+    "Black Signal",
+    "Red Shift",
+    "Cold Front"
+  ],
+  "clips": [
+    "Link established",
+    "Surge incoming",
+    "No one left behind",
+    "Make a way",
+    "One remains",
+    "All make it out"
+  ],
+  "technical": {
+    "javascript_syntax": "PASS \u2014 app.js and studies.js",
+    "draw_geometry": "PASS \u2014 216 poster/arena draw cases across three treatments, six moments, six phases; all numeric drawing arguments finite, positive arc radii, alpha values in range, balanced context save/restore",
+    "fixture_integrity": "PASS \u2014 fixture JSON unchanged by all 216 draw cases",
+    "source_integrity": "PASS \u2014 original scene, authoritative rules, and reusable skill retain recorded SHA-256 values",
+    "local_links": "PASS \u2014 local navigation and module links resolve"
+  },
+  "browser": {
+    "url": "http://localhost:5186/vector-relay/",
+    "viewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        1280,
+        900
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "narrow_horizontal_overflow": false,
+    "checked": [
+      "Initial concept boards visually inspected before constructing the full viewer/context",
+      "All 18 treatment/clip combinations selected in the actual browser with matching stage labels",
+      "Full-motion playback, play/pause, keyboard scrubbing to 60%",
+      "Sequence advanced from Surge incoming through rescue to Make a way",
+      "Reduced motion control paused at 55%",
+      "Replay reset the current clip",
+      "Three poster treatments compared at the same 60% phase",
+      "Three arena treatments rechecked after opacity correction",
+      "Console logs contained no captured errors or warnings",
+      "With Sequence off, replay completed at 100% and stopped in PAUSED state",
+      "Rescue poster inspected after adding active-craft resolution at completed progress"
+    ],
+    "fixed_context": "Same rescue fixture, 50% progress, perspective and HUD; illustrative effects do not advance the game simulation",
+    "delivery_state": "Red Shift selected, motion poster mode, full effects, sequence playing; browser viewport override reset"
+  },
+  "bounded_revision": {
+    "observed": "Arena effects competed with active targets because child drawing calls overwrote inherited opacity.",
+    "change": "Multiply inherited opacity and clamp fading at an overshoot endpoint; retain poster behavior and game geometry.",
+    "recheck": "Actual browser inspection of all three arena treatments; draw alpha checks across 216 cases."
+  },
+  "remaining": [
+    "Creator has chosen Vector Relay, not a final treatment",
+    "Tiny inner-rail bodies and nearby label overlap remain from the previous fixed fixture",
+    "Red Shift bright-on-red marks require contrast calibration before game integration",
+    "Motion posters and illustrative arena effects are not playable art integration",
+    "Human preference, recognition, enjoyment, and motion comfort untested"
+  ],
+  "source_media_bundled": false,
+  "artifacts": {
+    "README.md": {
+      "bytes": 5311,
+      "sha256": "5e8d67d115fc70afb0f1292463a460fe7ea4404fd2f5ed2ccb809d01e23e6c5b"
+    },
+    "app.js": {
+      "bytes": 4831,
+      "sha256": "da98af4a15760303094f8bead33d8a1e2c995b7b461d18cfa4c2b9c52842ed2c"
+    },
+    "concepts.html": {
+      "bytes": 1484,
+      "sha256": "e1a2f1a5d28e5dc1bbef99b91c427bc0e2a79ccacc312f431978af54a50d092e"
+    },
+    "evidence/black-signal-arena.jpg": {
+      "bytes": 67770,
+      "sha256": "6b42abf30b370197de5bf892b82d06ecff4f5c06d4c3b534473c598da82e36ac"
+    },
+    "evidence/black-signal-surge.jpg": {
+      "bytes": 82187,
+      "sha256": "c39a57c51fa85674a388cab0fdec692b3cd40d1756ac3a2a8fb76f9801242197"
+    },
+    "evidence/cold-front-arena.jpg": {
+      "bytes": 63133,
+      "sha256": "b8f205551c8599f171dae21375de209db1c87272797011962520124f37585de3"
+    },
+    "evidence/cold-front-surge.jpg": {
+      "bytes": 71801,
+      "sha256": "604835fc77c43c597edd069a40968f60b6effe16e124d75e8abd3bcb25b3ddc1"
+    },
+    "evidence/narrow-player.jpg": {
+      "bytes": 37792,
+      "sha256": "54446bc9c4406a0117bdcff52299532b8de994709da733dd4cefa965b4e7bd96"
+    },
+    "evidence/red-shift-arena.jpg": {
+      "bytes": 68510,
+      "sha256": "98114e77a98a372f89b6b215b4c7c8dd1c00768227c7bd20604e9bd1c519d371"
+    },
+    "evidence/red-shift-rescue.jpg": {
+      "bytes": 56360,
+      "sha256": "8857831bbba2b0a286a0a61adc58de46b1d3fbbffd82d0b16bed49c959f2f139"
+    },
+    "evidence/red-shift-surge.jpg": {
+      "bytes": 83287,
+      "sha256": "2fc098ce4fd7612149bef4bf9ca61079044fff6b8d2d9910b615de5fc5b763e9"
+    },
+    "evidence/source-record.json": {
+      "bytes": 1636,
+      "sha256": "af4cdae55a66bbdf2d7fcbfcb3a3029a156c8fa1e060da0233315033b3853fe4"
+    },
+    "index.html": {
+      "bytes": 5277,
+      "sha256": "0a5a47abbbde01e209de3cc7d723454fd5d3faea69492a837888ec742073db04"
+    },
+    "studies.js": {
+      "bytes": 17488,
+      "sha256": "6ea349b0782ea2169ee300fcfa8569fc24ddace6015b23e0d697fe0374125784"
+    },
+    "style.css": {
+      "bytes": 6236,
+      "sha256": "986652ef5cbadaefcf660eae2e33519cce524c15a4b09850762eb8dfa81c74aa"
+    }
+  }
+}
