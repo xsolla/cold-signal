@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-19",
+  "branch": "codex/tempest-art-direction-evaluation",
+  "base_branch": "codex/tempest-hexagon-jam",
+  "base_sha": "531c486a7a66bc991ca6d5c9aca3f4315ab698ef",
+  "skill": {
+    "pr": "https://github.com/xsolla/xsolla-pocket-studio/pull/12",
+    "commit": "802bf75a14984adcc51c7409aee9a0e86bb8df79",
+    "version": "1.1.0",
+    "files": {
+      "skills/art-direction/SKILL.md": "5fa56ce66c64e6a5eefbd603dd44ed02b28bc51bc3d0e5895c37168ded51058d",
+      "skills/art-direction/agents/openai.yaml": "338ec9175da6831ac7825ecd265a7b9502ba72302012b9517287b331578e81f8",
+      "skills/art-direction/assets/art-brief.md": "24fa75bd76d6a6fbf16b24563ec038d8f6b8b997e5487a5388eb57dbe82c756e",
+      "skills/art-direction/references/examples.md": "b6832f4c511b75bc492920d7c1b010f390d77cdc1a1b88adf03905c17dd2efdd",
+      "skills/art-direction/references/exploration.md": "e337db1bb2404db3fa9ae620e3ba2179a87de4dfc174a746f5d423b68130861a",
+      "skills/art-direction/references/production.md": "978fa8dd758719054ead745317bfd1ac6158389803cbba623517c5b3e101c65a"
+    }
+  },
+  "source": {
+    "projects/arcade-jam/game/public/renderer.js": {
+      "sha256": "7057367ce18068838699dd4addce6794f0bb708da5560f410ac5324b27c08748",
+      "snapshot": "baseline/renderer.js"
+    },
+    "projects/arcade-jam/game/src/rules.js": {
+      "sha256": "ea17e0aada39d41c6f4db096c34fef30aa2a38823ee95bb78458c92dc0547f3e",
+      "snapshot": "baseline/rules.js"
+    }
+  },
+  "evaluation": "Self-reviewed application trial; no independent grader or human recognition test."
+}

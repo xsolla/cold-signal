@@ -1,0 +1,173 @@
+{
+  "date": "2026-11-19",
+  "evaluator": "Producing agent; self-reviewed application trial",
+  "skill_version": "1.1.0",
+  "source_commit": "802bf75a14984adcc51c7409aee9a0e86bb8df79",
+  "technical": {
+    "skill_validation": "PASS — python3 scripts/check_skills.py, seven skills",
+    "javascript_syntax": "PASS — node --check app.js and scene.js",
+    "fixture_invariants": "PASS — four pilots, five threat kinds, 50% inner-ring rescue within actual range, approaching wall and safe gap, sanctuary preview",
+    "input_integrity": "PASS — all six skill files equal PR source; baseline copies equal original game files by bytes and SHA-256",
+    "nominal_body_pixels_at_690px_scene": {
+      "inner": 6.96,
+      "middle": 14.35,
+      "outer": 26
+    },
+    "repository_tests": "PASS — six repository sharing/packaging tests via python3 -m unittest discover -s tests -v"
+  },
+  "browser": {
+    "url": "http://localhost:5186",
+    "actual_viewports_checked": [
+      [
+        1280,
+        720
+      ],
+      [
+        1280,
+        900
+      ],
+      [
+        640,
+        480
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "horizontal_overflow": false,
+    "desktop_thumbnails_css_pixels": [
+      320,
+      200
+    ],
+    "checked": [
+      "Three concept boards visually compared",
+      "Current renderer and three proposals switched in the same constructed fixture",
+      "Grayscale toggle visually inspected",
+      "Motion played from 0 to 100 and automatically stopped",
+      "Keyboard motion scrubbed to 50%, paused",
+      "Original and revised rescue marker inspected at three actual depth scales",
+      "Empty review rejected",
+      "Labeled temporary QA note saved, restored after reload, exported, and inspected as JSON",
+      "Temporary review cleared with no selected radio or remaining note",
+      "No captured console errors or warnings in final QA tab"
+    ],
+    "export_evidence": "review-export-agent-qa.json — synthetic agent QA only; not a human review"
+  },
+  "observed_limitations": [
+    "Nominal inner-rail body only 6.96px at 690px scene scale",
+    "Nearby pilot and rescue labels overlap in the fixed close-rescue fixture, including baseline",
+    "Small previews make HUD and inner marks too small to identify confidently",
+    "Rescue paired bars may imply pause; recognition untested",
+    "Abstract motion study is not a moving gameplay calibration",
+    "Concept and context prototype code were authored together; a separate preproduction concept gate was not exercised"
+  ],
+  "not_claimed": [
+    "Independent evaluation",
+    "Human preference among candidates",
+    "Human recognition or gameplay test",
+    "Raster generation or export validation",
+    "Playable art integration",
+    "Automatic skill discovery",
+    "A/B superiority over use without the skill"
+  ],
+  "source_media_bundled": false,
+  "artifacts": {
+    "README.md": {
+      "bytes": 2065,
+      "sha256": "35bfe648e1efd904c715280d89b80d74218e713875161b80a179d600d5e821ac"
+    },
+    "app.js": {
+      "bytes": 6528,
+      "sha256": "a7e5b34e29878735d1cb55b582bd6918e538b6f6433deb3547b9ffc48de56140"
+    },
+    "baseline/renderer.js": {
+      "bytes": 11667,
+      "sha256": "7057367ce18068838699dd4addce6794f0bb708da5560f410ac5324b27c08748"
+    },
+    "baseline/rules.js": {
+      "bytes": 15545,
+      "sha256": "ea17e0aada39d41c6f4db096c34fef30aa2a38823ee95bb78458c92dc0547f3e"
+    },
+    "brief.md": {
+      "bytes": 8342,
+      "sha256": "5f97e6137eeb26db2365d13b16014e8e9246f8107132d0fb2d2fce68f827cfe7"
+    },
+    "evaluation.md": {
+      "bytes": 5667,
+      "sha256": "cbfed01bf7ad9a85f32badfaec2c50878dbb4484b205d889579951490b5765aa"
+    },
+    "evidence/baseline-context-desktop.jpg": {
+      "bytes": 66076,
+      "sha256": "7e1b584d41f7907df618ab71901f45e4ea48588bcb4f1a0656a205d604826bc6"
+    },
+    "evidence/calibration-desktop.jpg": {
+      "bytes": 79653,
+      "sha256": "bc97fd291014215d90576f11c7884026ef7e3018a5cd3b714434a42b697bb5b1"
+    },
+    "evidence/concepts-desktop.jpg": {
+      "bytes": 82307,
+      "sha256": "af0793ebabe18660440608b1ab137cfce48950da0ffd6e587797e0f2536ad53b"
+    },
+    "evidence/context-640x480.jpg": {
+      "bytes": 22614,
+      "sha256": "7813406d9a5c3b2e7bab0765e1a21444c089a35ae8b32bcad653f28c8e6ae939"
+    },
+    "evidence/context-narrow.jpg": {
+      "bytes": 37135,
+      "sha256": "84842f7508288a47d6fcf0435fdebde2f847dbdaa38624eee2a7c59b6e9c3ca6"
+    },
+    "evidence/elastic-context-desktop.jpg": {
+      "bytes": 62868,
+      "sha256": "6c6ae98ff7eae4c8d4204ca5a1af07caefa92d0f5c936390b030def98f4fbb48"
+    },
+    "evidence/grayscale-desktop.jpg": {
+      "bytes": 60884,
+      "sha256": "f7e7029c4bfd4685598cc8894cc5caf0cd8c7fa9ba4e5eec86c974e9c7058343"
+    },
+    "evidence/hull-context-desktop.jpg": {
+      "bytes": 59215,
+      "sha256": "a666964ef34638057f1b944f37bd1a373ed71a74794dae1c3abb6cd80a6d6427"
+    },
+    "evidence/motion-desktop.jpg": {
+      "bytes": 57334,
+      "sha256": "ddd5e8ac4b3e35b60f19ba64996e7c23f366352e6f8224a1b645d06925e11add"
+    },
+    "evidence/reference-sources.json": {
+      "bytes": 2286,
+      "sha256": "04e8fa9d6cc721d2e11244e4ec4098372034e2030233d3b348a7e9368bc83cfd"
+    },
+    "evidence/relay-context-desktop.jpg": {
+      "bytes": 57176,
+      "sha256": "4508282a7cd847ac53947600faed446998ec8d5848103e88ade11c887900a183"
+    },
+    "evidence/review-export-agent-qa.json": {
+      "bytes": 303,
+      "sha256": "daa4c1f72733377dfe1488c71cd6674f2f9c1bfa773aa479bb19f1120cabceed"
+    },
+    "evidence/runtime-entry.jpg": {
+      "bytes": 60334,
+      "sha256": "3de5a5184023f81dcffe6d846bc33cda99564733acb61982ce9acd5c5e5f6e91"
+    },
+    "evidence/source-manifest.json": {
+      "bytes": 1563,
+      "sha256": "86da6604fa96fb75cba39c60f4309319494c132f853762e548d03ede72de5fe3"
+    },
+    "index.html": {
+      "bytes": 6854,
+      "sha256": "c932c62c406fee3a14ac1a10731b6b62403398c2347ef185393963065c36c5e1"
+    },
+    "package.json": {
+      "bytes": 90,
+      "sha256": "925802833d9cf3c58efeb23f89f14cf444b86e4de3ac5e18947ea296b97e87b9"
+    },
+    "scene.js": {
+      "bytes": 16189,
+      "sha256": "0760a597ecb548fe6038e3467f974c120cab299423de341b68dba351e47284ae"
+    },
+    "style.css": {
+      "bytes": 6849,
+      "sha256": "b9f3d9d6840ca36569b2bbc77e78791964f5c453eae0d8cf91dde1c34558fcb2"
+    }
+  }
+}

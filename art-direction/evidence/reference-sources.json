@@ -1,0 +1,59 @@
+{
+  "user_input": {
+    "scope": "Explore three distinct looks within the current stark arcade direction",
+    "references": "Marathon by Bungie, visually distinct; especially iQOO — Artists Motions",
+    "human_selected_direction": null
+  },
+  "inspected": [
+    {
+      "url": "https://www.marathonthegame.com/",
+      "role": "Hierarchy and functional graphic framing, not branding or a style-transfer target",
+      "method": "Actual browser screenshot and DOM",
+      "observed": [
+        "Hard graphic frame around darker imagery",
+        "Operational markings and purposeful negative space",
+        "Strong sparse color accents"
+      ],
+      "excluded": [
+        "Logo and custom typography",
+        "Character and faction designs",
+        "Exact composition and lime identity"
+      ]
+    },
+    {
+      "url": "https://magazine.artstation.com/2026/06/bungie-marathon-art-blast/",
+      "role": "Bungie art-team rationale",
+      "method": "Read first-party introduction credited to Brian Vinton and Jason Sussman",
+      "observed": [
+        "Graphic hierarchy as worldbuilding",
+        "Restrained material and palette relationships"
+      ]
+    },
+    {
+      "url": "https://www.behance.net/gallery/77323971/iQOO-Artists-Motions",
+      "role": "Shared motion inspiration pool",
+      "method": "Actual browser page, collection trailer playback and Masanobu Hiraoka sequence playback; sampled frames inspected",
+      "sampled_videos": [
+        "https://vimeo.com/322476432",
+        "https://vimeo.com/322552567"
+      ],
+      "observed": [
+        "Fluid expanding and interlocking silhouettes",
+        "Ivory/lavender/coral masses and black negative space",
+        "Contained energy expressed through transformation"
+      ],
+      "limits": "Did not inspect every artist film or claim exact frame-by-frame timing analysis",
+      "excluded": [
+        "iQOO logo contours",
+        "Source characters",
+        "Copied motion paths or frames"
+      ]
+    }
+  ],
+  "direction_roles": {
+    "relay": "Functional hierarchy and modular separated forms",
+    "hull": "Contained energy interpreted as original mechanical clamp tension/release",
+    "resonance": "Fluid silhouette change and an ivory/ink value inversion"
+  },
+  "source_media_bundled": false
+}
