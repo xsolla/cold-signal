@@ -1,5 +1,7 @@
 # Vector Relay — motion and visual development
 
+**Latest revision:** the creator selected Cold Front's palette with Black Signal's structure and requested substantially higher arcade energy. [Open Cold Signal](arcade/) for the moving action preview, interactive shockwave, and clip export. The [earlier poster studies](poster-studies.html) and the notes below document the previous exploration.
+
 The creator selected **Vector Relay** from the earlier art-direction proposals and asked for more motion graphics and visual variations that feel dynamic and dramatic. This is a focused development pass using art-direction v1.1.0, not another broad art-direction interview.
 
 Open [the motion viewer](http://localhost:5186/vector-relay/). The parent local server serves it:

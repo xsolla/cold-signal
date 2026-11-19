@@ -1,0 +1,117 @@
+{
+  "date": "2026-11-19",
+  "branch": "codex/tempest-art-direction-evaluation",
+  "parent_revision": "6882b7e",
+  "skill_version": "1.1.0",
+  "user_correction": "Cold Front palette; Black Signal everything else; substantially higher arcade energy.",
+  "method": "Producing-agent application and visual review; no human playtest",
+  "source": {
+    "projects/arcade-jam/art-direction/vector-relay/studies.js": {
+      "sha256": "6ea349b0782ea2169ee300fcfa8569fc24ddace6015b23e0d697fe0374125784"
+    },
+    "projects/arcade-jam/art-direction/scene.js": {
+      "sha256": "0760a597ecb548fe6038e3467f974c120cab299423de341b68dba351e47284ae"
+    },
+    "projects/arcade-jam/art-direction/baseline/rules.js": {
+      "sha256": "ea17e0aada39d41c6f4db096c34fef30aa2a38823ee95bb78458c92dc0547f3e"
+    },
+    "skills/art-direction/SKILL.md": {
+      "sha256": "5fa56ce66c64e6a5eefbd603dd44ed02b28bc51bc3d0e5895c37168ded51058d"
+    }
+  },
+  "technical": {
+    "palette": "PASS \u2014 all eight color channels exactly equal Cold Front",
+    "structure": "PASS \u2014 Black Signal font/grammar and original glyph helpers retained; no prismatic sheets",
+    "drawing": "PASS \u2014 420 sampled frames across three action presets; finite numeric geometry, valid alpha, balanced canvas state; authored show remains unchanged",
+    "rescue": "PASS \u2014 down/active transition and continuous motion at rescue/rejoin boundaries",
+    "manual_pulse": "PASS \u2014 visible targets removed and impact events emitted in sampled model; actual Space input confirmed 9 targets in browser",
+    "legacy": "PASS \u2014 prior poster HTML preserved byte-for-byte at poster-studies.html",
+    "syntax": "PASS \u2014 action.js, app.js, audio.js"
+  },
+  "browser": {
+    "url": "http://localhost:5186/vector-relay/arcade/",
+    "checked": [
+      "Live moving Overdrive sequence",
+      "All three presets selected",
+      "Pause remained stable across UI redraw",
+      "Camera toggle",
+      "Button and Space-key shockwave",
+      "Replay and timeline scrub",
+      "Rescue downed scene at 4.8 seconds and active crew at 6.4 seconds",
+      "Sound initialized and toggled while paused; left off",
+      "8-second native canvas clip exported as MP4",
+      "Original Vector Relay entry redirected to the revised preview",
+      "No captured console errors or warnings"
+    ],
+    "desktop_viewports_observed": [
+      [
+        1280,
+        720
+      ],
+      [
+        1515,
+        1000
+      ]
+    ],
+    "compact_layout": "Viewport override returned unexpected dimensions/transient rendering; compact visual QA remains unverified. Override was reset.",
+    "delivery": "Overdrive playing, sound off, impact camera on"
+  },
+  "video": {
+    "file": "evidence/cold-signal-overdrive.mp4",
+    "native_browser_export": true,
+    "duration_seconds": 7.963667,
+    "width": 1202,
+    "height": 476,
+    "readyState": 4,
+    "playback_error": null,
+    "audio": "silent canvas recording; optional live synth audio is separate"
+  },
+  "limits": [
+    "Scripted motion choreography; no live multiplayer match or gameplay balance claim",
+    "Minimum on-screen glyph sizes are preview choices, not game changes",
+    "Playable game rules, renderer, server and tuning unchanged",
+    "Human preference, recognition and motion comfort untested"
+  ],
+  "artifacts": {
+    "README.md": {
+      "bytes": 3611,
+      "sha256": "ecffa9ce10f71163e75b59759a9275ac52759664e2728b56acf709ff254a79ad"
+    },
+    "action.js": {
+      "bytes": 12931,
+      "sha256": "62686ba42dbc152a2cacfdf1bd7e7d14c5fff02b8dfef78b7ffe45f6d6edc07c"
+    },
+    "app.js": {
+      "bytes": 4957,
+      "sha256": "7708aa1ede4621a7fde4f9146d2c8afec8bd38dbe02e0194cccd1e2b0e1165de"
+    },
+    "audio.js": {
+      "bytes": 1692,
+      "sha256": "9ee302a1a624e65b0e6a774a8b95bbc32164a1bc1cade6d42876ffdcce206dd4"
+    },
+    "evidence/clip-preview.html": {
+      "bytes": 554,
+      "sha256": "c9946048737338a02c4e7e9489d16526ed8693f431cdfbe6ba1146eeb3356aac"
+    },
+    "evidence/cold-signal-overdrive.mp4": {
+      "bytes": 1353358,
+      "sha256": "1e3a6ef32b5223f7097e704d5131d4fd623345cda530f43f30c8d3234f51c462"
+    },
+    "evidence/overdrive-desktop.jpg": {
+      "bytes": 114622,
+      "sha256": "40c58a9e69b632f33d4fc7a107eb517cea82c1bdf556ff6b7012ce0e24ddbe47"
+    },
+    "evidence/rescue-rush.jpg": {
+      "bytes": 104886,
+      "sha256": "8a2e052c22589e05a2513fcc8b26119e8706a7329831e2629e06bb37ccb4431f"
+    },
+    "index.html": {
+      "bytes": 2169,
+      "sha256": "0d3ffbb9e29c982e585fdbb8e9a7b8ddc65f292741b44bfef08d353c7443b7eb"
+    },
+    "style.css": {
+      "bytes": 3021,
+      "sha256": "bf85378f152877e417ef2eb9a0fcd2f688c27ba408cd7f0f97a0c6953d7b3d33"
+    }
+  }
+}
