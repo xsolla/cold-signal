@@ -1,0 +1,16 @@
+name: delve-together-previous
+services:
+  backend:
+    image: delve-together-backend:pre-tunnel-0.2
+    environment:
+      PORT: 8080
+      DEV_TOOLS: 1
+    init: true
+    restart: unless-stopped
+  web:
+    image: delve-together-web:pre-tunnel-0.2
+    ports:
+      - "127.0.0.1:5175:8080"
+    depends_on:
+      - backend
+    restart: unless-stopped
