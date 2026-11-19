@@ -64,24 +64,7 @@ export class Presentation {
     } else { this.origins.clear(); this.trails.clear(); }
     this.effects = this.effects.filter(e => this.time - e.born < 1.15).slice(-64);
   }
-  impact(reduced) {
-    if (reduced) return 0;
-    return Math.min(1, this.effects.reduce((sum, e) => {
-      const weight = e.type === 'special' ? (e.character === 'ivo' ? 1 : .6) :
-        e.type === 'down' ? .9 : e.type === 'rescue' ? .8 : e.type === 'kill' ? .55 : e.type === 'shield' ? .35 : 0;
-      return sum + weight * Math.exp(-(this.time - e.born) * 9);
-    }, 0));
-  }
-  camera(reduced) {
-    const punch = this.impact(reduced), t = this.time;
-    if (!punch) return { x: 0, y: 0, rotation: 0, zoom: 1 };
-    // CSS-pixel translation, world rotation, and zoom share the paused FX clock.
-    // Weighted oscillations stay bounded even when a Shockwave kills a whole wave.
-    return {
-      x: (Math.sin(t * 91) * .65 + Math.sin(t * 137 + .8) * .35) * 18 * punch,
-      y: (Math.cos(t * 79) * .65 + Math.sin(t * 113) * .35) * 13 * punch,
-      rotation: Math.sin(t * 63 + .4) * .02 * punch,
-      zoom: 1 + punch * .075,
-    };
-  }
+  // Player-reported nausea: keep the view locked in every motion setting.
+  // Combat energy comes from trails, fragments and chain links, never the camera.
+  camera() { return { x: 0, y: 0, rotation: 0, zoom: 1 }; }
 }

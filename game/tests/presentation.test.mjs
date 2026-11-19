@@ -18,9 +18,9 @@ test('pausing freezes effects and trails; resuming does not accumulate wall time
   const state = makeMatch(17), fx = new Presentation();
   state.events = [{ id: 1, type: 'special', character: 'ivo' }];
   fx.update(state, { now: 0 }); fx.update(state, { now: 20 });
-  const clock = fx.time, impact = fx.impact(false), trails = structuredClone(fx.trails);
+  const clock = fx.time, effects = structuredClone(fx.effects), trails = structuredClone(fx.trails);
   fx.update(state, { now: 10000, paused: true });
-  assert.equal(fx.time, clock); assert.equal(fx.impact(false), impact); assert.deepEqual(fx.trails, trails);
+  assert.equal(fx.time, clock); assert.deepEqual(fx.effects, effects); assert.deepEqual(fx.trails, trails);
   fx.update(state, { now: 10016 }); assert.ok(Math.abs(fx.time - clock - .016) < 1e-9);
 });
 
@@ -33,12 +33,12 @@ test('retry resets event IDs, transient particles, trails, and observed bullet o
   assert.equal(fx.effects.length, 1); assert.equal(fx.cursor, 1); assert.equal(fx.origins.size, 0); assert.equal(fx.time, 0);
 });
 
-test('reduced motion immediately removes camera impulse and movement ghosts', () => {
+test('reduced motion immediately removes movement ghosts while keeping functional feedback', () => {
   const state = makeMatch(17), fx = new Presentation();
   state.events = [{ id: 1, type: 'down' }];
-  fx.update(state, { now: 0 }); assert.ok(fx.trails.get(0).length > 0); assert.ok(fx.impact(false) > 0);
+  fx.update(state, { now: 0 }); assert.ok(fx.trails.get(0).length > 0);
   fx.update(state, { now: 16, reduced: true });
-  assert.equal(fx.impact(true), 0); assert.ok([...fx.trails.values()].every(t => t.length === 0));
+  assert.ok([...fx.trails.values()].every(t => t.length === 0));
   assert.equal(fx.effects.length, 1); // Functional rescue/ability feedback is retained.
 });
 
@@ -63,13 +63,13 @@ test('presentation history is bounded and the fork fits the previous painted shi
   assert.equal(fx.effects.length, 0);
 });
 
-test('stacked combat impulses keep camera bounds, freeze on pause, and disappear in reduced mode', () => {
+test('camera stays completely locked during stacked kills and specials in both motion settings', () => {
   const state = makeMatch(17), fx = new Presentation();
-  state.events = Array.from({ length: 20 }, (_, i) => ({ id: i + 1, type: 'kill' }));
+  state.events = Array.from({ length: 48 }, (_, i) => ({ id: i + 1, type: 'kill' }));
+  state.events.push({ id: 49, type: 'special', character: 'ivo' }, { id: 50, type: 'rescue' });
   for (let i = 0; i < 30; i++) {
-    fx.update(state, { now: i * 16 }); const c = fx.camera(false);
-    assert.ok(Math.abs(c.x) <= 18 && Math.abs(c.y) <= 13);
-    assert.ok(Math.abs(c.rotation) <= .02 && c.zoom >= 1 && c.zoom <= 1.075);
+    fx.update(state, { now: i * 16 });
+    for (const reduced of [true, false]) assert.deepEqual(fx.camera(reduced), { x: 0, y: 0, rotation: 0, zoom: 1 });
   }
   const camera = fx.camera(false); fx.update(state, { now: 50000, paused: true });
   assert.deepEqual(fx.camera(false), camera);

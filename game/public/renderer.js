@@ -118,7 +118,7 @@ export class Renderer {
       c.lineWidth = Math.max(.5, scale * 2); c.beginPath(); c.moveTo(x, y); c.lineTo(tail.x, tail.y); c.stroke(); c.restore();
     }
     {
-      if (e.type === 'rush') this.polygon(x, y, size, 3, e.angle, paper, null);
+      if (e.type === 'rush') this.polygon(x, y, size, 3, e.angle, e.escort ? null : paper, e.escort ? paper : null, line);
       if (e.type === 'flank') { this.polygon(x, y, size, 4, e.angle, ink, paper, line); this.polygon(x, y, 2 * scale, 4, 0, paper, null); }
       if (e.type === 'suppress') { this.polygon(x, y, size, 6, e.angle, ink, paper, line); this.polygon(x, y, 7 * scale, 3, e.angle, danger, null); }
       if (e.type === 'skimmer') {
@@ -225,7 +225,15 @@ export class Renderer {
       const age = time - e.born, radius = e.radius ?? T.radius, ds = depthScale(radius);
       const pos = pointAt(e.angle ?? 0, radius);
       c.save();
-      if (e.type === 'kill') this.explosion(e, pos, age, ds, reduced);
+      if (e.type === 'kill') {
+        if (!reduced && e.chainDepth > 0 && age < .3) {
+          const from = pointAt(e.fromAngle, e.fromRadius);
+          c.globalAlpha = 1 - age / .3; c.globalCompositeOperation = 'lighter';
+          c.strokeStyle = accent; c.lineWidth = 2;
+          c.beginPath(); c.moveTo(from.x, from.y); c.lineTo(pos.x, pos.y); c.stroke();
+        }
+        this.explosion(e, pos, age, ds, reduced);
+      }
       if (e.type === 'special' && age < .65) {
         const t = Math.min(1, age / .4); c.globalAlpha = 1 - age / .65;
         c.strokeStyle = e.character === 'sana' ? accent : acid;
@@ -284,7 +292,7 @@ export class Renderer {
       c.restore();
     }
     const burst = this.presentation.effects.filter(e => e.type === 'kill' && time - e.born < .3);
-    if (burst.length >= 3) { c.fillStyle = acid; c.font = 'bold 9px monospace'; c.textAlign = 'center'; c.fillText(`${burst.length} TARGETS CLEARED`, 0, -304); }
+    if (burst.length >= 3) { c.fillStyle = acid; c.font = 'bold 9px monospace'; c.textAlign = 'center'; c.fillText(`${burst.length} TARGETS CLEARED${burst.some(e => e.chainDepth > 0) ? ' / CHAIN' : ''}`, 0, -304); }
   }
   render(state, { joined = false, slot = 0, reduced = false, paused = false, now = 0, predicted = null, roster = [], crewCount = 4 } = {}) {
     const c = this.ctx, w = this.width, h = this.height;

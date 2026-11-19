@@ -101,7 +101,7 @@ function updateUI() {
   const charge = Math.round(100 * (1 - (own?.specialCooldown || 0) / currentCharacter.cooldown));
   $('ability-bar').style.setProperty('--charge', `${charge}%`); $('ability-bar').setAttribute('aria-valuenow', String(charge));
   $('footer-status').textContent = controlled ? 'CONTROLLED TEST CLIENT' : own?.down ? `DOWNED · ${ringName(own.ring)} RING` : `AUTO FIRE · ${ringName(own?.ring)} RING`;
-  $('arena-note').textContent = notice || (snapshot?.players.some(p => p.down) ? 'MATCH THEIR RING. STAY CLOSE TO RESCUE. FIRE IS AUTOMATIC.' : 'W/↑ IN · S/↓ OUT · THE BULLSEYE BLOCKS YOUR FIRE.');
+  $('arena-note').textContent = notice || (snapshot?.players.some(p => p.down) ? 'MATCH THEIR RING. STAY CLOSE TO RESCUE. FIRE IS AUTOMATIC.' : 'HIT A PACK TO START A CHAIN. THE BULLSEYE BLOCKS YOUR FIRE.');
   for (const button of $('character-select').children) button.setAttribute('aria-checked', String(button.dataset.character === picked.id));
   const selecting = !snapshot || ['won', 'lost'].includes(snapshot.status);
   $('character-select').hidden = !selecting; $('lobby-note').hidden = !selecting;

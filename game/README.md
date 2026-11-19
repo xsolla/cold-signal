@@ -8,10 +8,12 @@ character's special ability. Every pilot must be active at the final clear.
 The playable client now uses **Cold Signal**: Cold Front's navy/cyan/violet
 palette with Black Signal's forked ships, open rescue markers, radial instruments,
 and angular geometry. Streaming tunnel lines, projectile and movement trails,
-36-shard explosions, rescue bursts, and camera shake, roll, and zoom respond to live play.
+36-shard explosions, rescue bursts, and linked chain detonations respond to live play.
 The amplified effects use longer luminous trails and retain a readable burst size
 at inner depths. Pilots and rescue markers render above the large effects.
 The approved scripted motion study remains separate in `../art-direction/`.
+The camera is now **locked** in every motion setting: no shake, roll, or zoom
+pulses. This replaces the amplified camera response after player reports of nausea.
 
 ## Play without Docker
 
@@ -23,18 +25,42 @@ HOST=127.0.0.1 PORT=5176 DEV_TOOLS=1 npm start
 
 Open [Cold Signal / Delve Together](http://localhost:5176). For one human,
 create a room, open **Local test tools**, add three controlled crew members,
-and ready up. Keep their tabs open. **Reduce motion** removes camera movement,
-streaming depth, speed lines, movement ghosts, and fragmentation while retaining
+and ready up. Keep their tabs open. **Reduce motion** removes streaming depth,
+speed lines, luminous trails, movement ghosts, and fragmentation while retaining
 ability, warning, and rescue feedback. The initial setting respects the OS preference;
 click **Motion reduced** to enable the full arcade effects.
 
-Rules, collision geometry, enemy timing, network authority, and controls are
-unchanged. Ships use the original perspective scale and fit the original painted
-envelope; Shockwave's effect follows its actual sector. Presentation effects use
+Ships use the original perspective scale and fit the original painted envelope.
+Presentation effects use
 real time, stop during a shared pause, and reset when a room or run restarts.
 See [integration verification](evidence/cold-signal/README.md) for runtime captures
 and [the amplified-effects check](evidence/cold-signal-overdrive/README.md) for the
-latest revision and its checks.
+preceding visual revision. [The current pacing check](evidence/cold-signal-pacing/README.md)
+records the combat changes and stationary camera.
+
+## Arcade combat pacing
+
+At **1× pace**, each active pilot fires about **15 shots per second**, compared
+with about 8.6 previously. Squads arrive every 0.9–0.75 simulation seconds,
+growing from three to five enemies as the gauntlet advances. Two-player squads
+contain two or three enemies. Population is capped at 48 enemies for four pilots
+and 24 for two. Existing breathing phases, wall timing, movement, rescue timing,
+and the 90-second gauntlet remain in place.
+
+Squads have a behavior leader and light rush escorts. Outlined triangular escorts
+take one hit and threaten contact; they leave no lingering danger when they escape.
+Leaders retain their original behaviors and warning zones. The short center preview
+still protects every emerging enemy until it leaves the bullseye.
+
+Destroying an enemy deals one splash damage to nearby exposed enemies. Aim into
+a pack to start a chain; armored leaders may need several overlapping blasts.
+Chains never damage crew or protected preview enemies. The initiating pilot gets
+the normal per-enemy kill credit, with no score multiplier. Violet links show real
+chain connections and the clear count reports actual kills.
+
+Ivo initiates Shockwave inside its original sector. Resulting enemy explosions can
+propagate beyond that sector. Bullets themselves only travel inward from the ship's
+depth; nearby death blasts can reach other targets within their splash range.
 
 ## Run with Docker
 
@@ -196,6 +222,7 @@ npm ci
 npm test
 npm run test:browser
 npm run balance
+node scripts/pacing-check.mjs
 ```
 
 Node.js 20+ is sufficient for these developer commands. Browser verification
@@ -203,5 +230,7 @@ uses four installed Chrome processes by default on macOS; set `CHROME_PATH` or
 `DELVE_URL` for another installed Chromium executable or local URL. It records
 actual input/state plus labeled constructed scenarios to ignored `artifacts/`.
 The balance command retains a narrow two-pilot, full-speed rescue fixture; it
-is not a four-player character-balance claim. See [verification](../verification.md)
+is not a four-player character-balance claim. The pacing check compares fixed
+diagnostics against commit `222834b` and requires that commit in local Git history;
+its controlled traces are not human difficulty or comfort evidence. See [verification](../verification.md)
 and [the human playtest guide](../playtest.md) for evidence and remaining questions.

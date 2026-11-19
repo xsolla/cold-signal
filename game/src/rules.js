@@ -3,8 +3,8 @@ export const TAU = Math.PI * 2;
 export const RINGS = Object.freeze([112, 176, 240]);
 export const ringName = ring => ['INNER', 'MIDDLE', 'OUTER'][ring] || 'OUTER';
 export const T = Object.freeze({ radius: 240, coreRadius: 44, hopSpeed: 320, muzzleInset: 2,
-  speed: 3.1, fireInterval: .115, bulletSpeed: 590, rescueSeconds: 1.65, rescueArc: .20,
-  protectionSeconds: .85, duration: 90, step: 1 / 60 });
+  speed: 3.1, fireInterval: .065, bulletSpeed: 590, rescueSeconds: 1.65, rescueArc: .20,
+  chainRadius: 52, maxEnemies: 48, protectionSeconds: .85, duration: 90, step: 1 / 60 });
 // The vanishing point compresses distant rails. Foreground remains linear for readable wall warnings.
 export const projectRadius = r => r >= T.radius ? r : Math.max(0, r) / (1.8 - .8 * Math.max(0, r) / T.radius);
 export const depthScale = r => Math.max(.08, Math.min(2.4, (projectRadius(r) / T.radius) ** 1.18));
@@ -35,7 +35,7 @@ export function makeMatch(seed = 1, options = {}) {
   const timeScale = options.timeScale === 1 ? 1 : .5;
   return { status: 'playing', time: 0, elapsed: 0, timeScale, seed: seed >>> 0, rng: (seed >>> 0) || 1,
     nextId: 1, eventId: 0, score: 0, rescues: 0, phase: 'INGRESS',
-    enemyClock: .7, wallClock: 5, players: Array.from({ length: count }, (_, id) => ({ id,
+    enemyClock: .35, wallClock: 5, players: Array.from({ length: count }, (_, id) => ({ id,
       character: characterById(options.characters?.[id] || CREW[id].id).id,
       angle: wrap(-Math.PI / 2 + id * TAU / count), ring: 2, radius: T.radius, prevRadius: T.radius,
       inwardHeld: false, outwardHeld: false, down: false, rescue: 0,
@@ -49,7 +49,8 @@ function random(s) {
 }
 function event(s, type, data = {}) {
   s.events.push({ id: ++s.eventId, type, time: s.time, ...data });
-  if (s.events.length > 20) s.events.shift();
+  // A single cascading squad clear must fit between network snapshots.
+  if (s.events.length > 96) s.events.shift();
 }
 export function downPlayer(s, id) {
   const p = s.players[id];
@@ -67,15 +68,22 @@ export function phaseAt(time) {
   if (time < 74) return 'BREATH'; if (time < 90) return 'FINAL SURGE';
   return 'BRING THEM BACK';
 }
-function spawnEnemy(s) {
+function spawnEnemy(s, angle, wing = false) {
   const roll = random(s);
-  const type = s.time < 5 ? 'rush' : roll < .30 ? 'rush' : roll < .53 ? 'skimmer'
+  const type = wing || s.time < 5 ? 'rush' : roll < .30 ? 'rush' : roll < .53 ? 'skimmer'
     : roll < .72 ? 'stalker' : s.time < 14 ? 'rush' : s.time < 30 || roll < .9 ? 'flank' : 'suppress';
-  const angle = random(s) * TAU;
-  s.enemies.push({ id: s.nextId++, type, angle, base: angle, radius: 12, preview: 1.15,
+  s.enemies.push({ id: s.nextId++, type, escort: wing, angle, base: angle, radius: 12, preview: .65,
     hp: type === 'suppress' ? 3 : type === 'flank' ? 2 : 1, age: 0,
     ring: type === 'skimmer' ? 1 : type === 'stalker' ? 0 : null, mode: 'approach',
     turn: random(s) < .5 ? -1 : 1, pulse: 1.2 });
+}
+function spawnSquad(s) {
+  const capacity = s.players.length === 2 ? T.maxEnemies / 2 : T.maxEnemies;
+  const size = s.time < 12 ? 3 : s.time < 40 ? 4 : 5;
+  const desired = s.players.length === 2 ? Math.ceil(size * .6) : size;
+  const count = Math.min(desired, capacity - s.enemies.length), center = random(s) * TAU;
+  // One behavior leader and light escorts: clustered targets without multiplying beams.
+  for (let i = 0; i < count; i++) spawnEnemy(s, wrap(center + (i - (count - 1) / 2) * .14), i !== Math.floor(count / 2));
 }
 function spawnWall(s) {
   const angle = random(s) * TAU, single = s.time > 40 && random(s) > .65;
@@ -88,13 +96,26 @@ export function safeInWall(wall, angle) {
   return wall.gaps.some(g => distance(angle, g.angle) < g.width / 2);
 }
 function hurtEnemy(s, e, amount, owner) {
-  // All player attacks respect the preview sanctuary, including Shockwave.
-  if (e.hp <= 0 || e.radius <= T.coreRadius) return;
-  e.hp -= amount;
-  if (e.hp <= 0) {
-    s.score += e.type === 'rush' ? 100 : e.type === 'flank' ? 150 : e.type === 'suppress' ? 250 : 175;
+  const hits = [{ enemy: e, damage: amount, depth: 0, source: null }];
+  // Process cascades iteratively. Mark each death before queuing neighbors, so
+  // converging blasts never award a dead target twice or recurse indefinitely.
+  for (let index = 0; index < hits.length; index++) {
+    const { enemy: target, damage, depth, source } = hits[index];
+    // The sanctuary protects preview enemies from bullets, specials and chains.
+    if (target.hp <= 0 || target.radius <= T.coreRadius) continue;
+    target.hp -= damage;
+    if (target.hp > 0) continue;
+    s.score += target.type === 'rush' ? 100 : target.type === 'flank' ? 150 : target.type === 'suppress' ? 250 : 175;
     s.players[owner].kills++;
-    event(s, 'kill', { angle: e.angle, radius: e.radius, kind: e.type });
+    event(s, 'kill', { angle: target.angle, radius: target.radius, kind: target.type, chainDepth: depth,
+      ...(source ? { fromAngle: source.angle, fromRadius: source.radius } : {}) });
+    const origin = pointAt(target.angle, target.radius), reach = T.chainRadius * depthScale(target.radius);
+    for (const other of s.enemies) {
+      if (other.hp <= 0 || other.radius <= T.coreRadius) continue;
+      const pos = pointAt(other.angle, other.radius);
+      if (Math.hypot(pos.x - origin.x, pos.y - origin.y) <= reach)
+        hits.push({ enemy: other, damage: 1, depth: depth + 1, source: target });
+    }
   }
 }
 export function useSpecial(s, p) {
@@ -148,7 +169,7 @@ function updateEnemy(s, e, dt) {
     if (e.age > 14) e.hp = 0;
   } else e.radius += 86 * dt;
   if (e.radius > T.radius - 3) {
-    s.zones.push({ id: s.nextId++, angle: e.angle, radius: T.radius, width: .34, age: 0, warn: .25, life: 1.35 });
+    if (!e.escort) s.zones.push({ id: s.nextId++, angle: e.angle, radius: T.radius, width: .34, age: 0, warn: .25, life: 1.35 });
     e.hp = 0;
   }
 }
@@ -190,8 +211,8 @@ export function step(s, rawInputs = [], dt = T.step) {
   }
   const lull = s.phase === 'BREATH'; s.enemyClock -= dt;
   if (s.enemyClock <= 0) {
-    if (!lull && s.enemies.length < 26) spawnEnemy(s);
-    s.enemyClock = lull ? 1.4 : s.time < 12 ? 1.4 : s.time < 40 ? 1.05 : s.time < 74 ? .8 : .65;
+    if (!lull) spawnSquad(s);
+    s.enemyClock = lull ? 1.4 : s.time < 12 ? .9 : s.time < 40 ? .85 : s.time < 74 ? .8 : .75;
   }
   s.wallClock -= dt;
   if (s.wallClock <= 0) { if (!lull) spawnWall(s); s.wallClock = s.time < 26 ? 4.2 : s.time < 74 ? 3.4 : 2.7; }

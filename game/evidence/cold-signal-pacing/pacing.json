@@ -1,0 +1,164 @@
+{
+  "type": "Matched deterministic pacing diagnostics over authoritative JavaScript rules",
+  "baselineCommit": "222834b",
+  "baselineRulesSha256": "ea17e0aada39d41c6f4db096c34fef30aa2a38823ee95bb78458c92dc0547f3e",
+  "candidateRulesSha256": "241c7f54afba9e84d7809d951665198df9bbf9ba40bc5aa99b4751151355c3c4",
+  "timeStep": 0.016666666666666666,
+  "seeds": [
+    17,
+    73,
+    123,
+    773
+  ],
+  "limits": "Firing excludes threats; pressure grants invulnerability and disables firing/walls. Controlled traces use the existing diagnostic policy, not humans. No population win rate, enjoyment, comfort or final balance claim.",
+  "baseline": {
+    "firing": {
+      "realSeconds": 5,
+      "shots": 172,
+      "teamShotsPerSecond": 34.4
+    },
+    "pressureFixtures": [
+      {
+        "seed": 17,
+        "simulationSeconds": 20,
+        "spawned": 16,
+        "peakLiveEnemies": 9
+      },
+      {
+        "seed": 73,
+        "simulationSeconds": 20,
+        "spawned": 16,
+        "peakLiveEnemies": 7
+      },
+      {
+        "seed": 123,
+        "simulationSeconds": 20,
+        "spawned": 16,
+        "peakLiveEnemies": 8
+      },
+      {
+        "seed": 773,
+        "simulationSeconds": 20,
+        "spawned": 16,
+        "peakLiveEnemies": 8
+      }
+    ],
+    "controlledTraces": [
+      {
+        "seed": 17,
+        "stop": "lost",
+        "simulationSeconds": 30.5,
+        "score": 6350,
+        "kills": 12,
+        "chainKills": 0,
+        "rescues": 9,
+        "peakLiveEnemies": 7
+      },
+      {
+        "seed": 73,
+        "stop": "lost",
+        "simulationSeconds": 40.317,
+        "score": 7325,
+        "kills": 19,
+        "chainKills": 0,
+        "rescues": 9,
+        "peakLiveEnemies": 6
+      },
+      {
+        "seed": 123,
+        "stop": "lost",
+        "simulationSeconds": 23.817,
+        "score": 2800,
+        "kills": 13,
+        "chainKills": 0,
+        "rescues": 2,
+        "peakLiveEnemies": 4
+      },
+      {
+        "seed": 773,
+        "stop": "lost",
+        "simulationSeconds": 28.967,
+        "score": 5900,
+        "kills": 9,
+        "chainKills": 0,
+        "rescues": 9,
+        "peakLiveEnemies": 6
+      }
+    ]
+  },
+  "candidate": {
+    "firing": {
+      "realSeconds": 5,
+      "shots": 300,
+      "teamShotsPerSecond": 60
+    },
+    "pressureFixtures": [
+      {
+        "seed": 17,
+        "simulationSeconds": 20,
+        "spawned": 79,
+        "peakLiveEnemies": 19
+      },
+      {
+        "seed": 73,
+        "simulationSeconds": 20,
+        "spawned": 79,
+        "peakLiveEnemies": 20
+      },
+      {
+        "seed": 123,
+        "simulationSeconds": 20,
+        "spawned": 79,
+        "peakLiveEnemies": 24
+      },
+      {
+        "seed": 773,
+        "simulationSeconds": 20,
+        "spawned": 79,
+        "peakLiveEnemies": 22
+      }
+    ],
+    "controlledTraces": [
+      {
+        "seed": 17,
+        "stop": "lost",
+        "simulationSeconds": 7.667,
+        "score": 1475,
+        "kills": 14,
+        "chainKills": 8,
+        "rescues": 0,
+        "peakLiveEnemies": 12
+      },
+      {
+        "seed": 73,
+        "stop": "lost",
+        "simulationSeconds": 40.4,
+        "score": 9800,
+        "kills": 67,
+        "chainKills": 35,
+        "rescues": 5,
+        "peakLiveEnemies": 18
+      },
+      {
+        "seed": 123,
+        "stop": "lost",
+        "simulationSeconds": 24.433,
+        "score": 7025,
+        "kills": 48,
+        "chainKills": 26,
+        "rescues": 4,
+        "peakLiveEnemies": 18
+      },
+      {
+        "seed": 773,
+        "stop": "lost",
+        "simulationSeconds": 30.967,
+        "score": 10150,
+        "kills": 62,
+        "chainKills": 27,
+        "rescues": 6,
+        "peakLiveEnemies": 17
+      }
+    ]
+  }
+}
