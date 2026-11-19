@@ -26,6 +26,12 @@ export class Renderer {
     const c = this.ctx; c.strokeStyle = color; c.lineWidth = width;
     c.beginPath(); c.arc(0, 0, radius, 0, TAU); c.stroke();
   }
+  bloom(x, y, radius, color, alpha) {
+    const c = this.ctx, glow = c.createRadialGradient(x, y, 0, x, y, radius);
+    glow.addColorStop(0, color); glow.addColorStop(.25, `${color}70`); glow.addColorStop(1, `${color}00`);
+    c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha *= alpha; c.fillStyle = glow;
+    c.fillRect(x - radius, y - radius, radius * 2, radius * 2); c.restore();
+  }
   tunnel(own, reduced) {
     const c = this.ctx, core = projectRadius(T.coreRadius);
     const fog = c.createRadialGradient(0, 0, core, 0, 0, 330);
@@ -161,12 +167,57 @@ export class Renderer {
   bullet(b, slot, reduced) {
     const c = this.ctx, from = pointAt(b.angle, b.radius);
     // Never extend a trail beyond where this real projectile was first observed.
-    const end = Math.min(this.presentation.origins.get(b.id) ?? b.radius, b.radius + (reduced ? 12 : 38));
+    const end = Math.min(this.presentation.origins.get(b.id) ?? b.radius, b.radius + (reduced ? 12 : 78));
     const to = pointAt(b.angle, end), head = pointAt(b.angle, Math.max(T.coreRadius, b.radius - 5));
-    c.save(); c.strokeStyle = b.owner === slot ? acid : paper;
-    if (!reduced) { c.globalCompositeOperation = 'lighter'; c.globalAlpha = .28; c.lineWidth = Math.max(.5, 3.5 * depthScale(b.radius)); c.beginPath(); c.moveTo(from.x, from.y); c.lineTo(to.x, to.y); c.stroke(); }
-    c.globalAlpha = 1; c.lineWidth = Math.max(.5, 2 * depthScale(b.radius));
+    const color = b.owner === slot ? acid : this.players[b.owner]?.character === 'sana' ? accent : paper;
+    const ds = depthScale(b.radius);
+    c.save(); c.strokeStyle = color;
+    if (!reduced && end > b.radius) {
+      const gradient = c.createLinearGradient(from.x, from.y, to.x, to.y);
+      gradient.addColorStop(0, color); gradient.addColorStop(.45, `${color}b0`); gradient.addColorStop(1, `${color}00`);
+      c.globalCompositeOperation = 'lighter'; c.strokeStyle = gradient;
+      for (const [alpha, width] of [[.2, 10], [.9, 3.5]]) {
+        c.globalAlpha = alpha; c.lineWidth = Math.max(width / 3, width * ds);
+        c.beginPath(); c.moveTo(from.x, from.y); c.lineTo(to.x, to.y); c.stroke();
+      }
+      this.bloom(from.x, from.y, 10 * Math.max(.4, ds), color, .45);
+    }
+    c.globalAlpha = 1; c.strokeStyle = reduced ? color : paper;
+    c.lineWidth = Math.max(reduced ? .5 : .9, (reduced ? 2 : 2.5) * ds);
     c.beginPath(); c.moveTo(head.x, head.y); c.lineTo(from.x, from.y); c.stroke(); c.restore();
+  }
+  explosion(e, pos, age, ds, reduced) {
+    const c = this.ctx;
+    if (reduced) {
+      if (age >= .48) return;
+      c.globalAlpha = 1 - age / .48; c.strokeStyle = paper; c.lineWidth = Math.max(.5, ds);
+      c.beginPath(); c.arc(pos.x, pos.y, (5 + age / .48 * 3) * ds, 0, TAU); c.stroke(); return;
+    }
+    if (age >= .72) return;
+    // FX retain depth but do not collapse to collider size near the vanishing point.
+    const scale = Math.max(.6, Math.sqrt(ds)), t = age / .72, fade = (1 - t) ** 1.6;
+    c.translate(pos.x, pos.y); c.globalCompositeOperation = 'lighter'; c.globalAlpha = fade;
+    this.bloom(0, 0, (22 + t * 65) * scale, acid, .5);
+    this.circle((8 + t * 112) * scale, acid, (3.5 * (1 - t) + .6) * scale);
+    c.beginPath(); c.arc(0, 0, (4 + t * 80) * scale, e.id, e.id + TAU * .77);
+    c.strokeStyle = accent; c.lineWidth = 2 * scale; c.stroke();
+    if (age < .09) {
+      c.globalAlpha = 1 - age / .09; c.strokeStyle = paper; c.lineWidth = 3 * scale;
+      c.beginPath(); c.moveTo(-26 * scale, 0); c.lineTo(26 * scale, 0);
+      c.moveTo(0, -26 * scale); c.lineTo(0, 26 * scale); c.stroke();
+    }
+    for (let i = 0; i < 36; i++) {
+      const a = noise(e.id * 23 + i) * TAU, speed = 90 + noise(i + e.id) * 240;
+      const distance = (6 + age * speed) * scale, length = (3 + (1 - t) * 20) * scale;
+      const x = Math.cos(a) * distance, y = Math.sin(a) * distance;
+      const color = [acid, paper, accent, danger][i % 4];
+      c.globalAlpha = fade * (.45 + noise(i * 17 + e.id) * .55);
+      if (i % 6 === 0) this.polygon(x, y, (2 + (1 - t) * 3) * scale, 3, a + age * 8, color, null);
+      else {
+        c.strokeStyle = color; c.lineWidth = (i % 3 ? 1.5 : 3) * scale;
+        c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a) * length, y + Math.sin(a) * length); c.stroke();
+      }
+    }
   }
   effects(reduced) {
     const c = this.ctx, time = this.presentation.time;
@@ -174,23 +225,7 @@ export class Renderer {
       const age = time - e.born, radius = e.radius ?? T.radius, ds = depthScale(radius);
       const pos = pointAt(e.angle ?? 0, radius);
       c.save();
-      if (e.type === 'kill' && age < .48) {
-        const t = age / .48; c.globalAlpha = 1 - t;
-        if (!reduced) c.globalCompositeOperation = 'lighter';
-        c.strokeStyle = paper; c.lineWidth = Math.max(.5, ds);
-        c.beginPath(); c.arc(pos.x, pos.y, (5 + (reduced ? 3 : t * 42)) * ds, 0, TAU); c.stroke();
-        if (!reduced && age < .07) {
-          c.lineWidth = 2 * ds; c.beginPath();
-          c.moveTo(pos.x - 16 * ds, pos.y); c.lineTo(pos.x + 16 * ds, pos.y);
-          c.moveTo(pos.x, pos.y - 16 * ds); c.lineTo(pos.x, pos.y + 16 * ds); c.stroke();
-        }
-        if (!reduced) for (let i = 0; i < 18; i++) {
-          const a = noise(e.id * 23 + i) * TAU, distance = (8 + t * (28 + noise(i + e.id) * 58)) * ds;
-          const x = pos.x + Math.cos(a) * distance, y = pos.y + Math.sin(a) * distance;
-          c.strokeStyle = [acid, paper, accent, danger][i % 4]; c.lineWidth = (i % 3 ? 1 : 2) * ds;
-          c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a) * 8 * ds, y + Math.sin(a) * 8 * ds); c.stroke();
-        }
-      }
+      if (e.type === 'kill') this.explosion(e, pos, age, ds, reduced);
       if (e.type === 'special' && age < .65) {
         const t = Math.min(1, age / .4); c.globalAlpha = 1 - age / .65;
         c.strokeStyle = e.character === 'sana' ? accent : acid;
@@ -198,11 +233,26 @@ export class Renderer {
         if (e.character === 'ivo') {
           // The real Shockwave affects a 1.6-radian sector outside the sanctuary.
           const r = projectRadius(reduced ? radius : T.coreRadius + (T.radius - T.coreRadius) * t);
+          const core = projectRadius(T.coreRadius), fade = c.globalAlpha;
+          if (!reduced) {
+            c.globalCompositeOperation = 'lighter';
+            const fan = c.createRadialGradient(0, 0, core, 0, 0, Math.max(core + .01, r));
+            fan.addColorStop(0, `${acid}00`); fan.addColorStop(.7, `${accent}0c`); fan.addColorStop(1, `${acid}45`);
+            c.fillStyle = fan; c.beginPath(); c.arc(0, 0, r, e.angle - .8, e.angle + .8);
+            c.arc(0, 0, core, e.angle + .8, e.angle - .8, true); c.closePath(); c.fill();
+            c.globalAlpha = fade * .25; c.lineWidth = 16;
+            c.beginPath(); c.arc(0, 0, r, e.angle - .8, e.angle + .8); c.stroke();
+            c.globalAlpha = fade; c.lineWidth = 5;
+          }
           c.beginPath(); c.arc(0, 0, r, e.angle - .8, e.angle + .8); c.stroke();
-          if (!reduced) for (const offset of [-.8, -.4, 0, .4, .8]) {
-            const a = e.angle + offset; c.strokeStyle = accent; c.lineWidth = 1;
-            c.beginPath(); c.moveTo(Math.cos(a) * Math.max(projectRadius(T.coreRadius), r - 38), Math.sin(a) * Math.max(projectRadius(T.coreRadius), r - 38));
-            c.lineTo(Math.cos(a) * r, Math.sin(a) * r); c.stroke();
+          if (!reduced) {
+            c.strokeStyle = paper; c.lineWidth = 1.2;
+            c.beginPath(); c.arc(0, 0, Math.max(core, r - 8), e.angle - .8, e.angle + .8); c.stroke();
+            for (let i = 0; i < 9; i++) {
+              const a = e.angle - .8 + i * .2; c.strokeStyle = i % 2 ? accent : acid; c.lineWidth = i % 2 ? 1.5 : 2.5;
+              c.beginPath(); c.moveTo(Math.cos(a) * Math.max(core, r - 65), Math.sin(a) * Math.max(core, r - 65));
+              c.lineTo(Math.cos(a) * r, Math.sin(a) * r); c.stroke();
+            }
           }
         } else {
           if (e.character === 'mara') c.setLineDash([7 * ds, 4 * ds]);
@@ -216,8 +266,19 @@ export class Renderer {
         }
       }
       if (['down', 'shield', 'rescue'].includes(e.type) && age < .7) {
-        c.globalAlpha = 1 - age / .7; c.strokeStyle = e.type === 'down' ? danger : acid; c.lineWidth = 2 * ds;
-        c.beginPath(); c.arc(pos.x, pos.y, (20 + (reduced ? 0 : age * 75)) * ds, 0, TAU); c.stroke();
+        const scale = reduced ? ds : Math.max(.6, Math.sqrt(ds)), color = e.type === 'down' ? danger : acid;
+        c.globalAlpha = 1 - age / .7; c.strokeStyle = color; c.lineWidth = (reduced ? 2 : 3) * scale;
+        c.beginPath(); c.arc(pos.x, pos.y, (20 + (reduced ? 0 : age * 145)) * scale, 0, TAU); c.stroke();
+        if (!reduced) {
+          this.bloom(pos.x, pos.y, (25 + age * 70) * scale, color, .3);
+          c.globalCompositeOperation = 'lighter';
+          for (let i = 0; i < 16; i++) {
+            const a = i * TAU / 16 + e.id, r = (24 + age * 175) * scale;
+            c.strokeStyle = i % 2 ? accent : color; c.lineWidth = 2 * scale;
+            c.beginPath(); c.moveTo(pos.x + Math.cos(a) * r, pos.y + Math.sin(a) * r);
+            c.lineTo(pos.x + Math.cos(a) * (r + 10 * scale), pos.y + Math.sin(a) * (r + 10 * scale)); c.stroke();
+          }
+        }
         if (e.type === 'rescue') { c.fillStyle = acid; c.font = 'bold 10px monospace'; c.textAlign = 'center'; c.fillText('BACK IN THE FIGHT', pos.x, pos.y - 38 * Math.max(.6, ds)); }
       }
       c.restore();
@@ -230,9 +291,9 @@ export class Renderer {
     this.presentation.update(state, { now, paused, reduced, slot, predicted }); this.reduced = reduced;
     c.clearRect(0, 0, w, h); c.fillStyle = ink; c.fillRect(0, 0, w, h);
     const scale = Math.min(joined ? w : w * .78, h) / 690;
-    const impact = this.presentation.impact(reduced), clock = this.presentation.time;
-    c.save(); c.translate((joined ? w / 2 : w * .79) + Math.sin(clock * 93) * impact * 4, h * .53 + Math.cos(clock * 79) * impact * 3);
-    c.scale(scale * (1 + impact * .015), scale * (1 + impact * .015));
+    const camera = this.presentation.camera(reduced), clock = this.presentation.time, motionScale = Math.min(1, h / 680);
+    c.save(); c.translate((joined ? w / 2 : w * .79) + camera.x * motionScale, h * .53 + camera.y * motionScale);
+    c.rotate(camera.rotation); c.scale(scale * camera.zoom, scale * camera.zoom);
     const time = reduced ? 0 : clock * .08;
     c.globalAlpha = joined ? 1 : .65; this.tunnel(state?.players[slot], reduced);
     const count = joined ? crewCount : 4;
@@ -240,13 +301,30 @@ export class Renderer {
       character: characterById(roster[id] || CREW[id].id).id, angle: -Math.PI / 2 + id * TAU / count + time,
       ring: joined ? 2 : [2, 1, 0, 1][id], radius: joined ? T.radius : RINGS[[2, 1, 0, 1][id]], down: false }));
     this.players = players;
-    for (const p of players) if (!p.down && !reduced) for (const ghost of this.presentation.trails.get(p.id) || []) {
-      const age = clock - ghost.born; if (age < .005) continue;
-      const { x, y } = pointAt(ghost.angle, ghost.radius), ds = depthScale(ghost.radius);
-      c.save(); c.globalAlpha *= .22 * (1 - age / .14); c.translate(x, y); c.rotate(ghost.angle - Math.PI / 2); c.scale(ds, ds);
-      drawFork(c, p.id === slot ? acid : accent, ink, characterById(p.character).sides); c.restore();
+    for (const p of players) if (!p.down && !reduced) {
+      const trail = this.presentation.trails.get(p.id) || [];
+      const color = p.id === slot ? acid : p.character === 'sana' ? accent : paper;
+      if (trail.length > 1) {
+        const from = pointAt(trail[0].angle, trail[0].radius), to = pointAt(trail.at(-1).angle, trail.at(-1).radius);
+        const gradient = c.createLinearGradient(from.x, from.y, to.x, to.y);
+        gradient.addColorStop(0, `${color}00`); gradient.addColorStop(1, color);
+        c.save(); c.globalCompositeOperation = 'lighter'; c.strokeStyle = gradient;
+        for (const [alpha, width] of [[.2, 9], [.65, 2.5]]) {
+          c.globalAlpha *= alpha; c.lineWidth = Math.max(1, width * depthScale(p.radius)); c.beginPath();
+          trail.forEach((point, i) => { const pos = pointAt(point.angle, point.radius); i ? c.lineTo(pos.x, pos.y) : c.moveTo(pos.x, pos.y); });
+          c.stroke(); c.globalAlpha = joined ? 1 : .65;
+        }
+        c.restore();
+      }
+      for (let i = 0; i < trail.length; i += 2) {
+        const ghost = trail[i], age = clock - ghost.born; if (age < .005) continue;
+        const { x, y } = pointAt(ghost.angle, ghost.radius), ds = depthScale(ghost.radius);
+        c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha *= .32 * (1 - age / .24);
+        c.translate(x, y); c.rotate(ghost.angle - Math.PI / 2); c.scale(ds, ds);
+        drawFork(c, color, ink, characterById(p.character).sides); c.restore();
+      }
     }
-    const entities = players.map(p => ({ radius: p.radius, draw: () => this.player(p, slot, predicted, joined) }));
+    const entities = [];
     if (state) {
       for (const z of state.zones) this.zone(z);
       for (const wall of state.walls) entities.push({ radius: wall.radius, draw: () => this.wall(wall) });
@@ -257,11 +335,12 @@ export class Renderer {
       entities.push({ radius, draw: () => this.enemy({ radius, angle, type: ['rush', 'skimmer', 'stalker', 'flank'][i % 4] }) });
     }
     entities.sort((a, b) => a.radius - b.radius).forEach(e => e.draw());
-    // The sanctuary boundary stays legible while enemies remain visible inside it.
+    if (state) this.effects(reduced);
+    // Pilot silhouettes, rescue progress and the sanctuary stay above large FX.
+    [...players].sort((a, b) => a.radius - b.radius).forEach(p => this.player(p, slot, predicted, joined));
     this.circle(projectRadius(T.coreRadius), muted, 1);
     this.circle(projectRadius(T.coreRadius) - 4, line, .7);
     this.circle(3, danger, .8); c.fillStyle = danger; c.fillRect(-.7, -.7, 1.4, 1.4);
-    if (state) this.effects(reduced);
     c.restore();
   }
 }

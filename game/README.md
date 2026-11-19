@@ -8,7 +8,9 @@ character's special ability. Every pilot must be active at the final clear.
 The playable client now uses **Cold Signal**: Cold Front's navy/cyan/violet
 palette with Black Signal's forked ships, open rescue markers, radial instruments,
 and angular geometry. Streaming tunnel lines, projectile and movement trails,
-hit fragments, rescue bursts, and bounded camera punch respond to live play.
+36-shard explosions, rescue bursts, and camera shake, roll, and zoom respond to live play.
+The amplified effects use longer luminous trails and retain a readable burst size
+at inner depths. Pilots and rescue markers render above the large effects.
 The approved scripted motion study remains separate in `../art-direction/`.
 
 ## Play without Docker
@@ -31,7 +33,8 @@ unchanged. Ships use the original perspective scale and fit the original painted
 envelope; Shockwave's effect follows its actual sector. Presentation effects use
 real time, stop during a shared pause, and reset when a room or run restarts.
 See [integration verification](evidence/cold-signal/README.md) for runtime captures
-and the scope of the checks.
+and [the amplified-effects check](evidence/cold-signal-overdrive/README.md) for the
+latest revision and its checks.
 
 ## Run with Docker
 

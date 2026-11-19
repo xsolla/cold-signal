@@ -57,8 +57,23 @@ test('presentation history is bounded and the fork fits the previous painted shi
   for (let i = 0; i < 100; i++) {
     state.players[0].angle += .02; fx.update(state, { now: i * 5 });
   }
-  assert.ok(fx.effects.length <= 64); assert.ok(fx.trails.get(0).length <= 9);
+  assert.ok(fx.effects.length <= 64); assert.ok(fx.trails.get(0).length <= 14);
   assert.ok(SHIP_POINTS.every(([x, y]) => Math.hypot(x, y) + .6 <= 13));
   for (let i = 0; i < 80; i++) fx.update({ ...state, events: [] }, { now: 500 + i * 20 });
   assert.equal(fx.effects.length, 0);
+});
+
+test('stacked combat impulses keep camera bounds, freeze on pause, and disappear in reduced mode', () => {
+  const state = makeMatch(17), fx = new Presentation();
+  state.events = Array.from({ length: 20 }, (_, i) => ({ id: i + 1, type: 'kill' }));
+  for (let i = 0; i < 30; i++) {
+    fx.update(state, { now: i * 16 }); const c = fx.camera(false);
+    assert.ok(Math.abs(c.x) <= 18 && Math.abs(c.y) <= 13);
+    assert.ok(Math.abs(c.rotation) <= .02 && c.zoom >= 1 && c.zoom <= 1.075);
+  }
+  const camera = fx.camera(false); fx.update(state, { now: 50000, paused: true });
+  assert.deepEqual(fx.camera(false), camera);
+  assert.deepEqual(fx.camera(true), { x: 0, y: 0, rotation: 0, zoom: 1 });
+  for (let i = 0; i < 80; i++) fx.update(state, { now: 50016 + i * 16 });
+  assert.equal(fx.camera(false).zoom, 1);
 });
