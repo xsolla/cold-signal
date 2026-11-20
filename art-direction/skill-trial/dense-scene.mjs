@@ -49,16 +49,27 @@ state.events = [
   { id: 25, type: 'special', character: 'ivo', angle: -.45, radius: RINGS[0] },
 ].map(event => ({ ...event, time: state.time }));
 state.players[0].specialCooldown = 13.5;
-const previous = { ...state, score: 17300, events: [], bullets: state.bullets.map(bullet => ({ ...bullet, radius: bullet.radius + 44 })) };
+const adjacent = structuredClone(state);
+for (const player of adjacent.players.slice(0, 3)) player.angle = .01;
+adjacent.events[0].angle = .01;
+const previousSnapshot = scene => ({ ...scene, score: 17300, events: [],
+  bullets: scene.bullets.map(bullet => ({ ...bullet, radius: bullet.radius + 44 })) });
+const overlapArea = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left))
+  * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
 const config = { count: 4, timeScale: .5 };
 const spin = (ws, scene, ready = [false, false, false, false]) => ws.send(JSON.stringify({ type: 'state', code: 'DE1234', state: scene,
   ready, paused: [false, false, false, false], config, characters: state.players.map(p => p.character), connected: [true, true, true, true] }));
-const viewports = [{ width: 1440, height: 1000 }, { width: 640, height: 480 }];
+const desktop = { width: 1440, height: 1000 }, compact = { width: 640, height: 480 };
+const cases = [
+  { scene: 'dense', snapshot: state, viewport: desktop },
+  { scene: 'dense', snapshot: state, viewport: compact },
+  { scene: 'adjacent', snapshot: adjacent, viewport: compact },
+];
 const results = [];
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ executablePath: chromiumPath, headless: true });
 try {
-  for (const viewport of viewports) for (const reducedMotion of ['no-preference', 'reduce']) {
+  for (const { scene, snapshot, viewport } of cases) for (const reducedMotion of ['no-preference', 'reduce']) {
     const context = await browser.newContext({ viewport, deviceScaleFactor: 1, reducedMotion });
     try {
       const page = await context.newPage(), errors = [];
@@ -75,14 +86,14 @@ try {
             ws.send(JSON.stringify({ type: 'joined', code: 'DE1234', slot: 0, config }));
             spin(ws, null);
           }
-          if (request.type === 'ready') spin(ws, previous);
+          if (request.type === 'ready') spin(ws, previousSnapshot(snapshot));
         });
       });
       await page.goto(url);
       await page.evaluate(async () => {
         const { Renderer } = await import('/renderer.js');
         const render = Renderer.prototype.render;
-        const targets = new Set(['P1 YOU', 'P2 / INNER', 'RESCUE 50%']);
+        const targets = new Set(['P1 YOU', 'P2 / INNER', 'RESCUE 50%', 'P3', 'P4']);
         window.sceneProbe = { now: 10000, effectsAge: 0, text: {}, camera: null };
         Renderer.prototype.render = function (state, options) {
           const probe = window.sceneProbe;
@@ -93,7 +104,7 @@ try {
               const m = c.measureText(text), t = c.getTransform();
               const [left, right] = [x - m.actualBoundingBoxLeft, x + m.actualBoundingBoxRight].map(px => t.a * px + t.e);
               const [top, bottom] = [y - m.actualBoundingBoxAscent, y + m.actualBoundingBoxDescent].map(py => t.d * py + t.f);
-              probe.text[text] = { left, right, top, bottom, cssFontPixels: parseFloat(c.font.replace(/^bold /, '')) * t.a };
+              probe.text[text] = { left, right, top, bottom, baseline: t.d * y + t.f, cssFontPixels: parseFloat(c.font.replace(/^bold /, '')) * t.a };
             }
             return fillText.apply(this, arguments);
           };
@@ -108,7 +119,7 @@ try {
       await page.locator('#ready').click();
       await page.waitForFunction(() => document.querySelector('#score').textContent === '017300' && window.sceneProbe.camera);
       if (await page.locator('#mute').getAttribute('aria-pressed') !== 'true') await page.locator('#mute').click();
-      spin(socket, state);
+      spin(socket, snapshot);
       await page.waitForFunction(() => document.querySelector('#score').textContent === '017350' && window.sceneProbe.effectsCount === 5);
       const report = await page.evaluate(async () => {
         for (let i = 0; i < 4; i++) {
@@ -123,18 +134,34 @@ try {
       assert.ok(report.scrollWidth <= viewport.width && report.footerBottom <= viewport.height + 1);
       assert.ok(Math.abs(report.effectsAge - .18) < 1e-9, `expected 0.18s effect age, saw ${report.effectsAge}`);
       assert.deepEqual(errors, []);
-      const [helper, down] = [report.text['P1 YOU'], report.text['P2 / INNER']];
-      const overlap = Math.max(0, Math.min(helper.right, down.right) - Math.max(helper.left, down.left))
-        * Math.max(0, Math.min(helper.bottom, down.bottom) - Math.max(helper.top, down.top));
+      const { 'P1 YOU': helper, 'P2 / INNER': down, 'RESCUE 50%': progress, P3: neighbor, P4: other } = report.text;
+      const overlap = overlapArea(helper, down);
+      const progressOverlap = overlapArea(helper, progress);
+      const activeOverlap = overlapArea(helper, neighbor);
       if (label === 'baseline') {
         assert.ok(overlap > 0, 'baseline reproduces the helper and rescue label overlap');
+        if (scene === 'adjacent') assert.equal(activeOverlap, 0, 'before relocation, the helper did not overlap P3');
       } else {
         assert.equal(overlap, 0, 'helper and rescue text bounds must be separate');
+        assert.equal(progressOverlap, 0, 'helper and percentage text bounds must be separate');
         assert.ok(down.cssFontPixels >= 7.99, 'rescue text has an 8 CSS pixel font floor');
+        if (label === 'relocation' && scene === 'adjacent') {
+          assert.ok(activeOverlap > 0, 'original relocation put the helper tag over P3');
+        } else {
+          assert.equal(activeOverlap, 0, 'helper and P3 text bounds must be separate');
+          assert.equal(overlapArea(helper, other), 0, 'helper and P4 text bounds must be separate');
+          assert.equal(overlapArea(neighbor, other), 0, 'P3 and P4 text bounds must be separate');
+          for (const tag of [helper, neighbor, other]) {
+            assert.equal(overlapArea(tag, down) + overlapArea(tag, progress), 0, 'active tag clears the rescue block');
+            assert.ok(tag.left >= 0 && tag.right <= report.canvas[0]
+              && tag.top >= 0 && tag.bottom <= report.canvas[1], 'active tag fits in the canvas');
+          }
+        }
       }
-      const filename = `${label}-dense-${viewport.width}-${reducedMotion === 'reduce' ? 'reduced' : 'full'}.png`;
+      const filename = `${label}-${scene}-${viewport.width}-${reducedMotion === 'reduce' ? 'reduced' : 'full'}.png`;
       await page.screenshot({ path: resolve(output, filename) });
-      results.push({ filename, viewport: [viewport.width, viewport.height], reducedMotion, overlapSquareCssPixels: overlap, ...report });
+      results.push({ filename, scene, viewport: [viewport.width, viewport.height], reducedMotion, overlapSquareCssPixels: overlap,
+        progressOverlapSquareCssPixels: progressOverlap, activeOverlapSquareCssPixels: activeOverlap, ...report });
     } finally { await context.close(); }
   }
   const report = { label, browser: await browser.version(), source: 'fixed constructed snapshots over a mocked WebSocket; application Canvas, HUD and CSS at actual viewport sizes', results };

@@ -178,19 +178,28 @@ export class Renderer {
       return { ...label, progress, left: label.x - width / 2, right: label.x + width / 2 };
     });
     c.font = `${activeSize}px monospace`;
-    for (const { player, text, x, y } of labels) {
-      if (player.down) continue;
-      let labelX = x;
-      const nearby = rescues.filter(rescue => y >= rescue.y - rescueSize - padding && y - activeSize <= rescue.y + rescueStep + padding);
-      if (nearby.length) {
-        const half = c.measureText(text).width / 2 + padding;
-        if (nearby.some(rescue => x + half > rescue.left && x - half < rescue.right)) {
-          const left = Math.min(...nearby.map(rescue => rescue.left)) - half;
-          const right = Math.max(...nearby.map(rescue => rescue.right)) + half;
-          labelX = x - left < right - x ? left : right;
+    const active = labels.filter(label => !label.player.down);
+    if (rescues.length) {
+      for (const label of active) label.halfWidth = c.measureText(label.text).width / 2;
+      for (const label of active) {
+        const { x, y, halfWidth } = label, clearance = halfWidth + padding;
+        const blocked = rescues.filter(rescue => y >= rescue.y - rescueSize - padding && y - activeSize <= rescue.y + rescueStep + padding)
+          .map(rescue => [rescue.left - clearance, rescue.right + clearance]);
+        const contains = (interval, center) => center > interval[0] && center < interval[1];
+        if (!blocked.some(interval => contains(interval, x))) continue;
+        // A relocated tag must clear both rescue blocks and adjacent active tags.
+        for (const other of active) {
+          if (other === label || Math.abs(other.y - y) > activeSize + padding) continue;
+          const spacing = clearance + other.halfWidth;
+          blocked.push([other.x - spacing, other.x + spacing]);
         }
+        const limit = this.width / (2 * arenaScale) - clearance;
+        const alternatives = [-limit, limit, ...blocked.flat()].sort((a, b) => Math.abs(a - x) - Math.abs(b - x));
+        label.x = alternatives.find(center => Math.abs(center) <= limit && !blocked.some(interval => contains(interval, center))) ?? x;
       }
-      c.fillStyle = player.id === slot ? acid : muted; c.fillText(text, labelX, y);
+    }
+    for (const { player, text, x, y } of active) {
+      c.fillStyle = player.id === slot ? acid : muted; c.fillText(text, x, y);
     }
     // Put rescue text above other labels and use a navy outline against bursts.
     c.font = `${rescueSize}px monospace`;

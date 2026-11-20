@@ -1,0 +1,517 @@
+{
+  "source": "Same constructed snapshots served over a mocked WebSocket to the real Cold Signal browser app",
+  "trial": "Adjacent-rail crew tags and original dense calibration",
+  "chromium": "157.0.8103.80",
+  "deviceScaleFactor": 1,
+  "adjacentCases": {
+    "baseline": {
+      "gameRevision": "19d8cfe6b6734e274c4ae4ac219b4b29465b133c",
+      "rendererBlobSha1": "73e6ee05513bc75a957f79ecdb8783c7aeadf53c",
+      "rendererState": "from game revision",
+      "screens": [
+        {
+          "filename": "baseline-adjacent-640-full.webp",
+          "scene": "adjacent",
+          "viewport": [
+            640,
+            480
+          ],
+          "reducedMotion": "no-preference",
+          "overlapSquareCssPixels": 51.555256517581334,
+          "progressOverlapSquareCssPixels": 0,
+          "activeOverlapSquareCssPixels": 0,
+          "now": 10180,
+          "effectsAge": 0.18,
+          "text": {
+            "P1 YOU": {
+              "left": 348.8065095399175,
+              "right": 365.59508353934103,
+              "top": 196.2974587656161,
+              "bottom": 199.3683125807973,
+              "baseline": 199.29159935150057,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P2 / INNER": {
+              "left": 339.9187819712807,
+              "right": 368.2213142951496,
+              "top": 195.93097152764767,
+              "bottom": 199.5225454447218,
+              "baseline": 199.2598607504633,
+              "cssFontPixels": 4.76086950302124
+            },
+            "RESCUE 50%": {
+              "left": 339.85136731523204,
+              "right": 367.80287849898565,
+              "top": 202.07061280839935,
+              "bottom": 205.18331020319692,
+              "baseline": 205.07870125415593,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P3": {
+              "left": 382.4232167162497,
+              "right": 387.4374723402814,
+              "top": 196.56254754618118,
+              "bottom": 199.6473492212345,
+              "baseline": 199.57063599193776,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P4": {
+              "left": 197.92923025538755,
+              "right": 202.92023944629898,
+              "top": 288.6370722082358,
+              "bottom": 291.64051136736833,
+              "baseline": 291.64051136736833,
+              "cssFontPixels": 4.76086950302124
+            }
+          },
+          "camera": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "zoom": 1
+          },
+          "effectsCount": 5,
+          "canvas": [
+            604,
+            365
+          ],
+          "scrollWidth": 640,
+          "footerBottom": 480
+        },
+        {
+          "filename": "baseline-adjacent-640-reduced.webp",
+          "scene": "adjacent",
+          "viewport": [
+            640,
+            480
+          ],
+          "reducedMotion": "reduce",
+          "overlapSquareCssPixels": 51.555256517581334,
+          "progressOverlapSquareCssPixels": 0,
+          "activeOverlapSquareCssPixels": 0,
+          "now": 10180,
+          "effectsAge": 0.18,
+          "text": {
+            "P1 YOU": {
+              "left": 348.8065095399175,
+              "right": 365.59508353934103,
+              "top": 196.2974587656161,
+              "bottom": 199.3683125807973,
+              "baseline": 199.29159935150057,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P2 / INNER": {
+              "left": 339.9187819712807,
+              "right": 368.2213142951496,
+              "top": 195.93097152764767,
+              "bottom": 199.5225454447218,
+              "baseline": 199.2598607504633,
+              "cssFontPixels": 4.76086950302124
+            },
+            "RESCUE 50%": {
+              "left": 339.85136731523204,
+              "right": 367.80287849898565,
+              "top": 202.07061280839935,
+              "bottom": 205.18331020319692,
+              "baseline": 205.07870125415593,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P3": {
+              "left": 382.4232167162497,
+              "right": 387.4374723402814,
+              "top": 196.56254754618118,
+              "bottom": 199.6473492212345,
+              "baseline": 199.57063599193776,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P4": {
+              "left": 197.92923025538755,
+              "right": 202.92023944629898,
+              "top": 288.6370722082358,
+              "bottom": 291.64051136736833,
+              "baseline": 291.64051136736833,
+              "cssFontPixels": 4.76086950302124
+            }
+          },
+          "camera": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "zoom": 1
+          },
+          "effectsCount": 5,
+          "canvas": [
+            604,
+            365
+          ],
+          "scrollWidth": 640,
+          "footerBottom": 480
+        }
+      ]
+    },
+    "relocation": {
+      "gameRevision": "72ce04e2cb170e08abecf034c9f6c823d8c2d31b",
+      "rendererBlobSha1": "a25a134deee43600cd645466c2489d60e68f6edc",
+      "rendererState": "from game revision",
+      "screens": [
+        {
+          "filename": "relocation-adjacent-640-full.webp",
+          "scene": "adjacent",
+          "viewport": [
+            640,
+            480
+          ],
+          "reducedMotion": "no-preference",
+          "overlapSquareCssPixels": 0,
+          "progressOverlapSquareCssPixels": 0,
+          "activeOverlapSquareCssPixels": 14.068823104535209,
+          "now": 10180,
+          "effectsAge": 0.18,
+          "text": {
+            "P1 YOU": {
+              "left": 381.20238825143485,
+              "right": 397.9909622508584,
+              "top": 196.2974587656161,
+              "bottom": 199.3683125807973,
+              "baseline": 199.29159935150057,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P3": {
+              "left": 382.4232167162497,
+              "right": 387.4374723402814,
+              "top": 196.56254754618118,
+              "bottom": 199.6473492212345,
+              "baseline": 199.57063599193776,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P4": {
+              "left": 197.92923025538755,
+              "right": 202.92023944629898,
+              "top": 288.6370722082358,
+              "bottom": 291.64051136736833,
+              "baseline": 291.64051136736833,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P2 / INNER": {
+              "left": 330.34414925821153,
+              "right": 377.8923753114378,
+              "top": 193.66732689649143,
+              "bottom": 199.70117168255183,
+              "baseline": 199.2598607504633,
+              "cssFontPixels": 8.00000641722679
+            },
+            "RESCUE 50%": {
+              "left": 330.23089150601487,
+              "right": 377.1894047882179,
+              "top": 204.20627221256467,
+              "bottom": 209.4356042595877,
+              "baseline": 209.25986061982297,
+              "cssFontPixels": 8.00000641722679
+            }
+          },
+          "camera": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "zoom": 1
+          },
+          "effectsCount": 5,
+          "canvas": [
+            604,
+            365
+          ],
+          "scrollWidth": 640,
+          "footerBottom": 480
+        },
+        {
+          "filename": "relocation-adjacent-640-reduced.webp",
+          "scene": "adjacent",
+          "viewport": [
+            640,
+            480
+          ],
+          "reducedMotion": "reduce",
+          "overlapSquareCssPixels": 0,
+          "progressOverlapSquareCssPixels": 0,
+          "activeOverlapSquareCssPixels": 14.068823104535209,
+          "now": 10180,
+          "effectsAge": 0.18,
+          "text": {
+            "P1 YOU": {
+              "left": 381.20238825143485,
+              "right": 397.9909622508584,
+              "top": 196.2974587656161,
+              "bottom": 199.3683125807973,
+              "baseline": 199.29159935150057,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P3": {
+              "left": 382.4232167162497,
+              "right": 387.4374723402814,
+              "top": 196.56254754618118,
+              "bottom": 199.6473492212345,
+              "baseline": 199.57063599193776,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P4": {
+              "left": 197.92923025538755,
+              "right": 202.92023944629898,
+              "top": 288.6370722082358,
+              "bottom": 291.64051136736833,
+              "baseline": 291.64051136736833,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P2 / INNER": {
+              "left": 330.34414925821153,
+              "right": 377.8923753114378,
+              "top": 193.66732689649143,
+              "bottom": 199.70117168255183,
+              "baseline": 199.2598607504633,
+              "cssFontPixels": 8.00000641722679
+            },
+            "RESCUE 50%": {
+              "left": 330.23089150601487,
+              "right": 377.1894047882179,
+              "top": 204.20627221256467,
+              "bottom": 209.4356042595877,
+              "baseline": 209.25986061982297,
+              "cssFontPixels": 8.00000641722679
+            }
+          },
+          "camera": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "zoom": 1
+          },
+          "effectsCount": 5,
+          "canvas": [
+            604,
+            365
+          ],
+          "scrollWidth": 640,
+          "footerBottom": 480
+        }
+      ]
+    },
+    "candidate": {
+      "gameRevision": "72ce04e2cb170e08abecf034c9f6c823d8c2d31b",
+      "rendererBlobSha1": "eb3ff1657fdef6a8cb78724540eb3cb653cb8ef3",
+      "rendererState": "follow-up renderer diff",
+      "screens": [
+        {
+          "filename": "candidate-adjacent-640-full.webp",
+          "scene": "adjacent",
+          "viewport": [
+            640,
+            480
+          ],
+          "reducedMotion": "no-preference",
+          "overlapSquareCssPixels": 0,
+          "progressOverlapSquareCssPixels": 0,
+          "activeOverlapSquareCssPixels": 0,
+          "now": 10180,
+          "effectsAge": 0.18,
+          "text": {
+            "P1 YOU": {
+              "left": 310.06312221302704,
+              "right": 326.8516962124506,
+              "top": 196.2974587656161,
+              "bottom": 199.3683125807973,
+              "baseline": 199.29159935150057,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P3": {
+              "left": 382.4232167162497,
+              "right": 387.4374723402814,
+              "top": 196.56254754618118,
+              "bottom": 199.6473492212345,
+              "baseline": 199.57063599193776,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P4": {
+              "left": 197.92923025538755,
+              "right": 202.92023944629898,
+              "top": 288.6370722082358,
+              "bottom": 291.64051136736833,
+              "baseline": 291.64051136736833,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P2 / INNER": {
+              "left": 330.34414925821153,
+              "right": 377.8923753114378,
+              "top": 193.66732689649143,
+              "bottom": 199.70117168255183,
+              "baseline": 199.2598607504633,
+              "cssFontPixels": 8.00000641722679
+            },
+            "RESCUE 50%": {
+              "left": 330.23089150601487,
+              "right": 377.1894047882179,
+              "top": 204.20627221256467,
+              "bottom": 209.4356042595877,
+              "baseline": 209.25986061982297,
+              "cssFontPixels": 8.00000641722679
+            }
+          },
+          "camera": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "zoom": 1
+          },
+          "effectsCount": 5,
+          "canvas": [
+            604,
+            365
+          ],
+          "scrollWidth": 640,
+          "footerBottom": 480
+        },
+        {
+          "filename": "candidate-adjacent-640-reduced.webp",
+          "scene": "adjacent",
+          "viewport": [
+            640,
+            480
+          ],
+          "reducedMotion": "reduce",
+          "overlapSquareCssPixels": 0,
+          "progressOverlapSquareCssPixels": 0,
+          "activeOverlapSquareCssPixels": 0,
+          "now": 10180,
+          "effectsAge": 0.18,
+          "text": {
+            "P1 YOU": {
+              "left": 310.06312221302704,
+              "right": 326.8516962124506,
+              "top": 196.2974587656161,
+              "bottom": 199.3683125807973,
+              "baseline": 199.29159935150057,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P3": {
+              "left": 382.4232167162497,
+              "right": 387.4374723402814,
+              "top": 196.56254754618118,
+              "bottom": 199.6473492212345,
+              "baseline": 199.57063599193776,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P4": {
+              "left": 197.92923025538755,
+              "right": 202.92023944629898,
+              "top": 288.6370722082358,
+              "bottom": 291.64051136736833,
+              "baseline": 291.64051136736833,
+              "cssFontPixels": 4.76086950302124
+            },
+            "P2 / INNER": {
+              "left": 330.34414925821153,
+              "right": 377.8923753114378,
+              "top": 193.66732689649143,
+              "bottom": 199.70117168255183,
+              "baseline": 199.2598607504633,
+              "cssFontPixels": 8.00000641722679
+            },
+            "RESCUE 50%": {
+              "left": 330.23089150601487,
+              "right": 377.1894047882179,
+              "top": 204.20627221256467,
+              "bottom": 209.4356042595877,
+              "baseline": 209.25986061982297,
+              "cssFontPixels": 8.00000641722679
+            }
+          },
+          "camera": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "zoom": 1
+          },
+          "effectsCount": 5,
+          "canvas": [
+            604,
+            365
+          ],
+          "scrollWidth": 640,
+          "footerBottom": 480
+        }
+      ]
+    }
+  },
+  "originalDenseCandidate": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "reducedMotion": "no-preference",
+      "effectAgeSeconds": 0.18,
+      "helperAndDownOverlapSquareCssPixels": 0,
+      "helperAndRescueProgressOverlapSquareCssPixels": 0,
+      "helperAndP3OverlapSquareCssPixels": 0,
+      "rescueFontCssPixels": 11.021738648414612,
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "zoom": 1
+      }
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "reducedMotion": "reduce",
+      "effectAgeSeconds": 0.18,
+      "helperAndDownOverlapSquareCssPixels": 0,
+      "helperAndRescueProgressOverlapSquareCssPixels": 0,
+      "helperAndP3OverlapSquareCssPixels": 0,
+      "rescueFontCssPixels": 11.021738648414612,
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "zoom": 1
+      }
+    },
+    {
+      "viewport": [
+        640,
+        480
+      ],
+      "reducedMotion": "no-preference",
+      "effectAgeSeconds": 0.18,
+      "helperAndDownOverlapSquareCssPixels": 0,
+      "helperAndRescueProgressOverlapSquareCssPixels": 0,
+      "helperAndP3OverlapSquareCssPixels": 0,
+      "rescueFontCssPixels": 8.00000641722679,
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "zoom": 1
+      }
+    },
+    {
+      "viewport": [
+        640,
+        480
+      ],
+      "reducedMotion": "reduce",
+      "effectAgeSeconds": 0.18,
+      "helperAndDownOverlapSquareCssPixels": 0,
+      "helperAndRescueProgressOverlapSquareCssPixels": 0,
+      "helperAndP3OverlapSquareCssPixels": 0,
+      "rescueFontCssPixels": 8.00000641722679,
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "zoom": 1
+      }
+    }
+  ]
+}
