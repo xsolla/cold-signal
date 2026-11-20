@@ -1,0 +1,1635 @@
+{
+  "command": "node scripts/balance-rescue-windows.mjs",
+  "node": "v20.11.0",
+  "rulesSha256": "241c7f54afba9e84d7809d951665198df9bbf9ba40bc5aa99b4751151355c3c4",
+  "scriptSha256": "a74957a5b5d9d97bc0b9c6062f75e0855928e67424bb500e81383d1a22f6da5e",
+  "seeds": [
+    17,
+    73,
+    123,
+    773,
+    17321,
+    17322,
+    27182,
+    31415
+  ],
+  "timeScale": 0.5,
+  "fixedElapsedStep": 0.016666666666666666,
+  "fixedSimulationStep": 0.008333333333333333,
+  "openingSeconds": 20,
+  "rescueSeconds": 8,
+  "crashes": 0,
+  "scope": "Exploratory natural first-down checkpoints at unchanged rules. Match count and seed in paired branches. Crew size changes encounter scaling.",
+  "openingPolicy": "Project controlledInput sampled every fixed step. Natural spawns and hazards, default roster and spawn protection, abilities enabled. Stop at first down or opening horizon.",
+  "branchPolicies": {
+    "rescue-now": "Each active pilot moves to the nearest downed pilot by angle plus number of rail hops, holds angle and ring to rescue.",
+    "wall-first": "Same, but if a wall within 130 radius units of the farther ship threatens the target angle, hold the current ring and steer toward the nearest visible gap until the wall crosses both relevant positions."
+  },
+  "conditions": "Frozen first-down checkpoint per seed and crew size. No fixture edits, invulnerability or added grants. Branches suppress new Space inputs; opening ability effects can remain active. All active pilots follow the selected branch policy. Lowest event order picks the indexed downed pilot in a tie.",
+  "stopDefinitions": "Target-rescued = indexed downed pilot restored, crew-loss = all crew down before indexed pilot restored, rescue-horizon = still playing without restoring that pilot by eight simulation seconds. Crash = caught runner/assertion failure. Every opening and branch has a fixed tick limit.",
+  "measurements": "With-target-progress includes positive progress on the checkpoint tick. Progress-held seconds counts advancing ticks; max-progress seconds includes ability boosts. Wall-wait pilot seconds sums time across pilots, so it can exceed branch elapsed time. Earlier success and game loss shorten observation.",
+  "limits": "Policies use exact visible positions and steering updates at each fixed step. Wall-first has exact access to current wall positions/gaps, including when partly outside a view; neither branch anticipates local enemies or zones. Match seed/checkpoint is shared before branching, but combat can alter RNG draws after branching. Similar results across related rows are not independent player observations. This batch cannot estimate human success, full-run balance, or an optimal rescue rule.",
+  "replayChecks": "Each branch replayed without milestones must match outcome and full final state hash; the original checkpoint hash must remain unchanged. Compare repeated report output for batch determinism.",
+  "profiles": [
+    {
+      "count": 2,
+      "openingRuns": 8,
+      "firstDownsWithSurvivors": 7,
+      "openingCrewLosses": 0,
+      "openingHorizons": 1,
+      "openingCrashes": 0,
+      "policies": [
+        {
+          "policy": "rescue-now",
+          "windows": 7,
+          "withTargetProgress": 2,
+          "targetRescues": 0,
+          "crewLosses": 7,
+          "rescueHorizons": 0,
+          "crashes": 0
+        },
+        {
+          "policy": "wall-first",
+          "windows": 7,
+          "withTargetProgress": 2,
+          "targetRescues": 2,
+          "crewLosses": 5,
+          "rescueHorizons": 0,
+          "crashes": 0
+        }
+      ]
+    },
+    {
+      "count": 4,
+      "openingRuns": 8,
+      "firstDownsWithSurvivors": 8,
+      "openingCrewLosses": 0,
+      "openingHorizons": 0,
+      "openingCrashes": 0,
+      "policies": [
+        {
+          "policy": "rescue-now",
+          "windows": 8,
+          "withTargetProgress": 7,
+          "targetRescues": 5,
+          "crewLosses": 3,
+          "rescueHorizons": 0,
+          "crashes": 0
+        },
+        {
+          "policy": "wall-first",
+          "windows": 8,
+          "withTargetProgress": 7,
+          "targetRescues": 7,
+          "crewLosses": 1,
+          "rescueHorizons": 0,
+          "crashes": 0
+        }
+      ]
+    }
+  ],
+  "openings": [
+    {
+      "seed": 17,
+      "count": 2,
+      "roster": [
+        "mara",
+        "ivo"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 658,
+      "time": 5.483,
+      "stateHash": "98f5d712ac05c66abd5dc2c6be9d6b784e874f69fd4fb34a12bc7e69b197b32c",
+      "friend": 1,
+      "downedPilots": [
+        1
+      ],
+      "ring": "outer",
+      "radius": 240,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 2,
+          "ring": "middle",
+          "angleToTarget": 3.142,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 6,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 123,
+          "seconds": 1.025,
+          "firstProgressSeconds": 0.95,
+          "progressHeldSeconds": 0.075,
+          "maxProgressSeconds": 0.075,
+          "interruptions": 1,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "50c0418c7b7c57b0a596375b7bd7376397b148aab9f77f85770529809527dc7b",
+          "milestones": [
+            {
+              "seconds": 0.95,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 1.025,
+              "type": "target-progress-reset",
+              "previousProgressSeconds": 0.075
+            },
+            {
+              "seconds": 1.025,
+              "type": "down",
+              "pilot": 2,
+              "radius": 240
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 409,
+          "seconds": 3.408,
+          "firstProgressSeconds": 1.767,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 1.108,
+          "crewRescues": 1,
+          "activePilotsAtStop": 2,
+          "finalStateHash": "42390f0a70efe10c968885af6c6f25ec21f5d558fe8b8394f4f28092356f4fea",
+          "milestones": [
+            {
+              "seconds": 1.767,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 3.408,
+              "type": "rescue",
+              "pilot": 1,
+              "radius": 240
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 73,
+      "count": 2,
+      "roster": [
+        "mara",
+        "ivo"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 1251,
+      "time": 10.425,
+      "stateHash": "9c1ac76050e0f8d6548ef69d80a4b35e8b2340a88cbebaf58f8fb474d0957f16",
+      "friend": 2,
+      "downedPilots": [
+        2
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 3.064,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 1
+        }
+      ],
+      "enemies": 7,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 5,
+          "seconds": 0.042,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "a150587178d96bed7fa48a90b68d5af11b43a4eea2687b356b94735091fdc61c",
+          "milestones": [
+            {
+              "seconds": 0.042,
+              "type": "down",
+              "pilot": 1,
+              "radius": 226.667
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "crew-loss",
+          "ticks": 5,
+          "seconds": 0.042,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "a150587178d96bed7fa48a90b68d5af11b43a4eea2687b356b94735091fdc61c",
+          "milestones": [
+            {
+              "seconds": 0.042,
+              "type": "down",
+              "pilot": 1,
+              "radius": 226.667
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 123,
+      "count": 2,
+      "roster": [
+        "mara",
+        "ivo"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 1215,
+      "time": 10.125,
+      "stateHash": "6e34449a4f31c4457532b651e2a81d7995c5255c43a5230d17157a0d7200dcbd",
+      "friend": 2,
+      "downedPilots": [
+        2
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 2.263,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 1
+        }
+      ],
+      "enemies": 5,
+      "walls": 1,
+      "warningZones": 0,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 140,
+          "seconds": 1.167,
+          "firstProgressSeconds": 0.667,
+          "progressHeldSeconds": 0.5,
+          "maxProgressSeconds": 0.5,
+          "interruptions": 1,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "3819b52b5c648764f534ae8d8b3ab33c417b85695f444888c77d9ff247d95f73",
+          "milestones": [
+            {
+              "seconds": 0.667,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 1.167,
+              "type": "target-progress-reset",
+              "previousProgressSeconds": 0.5
+            },
+            {
+              "seconds": 1.167,
+              "type": "down",
+              "pilot": 1,
+              "radius": 176
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 435,
+          "seconds": 3.625,
+          "firstProgressSeconds": 1.983,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 1.317,
+          "crewRescues": 1,
+          "activePilotsAtStop": 2,
+          "finalStateHash": "8ed4fbe14157e423c98248af76a987962f0e9c1bc0788f3638f4684378ba137f",
+          "milestones": [
+            {
+              "seconds": 1.983,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 3.625,
+              "type": "rescue",
+              "pilot": 2,
+              "radius": 176
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 773,
+      "count": 2,
+      "roster": [
+        "mara",
+        "ivo"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 1206,
+      "time": 10.05,
+      "stateHash": "29194f6a549581fbd154cf9842ccc398c2f7edd4699ffb4d131d4d0f81be24ca",
+      "friend": 1,
+      "downedPilots": [
+        1
+      ],
+      "ring": "outer",
+      "radius": 240,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 2,
+          "ring": "middle",
+          "angleToTarget": 2.547,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 4,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 89,
+          "seconds": 0.742,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "b14ddc0ed07d939a7dfe0431b8547a4c5107a855839b72db01afc3dce648c7f6",
+          "milestones": [
+            {
+              "seconds": 0.742,
+              "type": "down",
+              "pilot": 2,
+              "radius": 240
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "crew-loss",
+          "ticks": 89,
+          "seconds": 0.742,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "b14ddc0ed07d939a7dfe0431b8547a4c5107a855839b72db01afc3dce648c7f6",
+          "milestones": [
+            {
+              "seconds": 0.742,
+              "type": "down",
+              "pilot": 2,
+              "radius": 240
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 17321,
+      "count": 2,
+      "roster": [
+        "mara",
+        "ivo"
+      ],
+      "stop": "opening-horizon",
+      "time": 20,
+      "branches": []
+    },
+    {
+      "seed": 17322,
+      "count": 2,
+      "roster": [
+        "mara",
+        "ivo"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 1225,
+      "time": 10.208,
+      "stateHash": "b3e2146187264f81a50a0e4a79496818ccd8763619162247896ae37dbc82940c",
+      "friend": 2,
+      "downedPilots": [
+        2
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 2.418,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 6,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 43,
+          "seconds": 0.358,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "5951cccf2334ab51ca73e8f9b53b630e6d1d4c4ca6a30c081bc6fd2d3335e1be",
+          "milestones": [
+            {
+              "seconds": 0.358,
+              "type": "down",
+              "pilot": 1,
+              "radius": 176
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "crew-loss",
+          "ticks": 43,
+          "seconds": 0.358,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "5951cccf2334ab51ca73e8f9b53b630e6d1d4c4ca6a30c081bc6fd2d3335e1be",
+          "milestones": [
+            {
+              "seconds": 0.358,
+              "type": "down",
+              "pilot": 1,
+              "radius": 176
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 27182,
+      "count": 2,
+      "roster": [
+        "mara",
+        "ivo"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 821,
+      "time": 6.842,
+      "stateHash": "599d114ac3481b09b9354dbadda131428f135ad56f957ab32ec8ffb587ea0a28",
+      "friend": 1,
+      "downedPilots": [
+        1
+      ],
+      "ring": "outer",
+      "radius": 240,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 2,
+          "ring": "middle",
+          "angleToTarget": 2.754,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 8,
+      "walls": 1,
+      "warningZones": 2,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 16,
+          "seconds": 0.133,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "6b20b32e4e011dde5e8f89e68df96c791fa84f1fe090cd8bbd2885765725d3de",
+          "milestones": [
+            {
+              "seconds": 0.133,
+              "type": "down",
+              "pilot": 2,
+              "radius": 218.667
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "crew-loss",
+          "ticks": 16,
+          "seconds": 0.133,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "6b20b32e4e011dde5e8f89e68df96c791fa84f1fe090cd8bbd2885765725d3de",
+          "milestones": [
+            {
+              "seconds": 0.133,
+              "type": "down",
+              "pilot": 2,
+              "radius": 218.667
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 31415,
+      "count": 2,
+      "roster": [
+        "mara",
+        "ivo"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 1375,
+      "time": 11.458,
+      "stateHash": "c5f25b58c132c31ec133f88f20a4a0401fc9b671ceeff78d30fb470b1d909786",
+      "friend": 2,
+      "downedPilots": [
+        2
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 2.367,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 3,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 74,
+          "seconds": 0.617,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "2014e1adbf18723b97557113673d8e4f70f08c05876206f423cfaf66d4b16b9f",
+          "milestones": [
+            {
+              "seconds": 0.617,
+              "type": "down",
+              "pilot": 1,
+              "radius": 176
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "crew-loss",
+          "ticks": 74,
+          "seconds": 0.617,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "2014e1adbf18723b97557113673d8e4f70f08c05876206f423cfaf66d4b16b9f",
+          "milestones": [
+            {
+              "seconds": 0.617,
+              "type": "down",
+              "pilot": 1,
+              "radius": 176
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 17,
+      "count": 4,
+      "roster": [
+        "mara",
+        "ivo",
+        "sana",
+        "rook"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 819,
+      "time": 6.825,
+      "stateHash": "da291a0c9785e294c1c88ba00db4c65d5132c56c5514fb20d1321bc2894e5815",
+      "friend": 1,
+      "downedPilots": [
+        1
+      ],
+      "ring": "outer",
+      "radius": 240,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 2,
+          "ring": "middle",
+          "angleToTarget": 2.759,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 3,
+          "ring": "inner",
+          "angleToTarget": 2.806,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 4,
+          "ring": "middle",
+          "angleToTarget": 0.366,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 12,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "target-rescued",
+          "ticks": 215,
+          "seconds": 1.792,
+          "firstProgressSeconds": 0.15,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 1,
+          "activePilotsAtStop": 2,
+          "finalStateHash": "e1f962fe3c3e4dec0bb7d9ebb135d52cceed0fae20b3d8ce1e1b72eb8ecfd7a0",
+          "milestones": [
+            {
+              "seconds": 0.15,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.55,
+              "type": "down",
+              "pilot": 2,
+              "radius": 240
+            },
+            {
+              "seconds": 0.558,
+              "type": "down",
+              "pilot": 3,
+              "radius": 240
+            },
+            {
+              "seconds": 1.792,
+              "type": "rescue",
+              "pilot": 1,
+              "radius": 240
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 215,
+          "seconds": 1.792,
+          "firstProgressSeconds": 0.15,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 1,
+          "activePilotsAtStop": 2,
+          "finalStateHash": "e1f962fe3c3e4dec0bb7d9ebb135d52cceed0fae20b3d8ce1e1b72eb8ecfd7a0",
+          "milestones": [
+            {
+              "seconds": 0.15,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.55,
+              "type": "down",
+              "pilot": 2,
+              "radius": 240
+            },
+            {
+              "seconds": 0.558,
+              "type": "down",
+              "pilot": 3,
+              "radius": 240
+            },
+            {
+              "seconds": 1.792,
+              "type": "rescue",
+              "pilot": 1,
+              "radius": 240
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 73,
+      "count": 4,
+      "roster": [
+        "mara",
+        "ivo",
+        "sana",
+        "rook"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 752,
+      "time": 6.267,
+      "stateHash": "b2fb4b9d1e46871f6841dbe253358e2aa54421b526deb33435bd6323ca073531",
+      "friend": 2,
+      "downedPilots": [
+        2
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 2.062,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 1
+        },
+        {
+          "pilot": 3,
+          "ring": "inner",
+          "angleToTarget": 1.183,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0.758,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 4,
+          "ring": "middle",
+          "angleToTarget": 3.139,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 9,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 98,
+          "seconds": 0.817,
+          "firstProgressSeconds": 0.325,
+          "progressHeldSeconds": 0.492,
+          "maxProgressSeconds": 0.757,
+          "interruptions": 1,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "3277397a9841b15ace89526abaad828e37fa9005932751bbf4ae7c89d7ea06cd",
+          "milestones": [
+            {
+              "seconds": 0.325,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.817,
+              "type": "target-progress-reset",
+              "previousProgressSeconds": 0.757
+            },
+            {
+              "seconds": 0.817,
+              "type": "down",
+              "pilot": 1,
+              "radius": 176
+            },
+            {
+              "seconds": 0.817,
+              "type": "down",
+              "pilot": 3,
+              "radius": 176
+            },
+            {
+              "seconds": 0.817,
+              "type": "down",
+              "pilot": 4,
+              "radius": 176
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 385,
+          "seconds": 3.208,
+          "firstProgressSeconds": 1.567,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 3.4,
+          "crewRescues": 1,
+          "activePilotsAtStop": 4,
+          "finalStateHash": "152dd7967b9b6f439195e43f3cc40f373ea3160c78c56a4236cb94ad4507532a",
+          "milestones": [
+            {
+              "seconds": 1.567,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 3.208,
+              "type": "rescue",
+              "pilot": 2,
+              "radius": 176
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 123,
+      "count": 4,
+      "roster": [
+        "mara",
+        "ivo",
+        "sana",
+        "rook"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 1629,
+      "time": 13.575,
+      "stateHash": "24421c9bdc9e6511d682f1538b10ed65f354b61a9b6c40a393f623e52a1e462b",
+      "friend": 3,
+      "downedPilots": [
+        3
+      ],
+      "ring": "inner",
+      "radius": 112,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 3.142,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 1
+        },
+        {
+          "pilot": 2,
+          "ring": "middle",
+          "angleToTarget": 1.571,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 4,
+          "ring": "middle",
+          "angleToTarget": 1.589,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 12,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 102,
+          "seconds": 0.85,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "cb56191309d6b7d320d5838e940580cb04665391d201d1bc5fa1958d152168f2",
+          "milestones": [
+            {
+              "seconds": 0.292,
+              "type": "down",
+              "pilot": 4,
+              "radius": 112
+            },
+            {
+              "seconds": 0.417,
+              "type": "down",
+              "pilot": 2,
+              "radius": 112
+            },
+            {
+              "seconds": 0.85,
+              "type": "down",
+              "pilot": 1,
+              "radius": 112
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "crew-loss",
+          "ticks": 102,
+          "seconds": 0.85,
+          "firstProgressSeconds": null,
+          "progressHeldSeconds": 0,
+          "maxProgressSeconds": 0,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "cb56191309d6b7d320d5838e940580cb04665391d201d1bc5fa1958d152168f2",
+          "milestones": [
+            {
+              "seconds": 0.292,
+              "type": "down",
+              "pilot": 4,
+              "radius": 112
+            },
+            {
+              "seconds": 0.417,
+              "type": "down",
+              "pilot": 2,
+              "radius": 112
+            },
+            {
+              "seconds": 0.85,
+              "type": "down",
+              "pilot": 1,
+              "radius": 112
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 773,
+      "count": 4,
+      "roster": [
+        "mara",
+        "ivo",
+        "sana",
+        "rook"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 760,
+      "time": 6.333,
+      "stateHash": "b79ad9fd0e3746cfa956c2cdcaffe9e373840bb6f909af6e442caf0dcd412b94",
+      "friend": 4,
+      "downedPilots": [
+        4
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 0.65,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 1
+        },
+        {
+          "pilot": 2,
+          "ring": "middle",
+          "angleToTarget": 2.427,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 3,
+          "ring": "inner",
+          "angleToTarget": 2.156,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 6,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "target-rescued",
+          "ticks": 215,
+          "seconds": 1.792,
+          "firstProgressSeconds": 0.15,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 1,
+          "activePilotsAtStop": 4,
+          "finalStateHash": "64d4cab4a21aa4281b1585df086ed7b87971e790beb245d344814def94b87a8c",
+          "milestones": [
+            {
+              "seconds": 0.15,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 1.792,
+              "type": "rescue",
+              "pilot": 4,
+              "radius": 176
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 215,
+          "seconds": 1.792,
+          "firstProgressSeconds": 0.15,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 1,
+          "activePilotsAtStop": 4,
+          "finalStateHash": "64d4cab4a21aa4281b1585df086ed7b87971e790beb245d344814def94b87a8c",
+          "milestones": [
+            {
+              "seconds": 0.15,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 1.792,
+              "type": "rescue",
+              "pilot": 4,
+              "radius": 176
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 17321,
+      "count": 4,
+      "roster": [
+        "mara",
+        "ivo",
+        "sana",
+        "rook"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 1838,
+      "time": 15.317,
+      "stateHash": "d0006865fd88cd6d461f9f3d0b6e2d8890d8d593d7253407c59dc72d89d86211",
+      "friend": 2,
+      "downedPilots": [
+        2
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 0.202,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 1
+        },
+        {
+          "pilot": 3,
+          "ring": "inner",
+          "angleToTarget": 3.095,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 4,
+          "ring": "middle",
+          "angleToTarget": 3.14,
+          "protectionRemaining": 0.067,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 5,
+      "walls": 1,
+      "warningZones": 0,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "target-rescued",
+          "ticks": 215,
+          "seconds": 1.792,
+          "firstProgressSeconds": 0.15,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 1,
+          "activePilotsAtStop": 2,
+          "finalStateHash": "b3745af1a0efbde69ceb66fd756c67a86b93d9be0044e6b92fc5490b5d12dc6a",
+          "milestones": [
+            {
+              "seconds": 0.15,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.183,
+              "type": "down",
+              "pilot": 4,
+              "radius": 176
+            },
+            {
+              "seconds": 0.25,
+              "type": "down",
+              "pilot": 3,
+              "radius": 176
+            },
+            {
+              "seconds": 1.792,
+              "type": "rescue",
+              "pilot": 2,
+              "radius": 176
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 215,
+          "seconds": 1.792,
+          "firstProgressSeconds": 0.15,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0.15,
+          "crewRescues": 1,
+          "activePilotsAtStop": 3,
+          "finalStateHash": "43d87d0b72a4331f737eb2a3b28f1056f6ea1c5a65c70bea1bb6f50af44981d7",
+          "milestones": [
+            {
+              "seconds": 0.15,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.183,
+              "type": "down",
+              "pilot": 4,
+              "radius": 176
+            },
+            {
+              "seconds": 1.792,
+              "type": "rescue",
+              "pilot": 2,
+              "radius": 176
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 17322,
+      "count": 4,
+      "roster": [
+        "mara",
+        "ivo",
+        "sana",
+        "rook"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 1092,
+      "time": 9.1,
+      "stateHash": "37a20c1ae21bc6f896f1063745f83d955da2ac65588af8a5ed5886089fb033bd",
+      "friend": 2,
+      "downedPilots": [
+        2
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 1.571,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 1
+        },
+        {
+          "pilot": 3,
+          "ring": "inner",
+          "angleToTarget": 1.571,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 4,
+          "ring": "middle",
+          "angleToTarget": 3.133,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 9,
+      "walls": 0,
+      "warningZones": 0,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "target-rescued",
+          "ticks": 251,
+          "seconds": 2.092,
+          "firstProgressSeconds": 0.45,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 1,
+          "activePilotsAtStop": 3,
+          "finalStateHash": "acbb9a00dcaac9ec7afc879ce7d331a25288236bd0f384d9f9c73038cedd2698",
+          "milestones": [
+            {
+              "seconds": 0.45,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.9,
+              "type": "down",
+              "pilot": 4,
+              "radius": 176
+            },
+            {
+              "seconds": 2.092,
+              "type": "rescue",
+              "pilot": 2,
+              "radius": 176
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 251,
+          "seconds": 2.092,
+          "firstProgressSeconds": 0.45,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 1,
+          "activePilotsAtStop": 3,
+          "finalStateHash": "acbb9a00dcaac9ec7afc879ce7d331a25288236bd0f384d9f9c73038cedd2698",
+          "milestones": [
+            {
+              "seconds": 0.45,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.9,
+              "type": "down",
+              "pilot": 4,
+              "radius": 176
+            },
+            {
+              "seconds": 2.092,
+              "type": "rescue",
+              "pilot": 2,
+              "radius": 176
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 27182,
+      "count": 4,
+      "roster": [
+        "mara",
+        "ivo",
+        "sana",
+        "rook"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 646,
+      "time": 5.383,
+      "stateHash": "3f966d6480a15dfea6ca6a2fbd3f5ddb27218c51afd030df71ffe93a6cc234ba",
+      "friend": 4,
+      "downedPilots": [
+        4
+      ],
+      "ring": "middle",
+      "radius": 176,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 1,
+          "ring": "outer",
+          "angleToTarget": 1.55,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 1
+        },
+        {
+          "pilot": 2,
+          "ring": "middle",
+          "angleToTarget": 3.121,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 3,
+          "ring": "inner",
+          "angleToTarget": 1.591,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 9,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "crew-loss",
+          "ticks": 204,
+          "seconds": 1.7,
+          "firstProgressSeconds": 0.442,
+          "progressHeldSeconds": 1.258,
+          "maxProgressSeconds": 1.258,
+          "interruptions": 1,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 0,
+          "activePilotsAtStop": 0,
+          "finalStateHash": "b9d72f60604cc96c7c30c862f103adec817c9a0d83a295bc77bd6b66967a301c",
+          "milestones": [
+            {
+              "seconds": 0.442,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 1.7,
+              "type": "target-progress-reset",
+              "previousProgressSeconds": 1.258
+            },
+            {
+              "seconds": 1.7,
+              "type": "down",
+              "pilot": 1,
+              "radius": 176
+            },
+            {
+              "seconds": 1.7,
+              "type": "down",
+              "pilot": 2,
+              "radius": 176
+            },
+            {
+              "seconds": 1.7,
+              "type": "down",
+              "pilot": 3,
+              "radius": 176
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 468,
+          "seconds": 3.9,
+          "firstProgressSeconds": 0.442,
+          "progressHeldSeconds": 2.025,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 1,
+          "wallWaitPilotSeconds": 3.325,
+          "crewRescues": 1,
+          "activePilotsAtStop": 4,
+          "finalStateHash": "e5b2c107cdd97b6dba7d3edc1b1b66a2f70b83f380242fa12d4b847b47ee58fd",
+          "milestones": [
+            {
+              "seconds": 0.442,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.817,
+              "type": "target-progress-reset",
+              "previousProgressSeconds": 0.375
+            },
+            {
+              "seconds": 3.9,
+              "type": "rescue",
+              "pilot": 4,
+              "radius": 176
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 31415,
+      "count": 4,
+      "roster": [
+        "mara",
+        "ivo",
+        "sana",
+        "rook"
+      ],
+      "stop": "rescue-checkpoint",
+      "tick": 855,
+      "time": 7.125,
+      "stateHash": "8ae3f407f61521130a689c87e37ab10394adba5d63fd877ca9c676365ddbbaec",
+      "friend": 1,
+      "downedPilots": [
+        1
+      ],
+      "ring": "outer",
+      "radius": 240,
+      "proximityTime": 0,
+      "activePilots": [
+        {
+          "pilot": 2,
+          "ring": "middle",
+          "angleToTarget": 1.829,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 3,
+          "ring": "inner",
+          "angleToTarget": 1.876,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        },
+        {
+          "pilot": 4,
+          "ring": "middle",
+          "angleToTarget": 1.296,
+          "protectionRemaining": 0,
+          "rallyRemaining": 0,
+          "wardCharges": 0
+        }
+      ],
+      "enemies": 9,
+      "walls": 1,
+      "warningZones": 1,
+      "branches": [
+        {
+          "policy": "rescue-now",
+          "stop": "target-rescued",
+          "ticks": 240,
+          "seconds": 2,
+          "firstProgressSeconds": 0.358,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0,
+          "crewRescues": 1,
+          "activePilotsAtStop": 2,
+          "finalStateHash": "0e7a758c09d1402d44d740ee2dc450b0cbed62fd7ac5d94ba06673c1d7236c42",
+          "milestones": [
+            {
+              "seconds": 0.358,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.492,
+              "type": "down",
+              "pilot": 2,
+              "radius": 240
+            },
+            {
+              "seconds": 0.5,
+              "type": "down",
+              "pilot": 3,
+              "radius": 240
+            },
+            {
+              "seconds": 2,
+              "type": "rescue",
+              "pilot": 1,
+              "radius": 240
+            }
+          ]
+        },
+        {
+          "policy": "wall-first",
+          "stop": "target-rescued",
+          "ticks": 253,
+          "seconds": 2.108,
+          "firstProgressSeconds": 0.467,
+          "progressHeldSeconds": 1.65,
+          "maxProgressSeconds": 1.65,
+          "interruptions": 0,
+          "wallWaitPilotSeconds": 0.825,
+          "crewRescues": 1,
+          "activePilotsAtStop": 3,
+          "finalStateHash": "6e025241ab81b7e640a457ba03de44339dcde99866556b854ce02442b65ffdff",
+          "milestones": [
+            {
+              "seconds": 0.467,
+              "type": "first-target-progress"
+            },
+            {
+              "seconds": 0.6,
+              "type": "down",
+              "pilot": 2,
+              "radius": 240
+            },
+            {
+              "seconds": 2.108,
+              "type": "rescue",
+              "pilot": 1,
+              "radius": 240
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
