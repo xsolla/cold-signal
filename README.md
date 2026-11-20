@@ -1,5 +1,7 @@
 # Cold Signal
 
+[Source repository](https://github.com/xsolla/cold-signal)
+
 A standalone cooperative vector arcade game, originally developed as Delve Together.
 
 [Design brief](docs/design.md) · [Development history](docs/project-overview.md) ·
@@ -22,9 +24,11 @@ pulses. This replaces the amplified camera response after player reports of naus
 
 ## Play without Docker
 
-From the standalone checkout, install the pinned dependencies and start development mode:
+Clone the standalone game, install the pinned dependencies, and start development mode:
 
 ```sh
+git clone https://github.com/xsolla/cold-signal.git
+cd cold-signal
 npm ci
 npm run dev
 ```

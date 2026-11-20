@@ -411,7 +411,7 @@
       "source": "projects/arcade-jam/game/README.md",
       "destination": "README.md",
       "sha256": "1ddbd84dfe90803bd1f8b40fdd2211b595721ca16fc1a482958690bb3ae367ec",
-      "standalone_sha256": "519f116be694994fb64d3d735d8583fb2c1f1bd31a6261287199fc34fed761a1",
+      "standalone_sha256": "a9e57e4376d965d261d54fac018e4bd6efaa8bb37beba6528bd832cb3af303f4",
       "byte_identical": false
     },
     {
@@ -677,7 +677,7 @@
       "source": "projects/arcade-jam/game/package.json",
       "destination": "package.json",
       "sha256": "d99adc08e719c58142e640fb1bf4cad48d4ba1cabda3daba9735166109158966",
-      "standalone_sha256": "9e49e43cbfb7fed58e71c41b5c8683de67918a3649dc76ad584308318a5d644f",
+      "standalone_sha256": "d9048408585940d3eed4adb56cec8a156a5fcc89498be940471b9f6f62371d70",
       "byte_identical": false
     },
     {

@@ -28,5 +28,6 @@
   "browser_errors": [],
   "pocket_studio_game_directory_removed": true,
   "pocket_studio_cleanup_commit": "16786c4",
-  "github_remote": "awaiting owner and visibility selection"
+  "github_remote": "https://github.com/xsolla/cold-signal",
+  "github_visibility": "public"
 }

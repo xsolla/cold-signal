@@ -50,5 +50,4 @@ verification outcomes are in [verification.json](verification.json).
 
 Pocket Studio removal is committed as `16786c4`; the original working directory
 was preserved as a recoverable local migration backup. Local environment files
-and ignored caches were excluded from this repository. A GitHub remote awaits
-the creator’s owner/visibility selection.
+and ignored caches were excluded from this repository. The public canonical repository is [xsolla/cold-signal](https://github.com/xsolla/cold-signal).

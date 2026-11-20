@@ -20,5 +20,13 @@
   "devDependencies": {
     "playwright-core": "1.65.1"
   },
-  "description": "A cooperative vector arcade game with three-depth combat and chain reactions."
+  "description": "A cooperative vector arcade game with three-depth combat and chain reactions.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xsolla/cold-signal.git"
+  },
+  "homepage": "https://github.com/xsolla/cold-signal#readme",
+  "bugs": {
+    "url": "https://github.com/xsolla/cold-signal/issues"
+  }
 }
