@@ -12,7 +12,12 @@
     "test:browser": "node scripts/browser-check.mjs",
     "balance": "node scripts/balance.mjs",
     "dev": "node server/index.mjs --dev-tools",
-    "pacing": "node scripts/pacing-check.mjs"
+    "pacing": "node scripts/pacing-check.mjs",
+    "skills:setup": "node scripts/pocket-studio.mjs setup",
+    "skills:link": "node scripts/pocket-studio.mjs link",
+    "skills:links": "node scripts/pocket-studio.mjs links",
+    "skills:status": "node scripts/pocket-studio.mjs status",
+    "skills:check": "node scripts/pocket-studio.mjs check"
   },
   "dependencies": {
     "ws": "8.23.0"

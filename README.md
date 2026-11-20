@@ -22,6 +22,21 @@ The original motion studies remain in `art-direction/`.
 The camera is now **locked** in every motion setting: no shake, roll, or zoom
 pulses. This replaces the amplified camera response after player reports of nausea.
 
+## Develop with Pocket Studio
+
+Pocket Studio is an editable, version-pinned submodule in `tools/pocket-studio`.
+Its seven skills, including art-direction v1.1.0, are linked into `.agents/skills`
+so experiments here directly exercise the source you can contribute upstream.
+
+```sh
+npm run skills:setup
+npm run skills:check
+```
+
+Setup needs Git, Python 3.9+ and network access; using the installed skills needs
+no Python environment. See [the contribution workflow](docs/pocket-studio.md)
+for skill requests, trial records, branches, upstream PRs and pin updates.
+
 ## Play without Docker
 
 Clone the standalone game, install the pinned dependencies, and start development mode:

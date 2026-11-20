@@ -1,0 +1,4 @@
+[submodule "tools/pocket-studio"]
+	path = tools/pocket-studio
+	url = https://github.com/xsolla/xsolla-pocket-studio.git
+	branch = codex/art-direction
