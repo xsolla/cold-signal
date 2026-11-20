@@ -6,7 +6,7 @@ Status: local 0.3 three-depth tunnel is running. The creator called 0.2 “super
 fun” and requested inner rings, depth controls, rail enemies, and perspective.
 
 **[Play the tunnel](http://localhost:5173)** · [Original 0.1](http://localhost:5174) · [Run instructions](../README.md) ·
-[Verification and limits](verification.md)
+[Verification and limits](verification-v03-delve-together.md)
 
 Branch: `codex/tempest-hexagon-jam`.
 
@@ -55,7 +55,7 @@ Confirmed by the creator:
 - Design inspiration: Left 4 Dead's cooperative design philosophy. Research
   notes and original arena proposals are in the balance plan.
 
-See [the design brief](design.md), [the ten-hour plan](prototype-plan.md),
+See [the design brief](design-delve-together.md), [the ten-hour plan](prototype-plan.md),
 [game-feel preparation](game-feel.md), [playtest preparation](playtest.md),
 [balance preparation](balance-plan.md), [launch checklist](launch-checklist.md),
 and [platform notes](platform-notes.md).

@@ -4,8 +4,9 @@
 
 A standalone cooperative vector arcade game, originally developed as Delve Together.
 
-[Design brief](docs/design.md) · [Development history](docs/project-overview.md) ·
-[Repository migration](docs/migration/README.md) · [Credits](CREDITS.md)
+[Design](docs/design.md) · [Architecture and workflows](docs/architecture.md) ·
+[Development history](docs/project-overview.md) · [Repository migration](docs/migration/README.md) ·
+[Credits](CREDITS.md)
 
 Four-player real-time cooperative PvE. Everyone fires automatically and can
 rescue any downed crew member. A/D or Left/Right orbits; W/Up jumps inward,
@@ -19,14 +20,15 @@ and angular geometry. Streaming tunnel lines, projectile and movement trails,
 The amplified effects use longer luminous trails and retain a readable burst size
 at inner depths. Pilots and rescue markers render above the large effects.
 The original motion studies remain in `art-direction/`.
-The camera is now **locked** in every motion setting: no shake, roll, or zoom
-pulses. This replaces the amplified camera response after player reports of nausea.
+The [locked camera decision](docs/design.md#presentation) applies in both
+motion settings.
 
 ## Develop with Pocket Studio
 
 Pocket Studio is an editable, version-pinned submodule in `tools/pocket-studio`.
-Its seven skills, including art-direction v1.1.0, are linked into `.agents/skills`
-so experiments here directly exercise the source you can contribute upstream.
+The active pin's skills are linked into `.agents/skills`, so experiments here
+directly exercise the source you can contribute upstream. Use
+`npm run skills:status` to identify the checkout and pin.
 
 ```sh
 npm run skills:setup
@@ -257,4 +259,5 @@ The balance command retains a narrow two-pilot, full-speed rescue fixture; it
 is not a four-player character-balance claim. The pacing check compares fixed
 diagnostics against an exact, versioned copy of the rules from origin commit `222834b`;
 its controlled traces are not human difficulty or comfort evidence. See [verification](docs/verification.md)
-and [the human playtest guide](docs/playtest.md) for evidence and remaining questions.
+for current evidence and [the imported playtest guide](docs/playtest.md) for the
+earlier human playtest plan.

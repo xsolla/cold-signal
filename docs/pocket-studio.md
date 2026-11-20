@@ -25,13 +25,14 @@ It preserves an initialized checkout's current branch and local changes. Clone
 with `git clone --recurse-submodules` to initialize it during cloning instead.
 Git access to Pocket Studio is required wherever setup runs, including CI.
 
-The pin follows upstream `codex/art-direction` at `8ccab1cb03ea6b8311d6d6e09fa25db2751fe56a`.
-It adds art-direction v1.1.0 to the six skills from `main`, preserving their source
-and the evaluation harness. `.agents/skills/art-direction` links to
-`tools/pocket-studio/skills/art-direction`; this is the single installed art-direction
-skill in this repo. Cold Signal's root `art-direction/` folder contains game art
-studies and evidence. Experimental skills on other branches become available when
-you check out those branches and run `npm run skills:link`.
+Use `npm run skills:status` to read the recorded pin and the checked-out
+revision. The autonomous trial branch assembles eleven skills from the original
+suite and upstream feature branches. Its combined Pocket Studio commit is
+local. Setup from a fresh clone needs a copy of that commit or a fetchable pin.
+The upstream update target in `.gitmodules` still points to `codex/art-direction`.
+Cold Signal's root `art-direction/` folder contains game art studies and
+evidence. After switching Pocket Studio revisions, run `npm run skills:link`
+to expose the skills present in that checkout.
 
 `skills:check` verifies the links, runs upstream metadata/resource/demo checks and
 unit tests, and packages every skill. ZIPs and the virtual environment stay ignored
@@ -54,11 +55,15 @@ Use the request that matches the task; these are independent specialists:
 
 | Skill | Example request |
 | --- | --- |
+| `agent-scaffolding` | Use $agent-scaffolding to reconcile Cold Signal's agent guide with the runtime and verify two common change paths. |
 | `game-design-doc` | Use $game-design-doc to review Cold Signal's current design against our latest decisions. |
 | `prototype-plan` | Use $prototype-plan to scope the next two-hour Cold Signal experiment with a baseline and acceptance checks. |
 | `game-feel` | Use $game-feel to review Cold Signal's pacing evidence and reduced-motion behavior. Keep the camera locked. |
 | `art-direction` | Use $art-direction to review Cold Signal's approved visual language and current gameplay captures, then propose a bounded readability experiment. |
+| `ui-ux-design` | Use $ui-ux-design to check the ready room, HUD, and keyboard flow. |
+| `generative-sound-design` | Use $generative-sound-design to review how ability, warning, and rescue cues compete in combat. |
 | `playtest` | Use $playtest to prepare a four-human session and turn my observed findings into a retest plan. |
+| `chatgpt-playtest-analytics` | Use $chatgpt-playtest-analytics to inspect an available playtest event export and identify what it can measure. |
 | `launch-checklist` | Use $launch-checklist to identify the next release evidence we need for Cold Signal. |
 | `time-bandits-game-balance` | Use $time-bandits-game-balance to inspect src/rules.js and the existing balance and pacing checks, then propose the next bounded experiment. |
 
