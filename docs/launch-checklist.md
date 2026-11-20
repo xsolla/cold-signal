@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together — release preparation
 
 **Status:** Local Docker first playable verified. GamePix candidate packaging,

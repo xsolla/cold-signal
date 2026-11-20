@@ -1,29 +1,35 @@
-# Delve Together — local playable 0.3
+# Cold Signal
+
+A standalone cooperative vector arcade game, originally developed as Delve Together.
+
+[Design brief](docs/design.md) · [Development history](docs/project-overview.md) ·
+[Repository migration](docs/migration/README.md) · [Credits](CREDITS.md)
 
 Four-player real-time cooperative PvE. Everyone fires automatically and can
 rescue any downed crew member. A/D or Left/Right orbits; W/Up jumps inward,
 S/Down jumps outward between three rings. Press Space for your
 character's special ability. Every pilot must be active at the final clear.
 
-The playable client now uses **Cold Signal**: Cold Front's navy/cyan/violet
+The visual direction combines Cold Front's navy/cyan/violet
 palette with Black Signal's forked ships, open rescue markers, radial instruments,
 and angular geometry. Streaming tunnel lines, projectile and movement trails,
 36-shard explosions, rescue bursts, and linked chain detonations respond to live play.
 The amplified effects use longer luminous trails and retain a readable burst size
 at inner depths. Pilots and rescue markers render above the large effects.
-The approved scripted motion study remains separate in `../art-direction/`.
+The original motion studies remain in `art-direction/`.
 The camera is now **locked** in every motion setting: no shake, roll, or zoom
 pulses. This replaces the amplified camera response after player reports of nausea.
 
 ## Play without Docker
 
-With dependencies already installed, run the same authoritative game locally:
+From the standalone checkout, install the pinned dependencies and start development mode:
 
 ```sh
-HOST=127.0.0.1 PORT=5176 DEV_TOOLS=1 npm start
+npm ci
+npm run dev
 ```
 
-Open [Cold Signal / Delve Together](http://localhost:5176). For one human,
+Open [Cold Signal](http://localhost:5176). For one human,
 create a room, open **Local test tools**, add three controlled crew members,
 and ready up. Keep their tabs open. **Reduce motion** removes streaming depth,
 speed lines, luminous trails, movement ghosts, and fragmentation while retaining
@@ -65,11 +71,10 @@ depth; nearby death blasts can reach other targets within their splash range.
 ## Run with Docker
 
 ```sh
-cd projects/arcade-jam/game
 docker compose up --build -d --wait
 ```
 
-Open [Delve Together](http://localhost:5173). Docker with Compose is the only
+Open [Cold Signal](http://localhost:5176). Docker with Compose is the only
 required local runtime. The running game needs no AGS, account, or cloud access.
 
 1. Create a room. Defaults are **four players** and **0.5× pace**. You can choose
@@ -121,10 +126,10 @@ The default binds only to this computer. To let other computers on the same
 local network join the Docker host, opt into a LAN listener:
 
 ```sh
-DELVE_BIND=0.0.0.0 docker compose up -d
+COLD_SIGNAL_BIND=0.0.0.0 docker compose up -d
 ```
 
-Other players open `http://<Docker-host-LAN-IP>:5173` in their desktop browser,
+Other players open `http://<Docker-host-LAN-IP>:5176` in their desktop browser,
 then enter the same room code. This is a local prototype without account auth;
 keep this listener on your intended local network. Return to loopback with
 `docker compose up -d` without that variable. Cross-device LAN play has not been
@@ -164,7 +169,7 @@ mid-run save or host migration.
 The preserved 0.1 Docker images run separately at
 [localhost:5174](http://localhost:5174): two players, original speed, and Space
 to shoot. The first prototype's source/evidence is documented in
-[the original verification](../verification-v01.md). The stored images must
+[the original verification](docs/verification-v01.md). The stored images must
 remain on this Docker host; they are not downloaded or rebuilt by this file.
 
 ```sh
@@ -185,7 +190,7 @@ docker compose -f compose.previous.yaml up -d
 docker compose -f compose.previous.yaml down
 ```
 
-It is not running by default. See [the 0.2 verification](../verification-v02.md)
+It is not running by default. See [the 0.2 verification](docs/verification-v02.md)
 for that build’s identity and scope. These image aliases exist on this host only.
 
 ## Local diagnostics and operations
@@ -203,7 +208,7 @@ docker compose down
 ```
 
 The web port is bound to loopback. In-memory rooms reset when the backend
-restarts. Change the port with `DELVE_PORT=5175 docker compose up -d`. Disable
+restarts. Change the port with `COLD_SIGNAL_PORT=5177 docker compose up -d`. Disable
 diagnostics with `DEV_TOOLS=0 docker compose up -d --force-recreate`.
 
 ## Architecture and verification
@@ -222,15 +227,15 @@ npm ci
 npm test
 npm run test:browser
 npm run balance
-node scripts/pacing-check.mjs
+npm run pacing
 ```
 
 Node.js 20+ is sufficient for these developer commands. Browser verification
 uses four installed Chrome processes by default on macOS; set `CHROME_PATH` or
-`DELVE_URL` for another installed Chromium executable or local URL. It records
+`COLD_SIGNAL_URL` for another installed Chromium executable or local URL. It records
 actual input/state plus labeled constructed scenarios to ignored `artifacts/`.
 The balance command retains a narrow two-pilot, full-speed rescue fixture; it
 is not a four-player character-balance claim. The pacing check compares fixed
-diagnostics against commit `222834b` and requires that commit in local Git history;
-its controlled traces are not human difficulty or comfort evidence. See [verification](../verification.md)
-and [the human playtest guide](../playtest.md) for evidence and remaining questions.
+diagnostics against an exact, versioned copy of the rules from origin commit `222834b`;
+its controlled traces are not human difficulty or comfort evidence. See [verification](docs/verification.md)
+and [the human playtest guide](docs/playtest.md) for evidence and remaining questions.

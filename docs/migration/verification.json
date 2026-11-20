@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-19",
+  "source_head": "e2f196f40c1b01888c6ab4edd1a9aea0eb18c246",
+  "source_files": 125,
+  "all_sources_present": true,
+  "byte_identical_files": 101,
+  "extracted_game_commits": 7,
+  "authors_dates_subjects_preserved": true,
+  "rules_byte_identical": true,
+  "fresh_npm_ci": true,
+  "node_tests": {
+    "passed": 55,
+    "failed": 0
+  },
+  "pacing_report_identical": true,
+  "docker_compose_config_valid": true,
+  "local_checkout": "/Users/samfarmer/Documents/GitHub/cold-signal",
+  "environment_files_copied": false,
+  "ignored_caches_copied": false
+}

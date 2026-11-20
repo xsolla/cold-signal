@@ -1,4 +1,4 @@
-# Delve Together — asset and dependency inventory
+# Cold Signal — asset and dependency inventory
 
 Game direction: the project creator, through the recorded Pocket Studio
 interviews. Implementation and original procedural visuals/audio: created in
@@ -27,3 +27,7 @@ Tempest, Super Hexagon, and Left 4 Dead are design references only. No source,
 assets, music, characters, or branding from those games are included. The
 GamePix listing, promotional assets, hosted integration, and final attribution
 review remain pending a release candidate.
+
+Cold Signal began as Delve Together in Xsolla Pocket Studio and became an
+independent game repository on November 19, 2026. The extracted game history
+and migration record are in `docs/migration/`.

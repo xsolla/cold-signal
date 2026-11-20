@@ -1,0 +1,9 @@
+.git
+node_modules
+artifacts
+.env
+.env.*
+.DS_Store
+docs
+art-direction
+evidence

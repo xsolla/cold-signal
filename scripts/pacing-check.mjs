@@ -1,13 +1,10 @@
 // Bounded diagnostic over the actual rules, not a human difficulty/fun estimate.
-import { execFileSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { fileURLToPath } from 'node:url';
 import * as candidate from '../src/rules.js';
 
 const baselineCommit = '222834b';
-const baselineSource = execFileSync('git', ['show', `${baselineCommit}:projects/arcade-jam/game/src/rules.js`],
-  { cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8' });
+const baselineSource = await readFile(new URL('../docs/baselines/pre-arcade-rules.mjs', import.meta.url), 'utf8');
 const baseline = await import(`data:text/javascript;base64,${Buffer.from(baselineSource).toString('base64')}`);
 const candidateSource = await readFile(new URL('../src/rules.js', import.meta.url));
 const sha = source => createHash('sha256').update(source).digest('hex');

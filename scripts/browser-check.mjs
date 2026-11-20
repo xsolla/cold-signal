@@ -2,7 +2,7 @@ import { chromium } from 'playwright-core';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { distance } from '../src/rules.js';
-const base = process.env.DELVE_URL || 'http://127.0.0.1:5173';
+const base = process.env.COLD_SIGNAL_URL || process.env.DELVE_URL || 'http://127.0.0.1:5176';
 const executablePath = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const artifacts = new URL('../artifacts/', import.meta.url);
 await mkdir(artifacts, { recursive: true });

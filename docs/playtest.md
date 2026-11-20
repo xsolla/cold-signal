@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together — playtest preparation
 
 **Mode and status:** An agent four-browser functional pass has run against the

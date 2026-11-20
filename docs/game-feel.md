@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together — game-feel preparation
 
 **Status:** Local playable implemented; agent browser input/rescue checks and

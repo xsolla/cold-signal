@@ -1,9 +1,11 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together
 
 Status: local 0.3 three-depth tunnel is running. The creator called 0.2 “super
 fun” and requested inner rings, depth controls, rail enemies, and perspective.
 
-**[Play the tunnel](http://localhost:5173)** · [Original 0.1](http://localhost:5174) · [Run instructions](game/README.md) ·
+**[Play the tunnel](http://localhost:5173)** · [Original 0.1](http://localhost:5174) · [Run instructions](../README.md) ·
 [Verification and limits](verification.md)
 
 Branch: `codex/tempest-hexagon-jam`.

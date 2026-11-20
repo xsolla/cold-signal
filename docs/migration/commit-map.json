@@ -1,0 +1,43 @@
+{
+  "source_repository": "https://github.com/xsolla/xsolla-pocket-studio",
+  "source_branch": "codex/tempest-art-direction-evaluation",
+  "source_head": "e2f196f40c1b01888c6ab4edd1a9aea0eb18c246",
+  "method": "git subtree split --prefix=projects/arcade-jam; followed by a root-layout migration commit",
+  "commits": [
+    {
+      "source": "e2f196f40c1b01888c6ab4edd1a9aea0eb18c246",
+      "extracted": "66d32b0ca22b2c52d35cfb666f276dfabd18b999",
+      "subject": "feat: accelerate combat and add chains with a stationary camera"
+    },
+    {
+      "source": "222834b6a832c03170a85f27ffb01c43b4f9aa12",
+      "extracted": "ee8b69811ba4110dbc6fa1450a6b635072dab6e5",
+      "subject": "feat: amplify Cold Signal combat effects and camera response"
+    },
+    {
+      "source": "4ec2925bff6589ef2b573ac6cd92831bf2ae11cf",
+      "extracted": "5127670d64aa7eaddbe5cea6078b03b1f26c67b3",
+      "subject": "feat: bring Cold Signal art direction into playable Delve Together"
+    },
+    {
+      "source": "1ba2398d3de5f195375590304e422f26b2e49a28",
+      "extracted": "8f9ca3df726a57950384aef29a1e61e33936dcb1",
+      "subject": "chore: preserve existing Delve Together playable baseline"
+    },
+    {
+      "source": "c3749fac24fc612ed0fa26b70ad91d793ddcd971",
+      "extracted": "3d4281a001f50f658a6f66c50c2e672cfc522a60",
+      "subject": "feat: add Cold Signal arcade motion preview"
+    },
+    {
+      "source": "6882b7e16197cf67381c97a64573c16221e4c652",
+      "extracted": "6d3ec90b140c3d62af38c5911e95e99b33158e3b",
+      "subject": "feat: develop Vector Relay motion and visual treatments"
+    },
+    {
+      "source": "9e466e1e4eef1b95cfb303103d3e620e09cabe49",
+      "extracted": "99297a802b9766c9cc21b51f94d318b0d44900b2",
+      "subject": "test: evaluate art direction on Delve Together"
+    }
+  ]
+}

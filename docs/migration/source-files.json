@@ -1,0 +1,894 @@
+{
+  "source_head": "e2f196f40c1b01888c6ab4edd1a9aea0eb18c246",
+  "files": [
+    {
+      "source": "projects/arcade-jam/art-direction/README.md",
+      "destination": "art-direction/README.md",
+      "sha256": "35bfe648e1efd904c715280d89b80d74218e713875161b80a179d600d5e821ac",
+      "standalone_sha256": "d6c5da4dfb997eb782eebfc5178ae51252329e61c42e6974b937ee0fc43358c8",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/app.js",
+      "destination": "art-direction/app.js",
+      "sha256": "a7e5b34e29878735d1cb55b582bd6918e538b6f6433deb3547b9ffc48de56140",
+      "standalone_sha256": "a7e5b34e29878735d1cb55b582bd6918e538b6f6433deb3547b9ffc48de56140",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/baseline/renderer.js",
+      "destination": "art-direction/baseline/renderer.js",
+      "sha256": "7057367ce18068838699dd4addce6794f0bb708da5560f410ac5324b27c08748",
+      "standalone_sha256": "7057367ce18068838699dd4addce6794f0bb708da5560f410ac5324b27c08748",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/baseline/rules.js",
+      "destination": "art-direction/baseline/rules.js",
+      "sha256": "ea17e0aada39d41c6f4db096c34fef30aa2a38823ee95bb78458c92dc0547f3e",
+      "standalone_sha256": "ea17e0aada39d41c6f4db096c34fef30aa2a38823ee95bb78458c92dc0547f3e",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/brief.md",
+      "destination": "art-direction/brief.md",
+      "sha256": "5f97e6137eeb26db2365d13b16014e8e9246f8107132d0fb2d2fce68f827cfe7",
+      "standalone_sha256": "5f97e6137eeb26db2365d13b16014e8e9246f8107132d0fb2d2fce68f827cfe7",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evaluation.md",
+      "destination": "art-direction/evaluation.md",
+      "sha256": "cbfed01bf7ad9a85f32badfaec2c50878dbb4484b205d889579951490b5765aa",
+      "standalone_sha256": "cbfed01bf7ad9a85f32badfaec2c50878dbb4484b205d889579951490b5765aa",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/baseline-context-desktop.jpg",
+      "destination": "art-direction/evidence/baseline-context-desktop.jpg",
+      "sha256": "7e1b584d41f7907df618ab71901f45e4ea48588bcb4f1a0656a205d604826bc6",
+      "standalone_sha256": "7e1b584d41f7907df618ab71901f45e4ea48588bcb4f1a0656a205d604826bc6",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/calibration-desktop.jpg",
+      "destination": "art-direction/evidence/calibration-desktop.jpg",
+      "sha256": "bc97fd291014215d90576f11c7884026ef7e3018a5cd3b714434a42b697bb5b1",
+      "standalone_sha256": "bc97fd291014215d90576f11c7884026ef7e3018a5cd3b714434a42b697bb5b1",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/concepts-desktop.jpg",
+      "destination": "art-direction/evidence/concepts-desktop.jpg",
+      "sha256": "af0793ebabe18660440608b1ab137cfce48950da0ffd6e587797e0f2536ad53b",
+      "standalone_sha256": "af0793ebabe18660440608b1ab137cfce48950da0ffd6e587797e0f2536ad53b",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/context-640x480.jpg",
+      "destination": "art-direction/evidence/context-640x480.jpg",
+      "sha256": "7813406d9a5c3b2e7bab0765e1a21444c089a35ae8b32bcad653f28c8e6ae939",
+      "standalone_sha256": "7813406d9a5c3b2e7bab0765e1a21444c089a35ae8b32bcad653f28c8e6ae939",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/context-narrow.jpg",
+      "destination": "art-direction/evidence/context-narrow.jpg",
+      "sha256": "84842f7508288a47d6fcf0435fdebde2f847dbdaa38624eee2a7c59b6e9c3ca6",
+      "standalone_sha256": "84842f7508288a47d6fcf0435fdebde2f847dbdaa38624eee2a7c59b6e9c3ca6",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/elastic-context-desktop.jpg",
+      "destination": "art-direction/evidence/elastic-context-desktop.jpg",
+      "sha256": "6c6ae98ff7eae4c8d4204ca5a1af07caefa92d0f5c936390b030def98f4fbb48",
+      "standalone_sha256": "6c6ae98ff7eae4c8d4204ca5a1af07caefa92d0f5c936390b030def98f4fbb48",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/grayscale-desktop.jpg",
+      "destination": "art-direction/evidence/grayscale-desktop.jpg",
+      "sha256": "f7e7029c4bfd4685598cc8894cc5caf0cd8c7fa9ba4e5eec86c974e9c7058343",
+      "standalone_sha256": "f7e7029c4bfd4685598cc8894cc5caf0cd8c7fa9ba4e5eec86c974e9c7058343",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/hull-context-desktop.jpg",
+      "destination": "art-direction/evidence/hull-context-desktop.jpg",
+      "sha256": "a666964ef34638057f1b944f37bd1a373ed71a74794dae1c3abb6cd80a6d6427",
+      "standalone_sha256": "a666964ef34638057f1b944f37bd1a373ed71a74794dae1c3abb6cd80a6d6427",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/motion-desktop.jpg",
+      "destination": "art-direction/evidence/motion-desktop.jpg",
+      "sha256": "ddd5e8ac4b3e35b60f19ba64996e7c23f366352e6f8224a1b645d06925e11add",
+      "standalone_sha256": "ddd5e8ac4b3e35b60f19ba64996e7c23f366352e6f8224a1b645d06925e11add",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/reference-sources.json",
+      "destination": "art-direction/evidence/reference-sources.json",
+      "sha256": "04e8fa9d6cc721d2e11244e4ec4098372034e2030233d3b348a7e9368bc83cfd",
+      "standalone_sha256": "04e8fa9d6cc721d2e11244e4ec4098372034e2030233d3b348a7e9368bc83cfd",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/relay-context-desktop.jpg",
+      "destination": "art-direction/evidence/relay-context-desktop.jpg",
+      "sha256": "4508282a7cd847ac53947600faed446998ec8d5848103e88ade11c887900a183",
+      "standalone_sha256": "4508282a7cd847ac53947600faed446998ec8d5848103e88ade11c887900a183",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/review-export-agent-qa.json",
+      "destination": "art-direction/evidence/review-export-agent-qa.json",
+      "sha256": "daa4c1f72733377dfe1488c71cd6674f2f9c1bfa773aa479bb19f1120cabceed",
+      "standalone_sha256": "daa4c1f72733377dfe1488c71cd6674f2f9c1bfa773aa479bb19f1120cabceed",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/runtime-entry.jpg",
+      "destination": "art-direction/evidence/runtime-entry.jpg",
+      "sha256": "3de5a5184023f81dcffe6d846bc33cda99564733acb61982ce9acd5c5e5f6e91",
+      "standalone_sha256": "3de5a5184023f81dcffe6d846bc33cda99564733acb61982ce9acd5c5e5f6e91",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/source-manifest.json",
+      "destination": "art-direction/evidence/source-manifest.json",
+      "sha256": "86da6604fa96fb75cba39c60f4309319494c132f853762e548d03ede72de5fe3",
+      "standalone_sha256": "86da6604fa96fb75cba39c60f4309319494c132f853762e548d03ede72de5fe3",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/evidence/verification.json",
+      "destination": "art-direction/evidence/verification.json",
+      "sha256": "94a9ab7bd5bf7d988323de8ef1f1fabca9086eb4fc897098a34dbe5acbb60051",
+      "standalone_sha256": "94a9ab7bd5bf7d988323de8ef1f1fabca9086eb4fc897098a34dbe5acbb60051",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/index.html",
+      "destination": "art-direction/index.html",
+      "sha256": "c932c62c406fee3a14ac1a10731b6b62403398c2347ef185393963065c36c5e1",
+      "standalone_sha256": "c932c62c406fee3a14ac1a10731b6b62403398c2347ef185393963065c36c5e1",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/package.json",
+      "destination": "art-direction/package.json",
+      "sha256": "925802833d9cf3c58efeb23f89f14cf444b86e4de3ac5e18947ea296b97e87b9",
+      "standalone_sha256": "925802833d9cf3c58efeb23f89f14cf444b86e4de3ac5e18947ea296b97e87b9",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/scene.js",
+      "destination": "art-direction/scene.js",
+      "sha256": "0760a597ecb548fe6038e3467f974c120cab299423de341b68dba351e47284ae",
+      "standalone_sha256": "0760a597ecb548fe6038e3467f974c120cab299423de341b68dba351e47284ae",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/style.css",
+      "destination": "art-direction/style.css",
+      "sha256": "b9f3d9d6840ca36569b2bbc77e78791964f5c453eae0d8cf91dde1c34558fcb2",
+      "standalone_sha256": "b9f3d9d6840ca36569b2bbc77e78791964f5c453eae0d8cf91dde1c34558fcb2",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/README.md",
+      "destination": "art-direction/vector-relay/README.md",
+      "sha256": "8d8b1e873aee448c5cd0e9cc2fafe74d7e6e17f02e0a3f4ad8b08a3555645551",
+      "standalone_sha256": "8d8b1e873aee448c5cd0e9cc2fafe74d7e6e17f02e0a3f4ad8b08a3555645551",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/app.js",
+      "destination": "art-direction/vector-relay/app.js",
+      "sha256": "da98af4a15760303094f8bead33d8a1e2c995b7b461d18cfa4c2b9c52842ed2c",
+      "standalone_sha256": "da98af4a15760303094f8bead33d8a1e2c995b7b461d18cfa4c2b9c52842ed2c",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/README.md",
+      "destination": "art-direction/vector-relay/arcade/README.md",
+      "sha256": "ecffa9ce10f71163e75b59759a9275ac52759664e2728b56acf709ff254a79ad",
+      "standalone_sha256": "ecffa9ce10f71163e75b59759a9275ac52759664e2728b56acf709ff254a79ad",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/action.js",
+      "destination": "art-direction/vector-relay/arcade/action.js",
+      "sha256": "62686ba42dbc152a2cacfdf1bd7e7d14c5fff02b8dfef78b7ffe45f6d6edc07c",
+      "standalone_sha256": "62686ba42dbc152a2cacfdf1bd7e7d14c5fff02b8dfef78b7ffe45f6d6edc07c",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/app.js",
+      "destination": "art-direction/vector-relay/arcade/app.js",
+      "sha256": "7708aa1ede4621a7fde4f9146d2c8afec8bd38dbe02e0194cccd1e2b0e1165de",
+      "standalone_sha256": "7708aa1ede4621a7fde4f9146d2c8afec8bd38dbe02e0194cccd1e2b0e1165de",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/audio.js",
+      "destination": "art-direction/vector-relay/arcade/audio.js",
+      "sha256": "9ee302a1a624e65b0e6a774a8b95bbc32164a1bc1cade6d42876ffdcce206dd4",
+      "standalone_sha256": "9ee302a1a624e65b0e6a774a8b95bbc32164a1bc1cade6d42876ffdcce206dd4",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/evidence/clip-preview.html",
+      "destination": "art-direction/vector-relay/arcade/evidence/clip-preview.html",
+      "sha256": "c9946048737338a02c4e7e9489d16526ed8693f431cdfbe6ba1146eeb3356aac",
+      "standalone_sha256": "c9946048737338a02c4e7e9489d16526ed8693f431cdfbe6ba1146eeb3356aac",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/evidence/cold-signal-overdrive.mp4",
+      "destination": "art-direction/vector-relay/arcade/evidence/cold-signal-overdrive.mp4",
+      "sha256": "1e3a6ef32b5223f7097e704d5131d4fd623345cda530f43f30c8d3234f51c462",
+      "standalone_sha256": "1e3a6ef32b5223f7097e704d5131d4fd623345cda530f43f30c8d3234f51c462",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/evidence/overdrive-desktop.jpg",
+      "destination": "art-direction/vector-relay/arcade/evidence/overdrive-desktop.jpg",
+      "sha256": "40c58a9e69b632f33d4fc7a107eb517cea82c1bdf556ff6b7012ce0e24ddbe47",
+      "standalone_sha256": "40c58a9e69b632f33d4fc7a107eb517cea82c1bdf556ff6b7012ce0e24ddbe47",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/evidence/rescue-rush.jpg",
+      "destination": "art-direction/vector-relay/arcade/evidence/rescue-rush.jpg",
+      "sha256": "8a2e052c22589e05a2513fcc8b26119e8706a7329831e2629e06bb37ccb4431f",
+      "standalone_sha256": "8a2e052c22589e05a2513fcc8b26119e8706a7329831e2629e06bb37ccb4431f",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/evidence/verification.json",
+      "destination": "art-direction/vector-relay/arcade/evidence/verification.json",
+      "sha256": "67301fbcd314e5242a4892c8c177285a9d4bbb3915f556d044f5230a1d734c47",
+      "standalone_sha256": "67301fbcd314e5242a4892c8c177285a9d4bbb3915f556d044f5230a1d734c47",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/index.html",
+      "destination": "art-direction/vector-relay/arcade/index.html",
+      "sha256": "0d3ffbb9e29c982e585fdbb8e9a7b8ddc65f292741b44bfef08d353c7443b7eb",
+      "standalone_sha256": "0d3ffbb9e29c982e585fdbb8e9a7b8ddc65f292741b44bfef08d353c7443b7eb",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/arcade/style.css",
+      "destination": "art-direction/vector-relay/arcade/style.css",
+      "sha256": "bf85378f152877e417ef2eb9a0fcd2f688c27ba408cd7f0f97a0c6953d7b3d33",
+      "standalone_sha256": "bf85378f152877e417ef2eb9a0fcd2f688c27ba408cd7f0f97a0c6953d7b3d33",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/concepts.html",
+      "destination": "art-direction/vector-relay/concepts.html",
+      "sha256": "e1a2f1a5d28e5dc1bbef99b91c427bc0e2a79ccacc312f431978af54a50d092e",
+      "standalone_sha256": "e1a2f1a5d28e5dc1bbef99b91c427bc0e2a79ccacc312f431978af54a50d092e",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/black-signal-arena.jpg",
+      "destination": "art-direction/vector-relay/evidence/black-signal-arena.jpg",
+      "sha256": "6b42abf30b370197de5bf892b82d06ecff4f5c06d4c3b534473c598da82e36ac",
+      "standalone_sha256": "6b42abf30b370197de5bf892b82d06ecff4f5c06d4c3b534473c598da82e36ac",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/black-signal-surge.jpg",
+      "destination": "art-direction/vector-relay/evidence/black-signal-surge.jpg",
+      "sha256": "c39a57c51fa85674a388cab0fdec692b3cd40d1756ac3a2a8fb76f9801242197",
+      "standalone_sha256": "c39a57c51fa85674a388cab0fdec692b3cd40d1756ac3a2a8fb76f9801242197",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/cold-front-arena.jpg",
+      "destination": "art-direction/vector-relay/evidence/cold-front-arena.jpg",
+      "sha256": "b8f205551c8599f171dae21375de209db1c87272797011962520124f37585de3",
+      "standalone_sha256": "b8f205551c8599f171dae21375de209db1c87272797011962520124f37585de3",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/cold-front-surge.jpg",
+      "destination": "art-direction/vector-relay/evidence/cold-front-surge.jpg",
+      "sha256": "604835fc77c43c597edd069a40968f60b6effe16e124d75e8abd3bcb25b3ddc1",
+      "standalone_sha256": "604835fc77c43c597edd069a40968f60b6effe16e124d75e8abd3bcb25b3ddc1",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/narrow-player.jpg",
+      "destination": "art-direction/vector-relay/evidence/narrow-player.jpg",
+      "sha256": "54446bc9c4406a0117bdcff52299532b8de994709da733dd4cefa965b4e7bd96",
+      "standalone_sha256": "54446bc9c4406a0117bdcff52299532b8de994709da733dd4cefa965b4e7bd96",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/red-shift-arena.jpg",
+      "destination": "art-direction/vector-relay/evidence/red-shift-arena.jpg",
+      "sha256": "98114e77a98a372f89b6b215b4c7c8dd1c00768227c7bd20604e9bd1c519d371",
+      "standalone_sha256": "98114e77a98a372f89b6b215b4c7c8dd1c00768227c7bd20604e9bd1c519d371",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/red-shift-rescue.jpg",
+      "destination": "art-direction/vector-relay/evidence/red-shift-rescue.jpg",
+      "sha256": "8857831bbba2b0a286a0a61adc58de46b1d3fbbffd82d0b16bed49c959f2f139",
+      "standalone_sha256": "8857831bbba2b0a286a0a61adc58de46b1d3fbbffd82d0b16bed49c959f2f139",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/red-shift-surge.jpg",
+      "destination": "art-direction/vector-relay/evidence/red-shift-surge.jpg",
+      "sha256": "2fc098ce4fd7612149bef4bf9ca61079044fff6b8d2d9910b615de5fc5b763e9",
+      "standalone_sha256": "2fc098ce4fd7612149bef4bf9ca61079044fff6b8d2d9910b615de5fc5b763e9",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/source-record.json",
+      "destination": "art-direction/vector-relay/evidence/source-record.json",
+      "sha256": "af4cdae55a66bbdf2d7fcbfcb3a3029a156c8fa1e060da0233315033b3853fe4",
+      "standalone_sha256": "af4cdae55a66bbdf2d7fcbfcb3a3029a156c8fa1e060da0233315033b3853fe4",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/evidence/verification.json",
+      "destination": "art-direction/vector-relay/evidence/verification.json",
+      "sha256": "2ddce6592d13a612d65b0fb88a388fdb8b135b8a813ee3e1706351aaf16f1e4b",
+      "standalone_sha256": "2ddce6592d13a612d65b0fb88a388fdb8b135b8a813ee3e1706351aaf16f1e4b",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/index.html",
+      "destination": "art-direction/vector-relay/index.html",
+      "sha256": "943f9a4240c674dc5b66f8ba99b86b9c7f4e59d0511e0047493634becd373c4d",
+      "standalone_sha256": "943f9a4240c674dc5b66f8ba99b86b9c7f4e59d0511e0047493634becd373c4d",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/poster-studies.html",
+      "destination": "art-direction/vector-relay/poster-studies.html",
+      "sha256": "0a5a47abbbde01e209de3cc7d723454fd5d3faea69492a837888ec742073db04",
+      "standalone_sha256": "0a5a47abbbde01e209de3cc7d723454fd5d3faea69492a837888ec742073db04",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/studies.js",
+      "destination": "art-direction/vector-relay/studies.js",
+      "sha256": "6ea349b0782ea2169ee300fcfa8569fc24ddace6015b23e0d697fe0374125784",
+      "standalone_sha256": "6ea349b0782ea2169ee300fcfa8569fc24ddace6015b23e0d697fe0374125784",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/art-direction/vector-relay/style.css",
+      "destination": "art-direction/vector-relay/style.css",
+      "sha256": "986652ef5cbadaefcf660eae2e33519cce524c15a4b09850762eb8dfa81c74aa",
+      "standalone_sha256": "986652ef5cbadaefcf660eae2e33519cce524c15a4b09850762eb8dfa81c74aa",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/.dockerignore",
+      "destination": ".dockerignore",
+      "sha256": "9383bd30314d81a3f9824be904663d9a89783b8b54322e47153bf09ee86a1932",
+      "standalone_sha256": "96fd6b525fc646526927d6bd289616d26646149f814f8e6017ef18e84cc51a67",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/.gitignore",
+      "destination": ".gitignore",
+      "sha256": "b231ade481ea67325d7a58fa66c42ef17bf2e8567119abdcb25988aafc8514ac",
+      "standalone_sha256": "f989de20205a34a48888bf87508e417a8aa67290c43ae1e5a447bebbc4cca5eb",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/CREDITS.md",
+      "destination": "CREDITS.md",
+      "sha256": "66f2249e76daf3528cc57c6d77f0b3cb1a8ce46b8c2a4036b26936f2d9202240",
+      "standalone_sha256": "b7a2e6bcf61ce0deeb278a3c7d34a63fdca7b19a8dab6284ee28092657dde7eb",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/Dockerfile.backend",
+      "destination": "Dockerfile.backend",
+      "sha256": "74ccdd31ee2a1fbffff35adbc230c6ce5ba0faa772edfa2e67dfd13f0eccbe83",
+      "standalone_sha256": "74ccdd31ee2a1fbffff35adbc230c6ce5ba0faa772edfa2e67dfd13f0eccbe83",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/Dockerfile.web",
+      "destination": "Dockerfile.web",
+      "sha256": "f7f83526b91f38479abf967bc3167e9e83856ad106c811085282bb42a05e04fa",
+      "standalone_sha256": "f7f83526b91f38479abf967bc3167e9e83856ad106c811085282bb42a05e04fa",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/README.md",
+      "destination": "README.md",
+      "sha256": "1ddbd84dfe90803bd1f8b40fdd2211b595721ca16fc1a482958690bb3ae367ec",
+      "standalone_sha256": "519f116be694994fb64d3d735d8583fb2c1f1bd31a6261287199fc34fed761a1",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/compose.baseline.yaml",
+      "destination": "compose.baseline.yaml",
+      "sha256": "e21d054474f63ba34a2e7f4a1828a60a1421f1b85c290d85c04cc44bdb99115f",
+      "standalone_sha256": "e21d054474f63ba34a2e7f4a1828a60a1421f1b85c290d85c04cc44bdb99115f",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/compose.previous.yaml",
+      "destination": "compose.previous.yaml",
+      "sha256": "4b5ebe5ababd58140c9951de43f9b47ac1ce9b8a9f5eb6c22858718bfcea6ff3",
+      "standalone_sha256": "4b5ebe5ababd58140c9951de43f9b47ac1ce9b8a9f5eb6c22858718bfcea6ff3",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/compose.yaml",
+      "destination": "compose.yaml",
+      "sha256": "acfbffac44a1d0cf313d7731c76a3d1e768ccfb95082c9b2cbc12abb35b1c8d7",
+      "standalone_sha256": "d819c5d874c15cf7a6bc73055473dae6dffd66f0de2fbb94f80a8c568961596c",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/README.md",
+      "destination": "evidence/cold-signal-overdrive/README.md",
+      "sha256": "2fc5552211f91aedc7ad53d1bc8d52b702f5732eeb0a774dec28e21741b5f7de",
+      "standalone_sha256": "2fc5552211f91aedc7ad53d1bc8d52b702f5732eeb0a774dec28e21741b5f7de",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/blast.jpg",
+      "destination": "evidence/cold-signal-overdrive/blast.jpg",
+      "sha256": "a2f7ce99d46491ab6abd2a5d3aaa9d11071abd9df0612ff69bcccab1040d78f2",
+      "standalone_sha256": "a2f7ce99d46491ab6abd2a5d3aaa9d11071abd9df0612ff69bcccab1040d78f2",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/node-tests.txt",
+      "destination": "evidence/cold-signal-overdrive/node-tests.txt",
+      "sha256": "42094ca7526bd5913d17b24457192a764744766a2046521678fd270b2bc79bf7",
+      "standalone_sha256": "42094ca7526bd5913d17b24457192a764744766a2046521678fd270b2bc79bf7",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/orbit-trails.jpg",
+      "destination": "evidence/cold-signal-overdrive/orbit-trails.jpg",
+      "sha256": "c2bec29968046b10aa0e35234977540368bc17a5a22d4d8311a9a3518a91008b",
+      "standalone_sha256": "c2bec29968046b10aa0e35234977540368bc17a5a22d4d8311a9a3518a91008b",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/pause-a.jpg",
+      "destination": "evidence/cold-signal-overdrive/pause-a.jpg",
+      "sha256": "2539280007be82c7561cf7e7d25dbb129eeec9e31fddc4f3c824b6234b9423fe",
+      "standalone_sha256": "2539280007be82c7561cf7e7d25dbb129eeec9e31fddc4f3c824b6234b9423fe",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/pause-b.jpg",
+      "destination": "evidence/cold-signal-overdrive/pause-b.jpg",
+      "sha256": "2539280007be82c7561cf7e7d25dbb129eeec9e31fddc4f3c824b6234b9423fe",
+      "standalone_sha256": "2539280007be82c7561cf7e7d25dbb129eeec9e31fddc4f3c824b6234b9423fe",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/ready-room.jpg",
+      "destination": "evidence/cold-signal-overdrive/ready-room.jpg",
+      "sha256": "0f7438e9d5d57e6b054a474050368d09ba5aaa56d0c66da39263d2bd349d63d2",
+      "standalone_sha256": "0f7438e9d5d57e6b054a474050368d09ba5aaa56d0c66da39263d2bd349d63d2",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/reduced.jpg",
+      "destination": "evidence/cold-signal-overdrive/reduced.jpg",
+      "sha256": "969ca4a7bcf3bc94d871b3f7f3eac1de7f5e27c3110fa619ccbc13cb5f8efa6c",
+      "standalone_sha256": "969ca4a7bcf3bc94d871b3f7f3eac1de7f5e27c3110fa619ccbc13cb5f8efa6c",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-overdrive/trails.jpg",
+      "destination": "evidence/cold-signal-overdrive/trails.jpg",
+      "sha256": "6d282ef1eab594bdbcb52ffc3c90489c56276acae16714545e1e1c6fb54e529e",
+      "standalone_sha256": "6d282ef1eab594bdbcb52ffc3c90489c56276acae16714545e1e1c6fb54e529e",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/README.md",
+      "destination": "evidence/cold-signal-pacing/README.md",
+      "sha256": "27561cc83d5f2b58eec94df4c1d1d011ee35b767aa073be7d653416966751c0f",
+      "standalone_sha256": "27561cc83d5f2b58eec94df4c1d1d011ee35b767aa073be7d653416966751c0f",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/combat.jpg",
+      "destination": "evidence/cold-signal-pacing/combat.jpg",
+      "sha256": "87ad8c8484bc10a5d3df699be7c40a47bbd4b12c70f14cd0b512eea626bd2355",
+      "standalone_sha256": "87ad8c8484bc10a5d3df699be7c40a47bbd4b12c70f14cd0b512eea626bd2355",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/impact.jpg",
+      "destination": "evidence/cold-signal-pacing/impact.jpg",
+      "sha256": "517cf130aa6c5a4d86625b413f1b111bc622d777c7858e4d78536ce262e065a1",
+      "standalone_sha256": "517cf130aa6c5a4d86625b413f1b111bc622d777c7858e4d78536ce262e065a1",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/node-tests.txt",
+      "destination": "evidence/cold-signal-pacing/node-tests.txt",
+      "sha256": "3862f8f1dbf50195215c38ce140ba7c899654bf2adec358350053ebf77c4f80f",
+      "standalone_sha256": "3862f8f1dbf50195215c38ce140ba7c899654bf2adec358350053ebf77c4f80f",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/pacing.json",
+      "destination": "evidence/cold-signal-pacing/pacing.json",
+      "sha256": "f246117ff6666715bb6ae6f8b8602cb6bcfa58aa304148479fbd92152f0648c7",
+      "standalone_sha256": "f246117ff6666715bb6ae6f8b8602cb6bcfa58aa304148479fbd92152f0648c7",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/paused-a.jpg",
+      "destination": "evidence/cold-signal-pacing/paused-a.jpg",
+      "sha256": "ab8a118b1a03cf5bf65f67740b69eb5772e87a76a2713a74a8f4d803e3edf4b9",
+      "standalone_sha256": "ab8a118b1a03cf5bf65f67740b69eb5772e87a76a2713a74a8f4d803e3edf4b9",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/paused-b.jpg",
+      "destination": "evidence/cold-signal-pacing/paused-b.jpg",
+      "sha256": "ab8a118b1a03cf5bf65f67740b69eb5772e87a76a2713a74a8f4d803e3edf4b9",
+      "standalone_sha256": "ab8a118b1a03cf5bf65f67740b69eb5772e87a76a2713a74a8f4d803e3edf4b9",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/ready-room.jpg",
+      "destination": "evidence/cold-signal-pacing/ready-room.jpg",
+      "sha256": "9b3756925a096e489d36c7781ff77e89b6da9a918ad3295cc79a9b73c155c05b",
+      "standalone_sha256": "9b3756925a096e489d36c7781ff77e89b6da9a918ad3295cc79a9b73c155c05b",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal-pacing/reduced.jpg",
+      "destination": "evidence/cold-signal-pacing/reduced.jpg",
+      "sha256": "fbfbb44d7f7f997e280abc07bb6f83d5b3a27cc23548d80a1674f14e3232ea70",
+      "standalone_sha256": "fbfbb44d7f7f997e280abc07bb6f83d5b3a27cc23548d80a1674f14e3232ea70",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/README.md",
+      "destination": "evidence/cold-signal/README.md",
+      "sha256": "5ed035d0a8e0f7faa562b1a21c29b692bea77955bd1722a981edb308e601f4fc",
+      "standalone_sha256": "5ed035d0a8e0f7faa562b1a21c29b692bea77955bd1722a981edb308e601f4fc",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/compact-gameplay.jpg",
+      "destination": "evidence/cold-signal/compact-gameplay.jpg",
+      "sha256": "7ff3b042517ecb17c32be0ab1337596b095dacb1f7dc4a7c95b9c6ac3c36be11",
+      "standalone_sha256": "7ff3b042517ecb17c32be0ab1337596b095dacb1f7dc4a7c95b9c6ac3c36be11",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/compact-lobby.jpg",
+      "destination": "evidence/cold-signal/compact-lobby.jpg",
+      "sha256": "ffbc500f48cf20188a700d8f8b615408ef7c7fa535ceb35146dbc6e1b633bc8b",
+      "standalone_sha256": "ffbc500f48cf20188a700d8f8b615408ef7c7fa535ceb35146dbc6e1b633bc8b",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/menu.jpg",
+      "destination": "evidence/cold-signal/menu.jpg",
+      "sha256": "4403d716cc94e05204e97576896d87b4e720ca7602841b73d17659b6f3291222",
+      "standalone_sha256": "4403d716cc94e05204e97576896d87b4e720ca7602841b73d17659b6f3291222",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/node-tests.txt",
+      "destination": "evidence/cold-signal/node-tests.txt",
+      "sha256": "aa2bac4ac537453737ef31f037f3c98aca9dd004748ceeb0ea1f56b8f2485e56",
+      "standalone_sha256": "aa2bac4ac537453737ef31f037f3c98aca9dd004748ceeb0ea1f56b8f2485e56",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/paused-later.jpg",
+      "destination": "evidence/cold-signal/paused-later.jpg",
+      "sha256": "172824f155a69b7a464b445c702a4953ad0b6480b44f58bb30a9a2d6bec4ec09",
+      "standalone_sha256": "172824f155a69b7a464b445c702a4953ad0b6480b44f58bb30a9a2d6bec4ec09",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/paused.jpg",
+      "destination": "evidence/cold-signal/paused.jpg",
+      "sha256": "172824f155a69b7a464b445c702a4953ad0b6480b44f58bb30a9a2d6bec4ec09",
+      "standalone_sha256": "172824f155a69b7a464b445c702a4953ad0b6480b44f58bb30a9a2d6bec4ec09",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/ready-room.jpg",
+      "destination": "evidence/cold-signal/ready-room.jpg",
+      "sha256": "9afb81f53622694db47d05218028e5755786f6b63ad75064d0094bd30af67ea5",
+      "standalone_sha256": "9afb81f53622694db47d05218028e5755786f6b63ad75064d0094bd30af67ea5",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/reduced-motion.jpg",
+      "destination": "evidence/cold-signal/reduced-motion.jpg",
+      "sha256": "4cdfdcce238521b7691a4bff81bd4319d2aa2afca04002e721ffeb49d7668ff3",
+      "standalone_sha256": "4cdfdcce238521b7691a4bff81bd4319d2aa2afca04002e721ffeb49d7668ff3",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/rescue.jpg",
+      "destination": "evidence/cold-signal/rescue.jpg",
+      "sha256": "e66eeba9901ee03a3cb5dc579559eb6e863a0adfa5dba0a9bcc44a6c24d0141c",
+      "standalone_sha256": "e66eeba9901ee03a3cb5dc579559eb6e863a0adfa5dba0a9bcc44a6c24d0141c",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/shockwave.jpg",
+      "destination": "evidence/cold-signal/shockwave.jpg",
+      "sha256": "a4b5c4d7a11ab8877e252fc2678aae0e2201a8c232f599576da79d50a7591ae6",
+      "standalone_sha256": "a4b5c4d7a11ab8877e252fc2678aae0e2201a8c232f599576da79d50a7591ae6",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/team-clear.jpg",
+      "destination": "evidence/cold-signal/team-clear.jpg",
+      "sha256": "f4c092fde71e98f88eb8a81c6a1de729e42dcbf7511705ba25de7d0d24e1e590",
+      "standalone_sha256": "f4c092fde71e98f88eb8a81c6a1de729e42dcbf7511705ba25de7d0d24e1e590",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/team-wipe.jpg",
+      "destination": "evidence/cold-signal/team-wipe.jpg",
+      "sha256": "3a6aaf82b5af5aba785d4c4dc70fbb385728dabd57193d3cf39284683e161c00",
+      "standalone_sha256": "3a6aaf82b5af5aba785d4c4dc70fbb385728dabd57193d3cf39284683e161c00",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/evidence/cold-signal/tunnel-fixture.jpg",
+      "destination": "evidence/cold-signal/tunnel-fixture.jpg",
+      "sha256": "7a5e7349ed25428d7ec71555d8984fffa083b2b4cfb52dc9ada74003e2693b32",
+      "standalone_sha256": "7a5e7349ed25428d7ec71555d8984fffa083b2b4cfb52dc9ada74003e2693b32",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/nginx.conf",
+      "destination": "nginx.conf",
+      "sha256": "7eb886927583064985613bc9e4603547e16f3c9a2b555673a780d141cd906743",
+      "standalone_sha256": "7eb886927583064985613bc9e4603547e16f3c9a2b555673a780d141cd906743",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/package-lock.json",
+      "destination": "package-lock.json",
+      "sha256": "ae4404bbd4987dc3dbd637afb39ee3a7600ae34faca164c594986acdb2006203",
+      "standalone_sha256": "63058f13d507724d6dd440d72122e038af7362d123c2d25d690166525ebb8ad7",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/package.json",
+      "destination": "package.json",
+      "sha256": "d99adc08e719c58142e640fb1bf4cad48d4ba1cabda3daba9735166109158966",
+      "standalone_sha256": "9e49e43cbfb7fed58e71c41b5c8683de67918a3649dc76ad584308318a5d644f",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/public/audio.js",
+      "destination": "public/audio.js",
+      "sha256": "48afcd8586d6ddf0bf4ebd38e743b57dc3059c097cfa5e86a4403f758b4ac2ec",
+      "standalone_sha256": "48afcd8586d6ddf0bf4ebd38e743b57dc3059c097cfa5e86a4403f758b4ac2ec",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/public/cold-signal.js",
+      "destination": "public/cold-signal.js",
+      "sha256": "d96bd221fb415424f8823b1b8709180236c343d43215661ba03460356be1a219",
+      "standalone_sha256": "d96bd221fb415424f8823b1b8709180236c343d43215661ba03460356be1a219",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/public/icon.svg",
+      "destination": "public/icon.svg",
+      "sha256": "86144d5052c16be0ac6c953edd8299bb458fe2da3f68fb510dbf544272e9acb7",
+      "standalone_sha256": "86144d5052c16be0ac6c953edd8299bb458fe2da3f68fb510dbf544272e9acb7",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/public/index.html",
+      "destination": "public/index.html",
+      "sha256": "4b5f603d9c699d042598fbca954553252b70bfa2c2a1e2da6656abb8695c4d06",
+      "standalone_sha256": "3b808ce5566c1ffb768346bccdcf094be6ca1294d673d93129000d8b78d9798b",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/public/main.js",
+      "destination": "public/main.js",
+      "sha256": "10122c429e89b004667b785fb8a429359958cb20b1cb35f8ecc406f52cca3525",
+      "standalone_sha256": "10122c429e89b004667b785fb8a429359958cb20b1cb35f8ecc406f52cca3525",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/public/renderer.js",
+      "destination": "public/renderer.js",
+      "sha256": "8051a66621b5e2aeb32c11d4f60505e45e782740fcf76a910414a78ec20fadd8",
+      "standalone_sha256": "8051a66621b5e2aeb32c11d4f60505e45e782740fcf76a910414a78ec20fadd8",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/public/style.css",
+      "destination": "public/style.css",
+      "sha256": "bdc6dc5096d6fd289e5eb667e01a3c6690156a036fb622556481120cf6ebaab6",
+      "standalone_sha256": "bdc6dc5096d6fd289e5eb667e01a3c6690156a036fb622556481120cf6ebaab6",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/scripts/balance.mjs",
+      "destination": "scripts/balance.mjs",
+      "sha256": "93cb09f8e563e8eaf752e060270e3b67c25f88daafcf0b83554c30acb4537c1f",
+      "standalone_sha256": "93cb09f8e563e8eaf752e060270e3b67c25f88daafcf0b83554c30acb4537c1f",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/scripts/browser-check.mjs",
+      "destination": "scripts/browser-check.mjs",
+      "sha256": "871347ee73f36a26ceddef21ded0508fa56a84373f0b50c4367ee322f53198b3",
+      "standalone_sha256": "58af5cfdda2e406c5d88662afce71c1bc8377dc2b44b39960b78b6bc9cde8c1f",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/scripts/pacing-check.mjs",
+      "destination": "scripts/pacing-check.mjs",
+      "sha256": "e63bfb492a6cba76c4cfc5e27e990901d1fed2260e99412b59e4c2c9fe2aba3b",
+      "standalone_sha256": "2e8acdee6c18f0b1e419b508a0b4ea06663bb113f28d1f4b185cc73f17231131",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/server/index.mjs",
+      "destination": "server/index.mjs",
+      "sha256": "f4dd0f9f345616a8e6c18950b51108bf2c7451f2bb2668b1761a6982209a4208",
+      "standalone_sha256": "5c4c504106fa87340700f9835c478ec38e9ff0c67a8f493fd6df5771680a1347",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game/src/rules.js",
+      "destination": "src/rules.js",
+      "sha256": "241c7f54afba9e84d7809d951665198df9bbf9ba40bc5aa99b4751151355c3c4",
+      "standalone_sha256": "241c7f54afba9e84d7809d951665198df9bbf9ba40bc5aa99b4751151355c3c4",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/tests/pacing.test.mjs",
+      "destination": "tests/pacing.test.mjs",
+      "sha256": "2c1f993582163bf247e39cdeb740f5cd45484584a01ab87678ea7dade14c4be7",
+      "standalone_sha256": "2c1f993582163bf247e39cdeb740f5cd45484584a01ab87678ea7dade14c4be7",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/tests/presentation.test.mjs",
+      "destination": "tests/presentation.test.mjs",
+      "sha256": "879e9b8e8ca8304967125f26d30df184899c965ddcb29907691308253e5908a9",
+      "standalone_sha256": "879e9b8e8ca8304967125f26d30df184899c965ddcb29907691308253e5908a9",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/tests/rules.test.mjs",
+      "destination": "tests/rules.test.mjs",
+      "sha256": "6c47b42565a7b9edf91597d8c6893f8c0145aca30b82eec76025f773f7efc09a",
+      "standalone_sha256": "6c47b42565a7b9edf91597d8c6893f8c0145aca30b82eec76025f773f7efc09a",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/game/tests/server.test.mjs",
+      "destination": "tests/server.test.mjs",
+      "sha256": "207f8bc4801f8d6a42eb04d1c5880069a02e9d054fe89dc89a53b729821dadd0",
+      "standalone_sha256": "207f8bc4801f8d6a42eb04d1c5880069a02e9d054fe89dc89a53b729821dadd0",
+      "byte_identical": true
+    },
+    {
+      "source": "projects/arcade-jam/README.md",
+      "destination": "docs/project-overview.md",
+      "sha256": "d5cd2f84499d075077493f3cd23c03e4cc5b87c3cdc5b791bca9a31fd67e9359",
+      "previously_untracked": true,
+      "standalone_sha256": "175909ee1fb494fef89e714cc2c603729b9f8d050ca757461c26e568fa5b66b5",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/ags-init.md",
+      "destination": "docs/ags-init.md",
+      "sha256": "bc11803c6275f9f93a50ef9b691882601ff89a58e9549afd0c63e8df62e5a969",
+      "previously_untracked": true,
+      "standalone_sha256": "7abaa3a80e248e4213891d5fe62c32dd7fd86bc219358da3002e23906d140945",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/balance-plan.md",
+      "destination": "docs/balance-plan.md",
+      "sha256": "18974b2b5d870ed6005e1a6bbf1d6e3b07f844a83785b8567d399723fbdda29a",
+      "previously_untracked": true,
+      "standalone_sha256": "d53f8dfd428826fd0136892879f84a72ca7241e36809c36f9b2db1b5f48b5725",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/design.md",
+      "destination": "docs/design.md",
+      "sha256": "7b2e7142fba2287366cff88f68132c57aa2c9740c902e0cd11b2c11cd7678451",
+      "previously_untracked": true,
+      "standalone_sha256": "cf270507d1edcb89217fecd8a6878520f7696237ba996756f7edd3eb50be1bcc",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/game-feel.md",
+      "destination": "docs/game-feel.md",
+      "sha256": "d85dc832428ec2172dc3d93514c4340aefbe6bfb6582950e49fce392307bdc15",
+      "previously_untracked": true,
+      "standalone_sha256": "19ecf375f8125d6500e899330da249a691d74edf5c097a79ad74338068e2e1f1",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/launch-checklist.md",
+      "destination": "docs/launch-checklist.md",
+      "sha256": "45d292129956da13653ae91acd2eeb8b6b778be3bd8321d2db4031e0f3311a8a",
+      "previously_untracked": true,
+      "standalone_sha256": "6f622b8f4b10a6b4055ebb0bc1b7c5fe955cfb6c2da4e4d86af132dcdfe3a222",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/platform-notes.md",
+      "destination": "docs/platform-notes.md",
+      "sha256": "f0db2013c027f533594169ca9fde25aa565d7a5aa96a3f0f6492d944bbae41c8",
+      "previously_untracked": true,
+      "standalone_sha256": "73128c7e83908fac8074246d7d131bfba2b502882519f57c316ee0f428dae559",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/playtest.md",
+      "destination": "docs/playtest.md",
+      "sha256": "97bd63efdc8fd97adfbd36905d38e89855590cd2aa9048cf395fe83abf1e8c5d",
+      "previously_untracked": true,
+      "standalone_sha256": "b590a8a17ed21013ca3e22afad5361ad7d3f9b02c0952f8616224cfa8deea6e4",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/prototype-plan.md",
+      "destination": "docs/prototype-plan.md",
+      "sha256": "3fe080d007e9da777e06ffac50ca0ea92ae340b4ae9351f40a1acbf9443ae843",
+      "previously_untracked": true,
+      "standalone_sha256": "56d304c3a0df5fb65f2dee49d5388b1864f1862c9a60dad8b2fc3affd90f4054",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/verification-v01.md",
+      "destination": "docs/verification-v01.md",
+      "sha256": "0813c429c7bc4bf025782da16f625cb11cb40a462857af4452eec5a79e40ed6a",
+      "previously_untracked": true,
+      "standalone_sha256": "b7f06fe18425b210991f0f7a4bd0e53336d4535775e475917e231847e0749fc1",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/verification-v02.md",
+      "destination": "docs/verification-v02.md",
+      "sha256": "d875fdc46f3846bc48fedadd6c8e4ea299f499fa9742065cfee11f13e37dee25",
+      "previously_untracked": true,
+      "standalone_sha256": "19253bba17972c574d8d51aa12372814ab7a54c0ad9435b46c1c286cd19ddfee",
+      "byte_identical": false
+    },
+    {
+      "source": "projects/arcade-jam/verification.md",
+      "destination": "docs/verification.md",
+      "sha256": "32e0460746c291eb5ba6f90c13dbbf8b1926454b571979ed4a924768c921d71f",
+      "previously_untracked": true,
+      "standalone_sha256": "6f67b6e55b1380a378654151642509d48a77baa7160d56da38f21f6ddc8e5d31",
+      "byte_identical": false
+    }
+  ],
+  "root_video_copy": "cold-signal-overdrive.mp4 matched art-direction/vector-relay/arcade/evidence/cold-signal-overdrive.mp4 byte-for-byte",
+  "raw_planning_import_commit": "764d05a"
+}

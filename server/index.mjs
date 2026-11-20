@@ -182,9 +182,9 @@ export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep
   return { server, rooms, close };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const game = createGameServer({ diagnostics: process.env.DEV_TOOLS === '1' });
-  game.server.listen(Number(process.env.PORT || 8080), process.env.HOST || '0.0.0.0', () => {
-    console.log(`Delve Together local server listening on ${game.server.address().port}`);
+  const game = createGameServer({ diagnostics: process.argv.includes('--dev-tools') || process.env.DEV_TOOLS === '1' });
+  game.server.listen(Number(process.env.PORT || 5176), process.env.HOST || '127.0.0.1', () => {
+    console.log(`Cold Signal local server listening on ${game.server.address().port}`);
   });
   for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, async () => { await game.close(); process.exit(0); });
 }

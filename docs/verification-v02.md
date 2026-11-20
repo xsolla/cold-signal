@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together — 0.2 local verification
 
 Evidence date: 2026-11-18. Candidate: local 0.2.0, uncommitted project files on

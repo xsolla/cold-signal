@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together — balance preparation
 
 Prepared using `time-bandits-game-balance`, created by the Time Bandits team.

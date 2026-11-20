@@ -1,0 +1,11 @@
+Xsolla Pocket Studio
+
+This distribution includes Time Bandits Game Balance, created by the Time Bandits
+team and based on the team's Hexgrind balance-simulation workflow.
+
+Additional Pocket Studio game-development skills are created for Xsolla Pocket
+Studio, informed by the Time Bandits team's Hexgrind human/AI workflows.
+Their fictional examples and synthetic data are identified in the source.
+
+See LICENSE for the Apache License, Version 2.0.
+The license does not grant rights to the Xsolla or Pocket Studio names.

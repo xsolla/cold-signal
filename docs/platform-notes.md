@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Browser co-op and GamePix — feasibility notes
 
 Status: updated 2026-11-18 for the creator's local-first decision. The Docker

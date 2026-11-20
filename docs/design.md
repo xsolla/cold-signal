@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together — one-page design
 
 **Status:** Local 0.3 tunnel experiment following the creator's positive play report.

@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together — first playable plan
 
 **Question:** Can four players cover distinct threats and make a readable,

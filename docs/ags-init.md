@@ -1,3 +1,5 @@
+> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+
 # Delve Together — AGS initialization status
 
 Status: AGS initialization deferred by the creator. Current development and
