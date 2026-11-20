@@ -108,7 +108,7 @@ try {
   await a.screenshot({ path: new URL('four-player-gameplay.png', artifacts).pathname });
   await contexts[2].close(); await until(() => states[0].state.status === 'interrupted' && states[3].state.status === 'interrupted', 'crew disconnect');
   result.steps.push('Three-depth all-active victory, whole-crew loss, reset ability state on retry, and interruption on one crew disconnect passed.');
-  await a.locator('#leave').click(); await Promise.all([contexts[1].close(), contexts[3].close()]);
+  await a.getByRole('button', { name: 'LEAVE ROOM', exact: true }).click(); await Promise.all([contexts[1].close(), contexts[3].close()]);
   await a.setViewportSize({ width: 640, height: 480 }); await settle(a);
   await a.screenshot({ path: new URL('four-player-menu-640x480.png', artifacts).pathname });
   const fit = await a.evaluate(() => ({ width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth,
@@ -127,6 +127,14 @@ try {
   }
   await until(() => states[0].ready.slice(1).every(Boolean), 'controlled crew ready');
   await a.setViewportSize({ width: 640, height: 480 }); await settle(a);
+  const selectionFit = await a.evaluate(() => {
+    const overlay = document.querySelector('#overlay'), ready = document.querySelector('#ready').getBoundingClientRect();
+    return { overflow: overlay.scrollHeight - overlay.clientHeight, readyBottom: ready.bottom,
+      visibleDescriptions: [...overlay.querySelectorAll('.character-description')].filter(description => description.getBoundingClientRect().height > 0).length };
+  });
+  assert.equal(selectionFit.overflow, 0);
+  assert.equal(selectionFit.visibleDescriptions, 4);
+  assert.ok(selectionFit.readyBottom <= 480);
   await a.screenshot({ path: new URL('four-player-selection-640x480.png', artifacts).pathname });
   await a.locator('#ready').click(); await until(() => states[0].state?.status === 'playing', 'controlled four-player session');
   await wait(350); assert.ok(states[0].state.players.slice(1).every((p, id) => distance(p.angle, -Math.PI / 2 + (id + 1) * Math.PI / 2) > .1));

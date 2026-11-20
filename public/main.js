@@ -2,16 +2,26 @@ import { T, ringName, CREW, characterById, moveSpeed, delta, wrap, cleanInput, c
 import { Renderer } from './renderer.js';
 import { Sound } from './audio.js';
 const $ = id => document.getElementById(id);
-const canvas = $('arena'), renderer = new Renderer(canvas), sound = new Sound();
+const canvas = $('arena'), characterSelect = $('character-select');
+const renderer = new Renderer(canvas), sound = new Sound();
 let socket, code = '', slot = 0, snapshot = null, ready = [], connected = [], characters = [];
 let config = { count: 4, timeScale: .5 }, pauses = [], diagnostics = false, controlled = false, userPaused = false;
+let view = 'entry', soundPreference = null;
 let input = cleanInput(), reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let predicted = null, lastFrame = performance.now(), lastEvent = 0, notice = '', connectionAttempts = 0, openedClients = 0;
 const params = new URLSearchParams(location.search);
 function send(message) { if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message)); }
 function status(text, error = false) { $('connection').textContent = text; $('connection').classList.toggle('error', error); }
 function showAudio() { $('mute').textContent = sound.enabled ? 'SOUND ON' : 'SOUND OFF'; $('mute').setAttribute('aria-pressed', String(!sound.enabled)); }
-async function unlockAudio() { try { await sound.enable(); showAudio(); } catch { status('Audio unavailable. You can still play.'); } }
+async function unlockAudio() {
+  if (soundPreference === false || sound.enabled) return;
+  try {
+    await sound.enable();
+    if (soundPreference === false) sound.enabled = false;
+    showAudio();
+    if (!sound.enabled || (code && view !== 'run')) await sound.suspend();
+  } catch { status('Audio unavailable. You can still play.'); }
+}
 function setInput(next) { input = cleanInput(next); send({ type: 'input', input }); }
 const formatTime = value => `${String(Math.floor(value / 60)).padStart(2, '0')}:${String(Math.floor(value % 60)).padStart(2, '0')}`;
 function entryOptions() {
@@ -24,7 +34,9 @@ function resetRoom() {
   code = ''; snapshot = null; predicted = null; ready = []; connected = []; characters = [];
   lastEvent = 0; pauses = []; userPaused = false; input = cleanInput(); controlled = false; openedClients = 0; notice = '';
   document.body.classList.remove('in-room'); $('entry').hidden = false; $('hud').hidden = true;
-  $('overlay').hidden = true; $('pause').hidden = true; $('ability').hidden = true; $('footer-status').textContent = 'AUTO FIRE · COOPERATIVE PVE';
+  view = 'entry'; canvas.inert = true;
+  $('overlay').hidden = true; $('pause').hidden = true; $('ability').hidden = true; $('leave').hidden = false;
+  $('lobby-error').textContent = ''; $('footer-status').textContent = 'AUTO FIRE · COOPERATIVE PVE';
 }
 function connect() {
   socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
@@ -42,13 +54,12 @@ function connect() {
     if (msg.type === 'joined') {
       code = msg.code; slot = msg.slot; config = msg.config; notice = ''; lastEvent = 0; predicted = null;
       $('room-code').textContent = code; document.body.classList.add('in-room');
-      $('entry').hidden = true; $('hud').hidden = false; $('pause').hidden = false; $('ability').hidden = false;
-      canvas.focus();
+      $('entry').hidden = true; $('hud').hidden = false;
     }
     if (msg.type === 'state') {
       if (snapshot?.status !== 'playing' && msg.state?.status === 'playing') {
         renderer.resetEffects();
-        predicted = null; lastEvent = 0; userPaused = false; canvas.focus();
+        predicted = null; lastEvent = 0; userPaused = false;
       }
       snapshot = msg.state; ready = msg.ready; connected = msg.connected; pauses = msg.paused;
       config = msg.config; characters = msg.characters;
@@ -80,20 +91,51 @@ for (const character of CREW) {
   const button = document.createElement('button'); button.type = 'button'; button.className = 'character-card';
   button.dataset.character = character.id; button.setAttribute('role', 'radio'); button.setAttribute('aria-checked', 'false');
   button.setAttribute('aria-label', `${character.name}, ${character.role}, ${character.ability}`);
-  button.innerHTML = `<span class="character-icon">${character.symbol}</span><strong>${character.name}</strong><span class="character-role">${character.role}</span><span class="character-power">${character.ability}</span><span class="character-description">${character.description}</span><em>“${character.quote}”</em>`;
+  button.setAttribute('aria-describedby', `ability-description-${character.id}`);
+  button.innerHTML = `<span class="character-icon">${character.symbol}</span><strong>${character.name}</strong><span class="character-role">${character.role}</span><span class="character-power">${character.ability}</span><span id="ability-description-${character.id}" class="character-description">${character.description}</span><em>“${character.quote}”</em>`;
   button.onclick = () => { $('lobby-error').textContent = ''; send({ type: 'character', character: character.id }); };
-  $('character-select').append(button);
+  characterSelect.append(button);
+}
+characterSelect.addEventListener('keydown', event => {
+  const direction = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[event.key];
+  if (!direction) return;
+  const cards = [...characterSelect.children];
+  const index = cards.indexOf(event.target);
+  if (index < 0) return;
+  event.preventDefault();
+  const next = cards[(index + direction + cards.length) % cards.length];
+  next.focus({ preventScroll: true });
+  next.click();
+});
+function setOverlay(kicker, title, copy) {
+  for (const [id, value] of [['overlay-kicker', kicker], ['overlay-title', title], ['overlay-copy', copy]]) {
+    if ($(id).textContent !== value) $(id).textContent = value;
+  }
 }
 function updateUI() {
   if (!code) return;
   $('score').textContent = String(snapshot?.score || 0).padStart(6, '0');
   const time = snapshot?.time || 0, scale = config.timeScale;
+  const previousView = view;
+  const status = snapshot?.status;
+  if (status !== 'playing') view = status || 'lobby';
+  else if (pauses.some(Boolean)) view = pauses[slot] ? 'local-pause' : 'crew-pause';
+  else view = 'run';
+  const selecting = ['lobby', 'won', 'lost'].includes(view);
+  const running = view === 'run';
+
+  if (!running && previousView === 'run') setInput({});
+  canvas.inert = !running;
+  $('pause').hidden = !running;
+  $('ability').hidden = selecting || view === 'interrupted';
+  $('leave').hidden = view === 'interrupted';
   $('clock').innerHTML = `${formatTime(time / scale)}<span> / ${formatTime(T.duration / scale)}</span>`;
   $('phase').textContent = `${snapshot?.phase || 'ASSEMBLING CREW'} · ${scale}×`;
   $('crew').replaceChildren(...Array.from({ length: config.count }, (_, id) => {
-    const chip = document.createElement('span'), p = snapshot?.players[id], character = characterById(p?.character || characters[id]);
-    chip.className = (p?.down ? 'down ' : '') + (id === slot ? 'you' : '');
-    chip.textContent = `${character.symbol} P${id + 1} ${id === slot ? 'YOU' : character.name.toUpperCase()} ${!connected[id] ? '—' : p?.down ? `DOWN ${ringName(p.ring)}` : p ? ringName(p.ring) : '●'}`;
+    const chip = document.createElement('span'), p = snapshot?.players[id], character = characterById(selecting ? characters[id] : p?.character);
+    const crewStatus = !connected[id] ? '—' : selecting ? (ready[id] ? 'READY' : 'JOINED') : p.down ? `DOWN ${ringName(p.ring)}` : ringName(p.ring);
+    chip.className = (!selecting && p?.down ? 'down ' : '') + (id === slot ? 'you' : '');
+    chip.textContent = `${character.symbol} P${id + 1} ${id === slot ? 'YOU' : character.name.toUpperCase()} ${crewStatus}`;
     return chip;
   }));
   const own = snapshot?.players[slot], picked = characterById(characters[slot]);
@@ -102,43 +144,109 @@ function updateUI() {
   $('ability-state').textContent = own?.down ? 'DOWNED' : own?.specialCooldown > 0 ? `${Math.ceil(own.specialCooldown / scale)}s` : 'READY';
   const charge = Math.round(100 * (1 - (own?.specialCooldown || 0) / currentCharacter.cooldown));
   $('ability-bar').style.setProperty('--charge', `${charge}%`); $('ability-bar').setAttribute('aria-valuenow', String(charge));
-  $('footer-status').textContent = controlled ? 'CONTROLLED TEST CLIENT' : own?.down ? `DOWNED · ${ringName(own.ring)} RING` : `AUTO FIRE · ${ringName(own?.ring)} RING`;
+  $('footer-status').textContent = controlled ? 'CONTROLLED TEST CLIENT' : selecting ? 'ASSEMBLING CREW' :
+    view === 'interrupted' ? 'RUN INTERRUPTED' : own.down ? `DOWNED · ${ringName(own.ring)} RING` : `AUTO FIRE · ${ringName(own.ring)} RING`;
   $('arena-note').textContent = notice || (snapshot?.players.some(p => p.down) ? 'MATCH THEIR RING. STAY CLOSE TO RESCUE. FIRE IS AUTOMATIC.' : 'HIT A PACK TO START A CHAIN. THE BULLSEYE BLOCKS YOUR FIRE.');
-  for (const button of $('character-select').children) button.setAttribute('aria-checked', String(button.dataset.character === picked.id));
-  const selecting = !snapshot || ['won', 'lost'].includes(snapshot.status);
-  $('character-select').hidden = !selecting; $('lobby-note').hidden = !selecting;
+  let pickedButton;
+  for (const button of characterSelect.children) {
+    const checked = button.dataset.character === picked.id;
+    button.setAttribute('aria-checked', String(checked));
+    button.tabIndex = checked ? 0 : -1;
+    if (checked) pickedButton = button;
+  }
+  characterSelect.hidden = !selecting; $('lobby-note').hidden = !selecting;
   $('overlay').classList.toggle('selecting', selecting);
-  const show = (kicker, title, copy, readyButton = false, resumeButton = false) => {
-    $('overlay').hidden = false; $('overlay-kicker').textContent = kicker; $('overlay-title').innerHTML = title;
-    $('overlay-copy').textContent = copy; $('ready').hidden = !readyButton; $('resume').hidden = !resumeButton;
-    $('ready').disabled = ready[slot]; $('ready').innerHTML = ready[slot] ? 'READY. WAITING FOR CREW…' : `READY AS ${picked.name.toUpperCase()} <span>→</span>`;
-  };
-  if (snapshot?.status === 'interrupted') return show('CONNECTION INTERRUPTED', 'REGROUP.<br>TRY AGAIN.', notice || 'Leave this room and form a fresh crew.');
-  if (!snapshot) return show(`ROOM ${code} · ${connected.filter(Boolean).length}/${config.count} PILOTS · ${scale}×`, 'CHOOSE YOUR CREW.',
-    connected.every(Boolean) ? 'A/D orbits. W/S jumps between three rings. Everyone shoots automatically. Press Space for your ability. Every pilot must finish.' : `Share the code. ${config.count - connected.filter(Boolean).length} more pilots needed. Choose your character while they join.`, true);
-  if (snapshot.status === 'won') return show('TEAM CLEAR · ' + snapshot.score.toLocaleString() + ' POINTS', 'ALL THE WAY.<br>ALL OF US.', `${snapshot.rescues} rescues. Every ship made it through. Pick a character and ready up.`, true);
-  if (snapshot.status === 'lost') return show('CREW LOST · ' + Math.floor(time / scale) + ' SECONDS', 'WE GO<br>AGAIN.', 'The tunnel took the crew. Cover each other. Time your abilities. Risk the rescue.', true);
-  if (pauses.some(Boolean)) return show('SESSION PAUSED', 'HOLD<br>POSITION.', pauses[slot] ? 'Your client is paused. Resume when you are ready.' : 'Waiting for a crew member to return.', false, pauses[slot]);
-  $('overlay').hidden = true; $('ready').hidden = true; $('resume').hidden = true;
+  $('overlay').hidden = running;
+  $('ready').hidden = !selecting;
+  $('resume').hidden = view !== 'local-pause';
+  $('leave-interrupted').hidden = view !== 'interrupted';
+
+  const readyLabel = ready[slot] ? `WAITING FOR CREW · ${ready.filter(Boolean).length}/${config.count} READY` : `READY AS ${picked.name.toUpperCase()}`;
+  if ($('ready-label').textContent !== readyLabel) $('ready-label').textContent = readyLabel;
+  $('ready').setAttribute('aria-disabled', String(!!ready[slot]));
+
+  if (view === 'lobby') {
+    const joined = connected.filter(Boolean).length;
+    const missing = config.count - joined;
+    setOverlay(`ROOM ${code} · ${joined}/${config.count} PILOTS · ${scale}×`, 'CHOOSE YOUR PILOT.',
+      missing ? `Share the code. ${missing} more ${missing === 1 ? 'pilot' : 'pilots'} needed.` : 'Every pilot must finish. Match a downed pilot’s ring and stay close to rescue.');
+  } else if (view === 'won') {
+    setOverlay(`TEAM CLEAR · ${snapshot.score.toLocaleString()} POINTS`, 'ALL THE WAY. ALL OF US.',
+      `${snapshot.rescues} ${snapshot.rescues === 1 ? 'rescue' : 'rescues'}. Every ship made it through. Pick a pilot and ready up for another run.`);
+  } else if (view === 'lost') {
+    setOverlay(`CREW LOST · ${Math.floor(time / scale)} SECONDS`, 'WE GO AGAIN.',
+      'The tunnel took the crew. Pick a pilot and ready up to try again.');
+  } else if (view === 'interrupted') {
+    setOverlay('CONNECTION INTERRUPTED', 'REGROUP. TRY AGAIN.', notice || 'Leave this room and form a fresh crew.');
+  } else if (!running) {
+    setOverlay('SESSION PAUSED', 'HOLD POSITION.', view === 'local-pause' ?
+      'You paused the crew. Select Resume or press Esc to continue.' : 'Waiting for a crew member to return.');
+  }
+
+  if (view !== previousView) {
+    const focus = selecting ? pickedButton :
+      { run: canvas, 'local-pause': $('resume'), 'crew-pause': $('overlay-title'), interrupted: $('leave-interrupted') }[view];
+    focus?.focus({ preventScroll: true });
+  }
 }
-$('create').onclick = async () => { await unlockAudio(); send({ type: 'create', count: Number($('crew-count').value), timeScale: Number($('pace').value) }); };
-$('join').onclick = async () => { await unlockAudio(); send({ type: 'join', code: $('room-input').value }); };
+$('create').onclick = () => {
+  void unlockAudio();
+  send({ type: 'create', count: Number($('crew-count').value), timeScale: Number($('pace').value) });
+};
+$('join').onclick = () => { void unlockAudio(); send({ type: 'join', code: $('room-input').value }); };
 $('room-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('join').click(); });
-$('ready').onclick = async () => { await unlockAudio(); setInput({}); send({ type: 'ready' }); canvas.focus(); };
-$('leave').onclick = () => { send({ type: 'leave' }); resetRoom(); status('Room server ready. Bring your crew.'); };
-$('mute').onclick = async () => { if (sound.enabled) { sound.enabled = false; await sound.suspend(); } else await unlockAudio(); showAudio(); if (code) canvas.focus({ preventScroll: true }); };
-$('motion').onclick = () => { reduced = !reduced; $('motion').setAttribute('aria-pressed', String(reduced)); $('motion').textContent = reduced ? 'MOTION REDUCED' : 'REDUCE MOTION'; if (code) canvas.focus({ preventScroll: true }); };
+$('ready').onclick = () => {
+  if (ready[slot]) return;
+  void unlockAudio();
+  setInput({});
+  send({ type: 'ready' });
+};
+function leaveRoom() {
+  send({ type: 'leave' });
+  resetRoom();
+  status('Room server ready. Bring your crew.');
+  $('create').focus({ preventScroll: true });
+}
+$('leave').onclick = leaveRoom;
+$('leave-interrupted').onclick = leaveRoom;
+$('mute').onclick = event => {
+  soundPreference = !(soundPreference ?? sound.enabled);
+  if (soundPreference) void unlockAudio();
+  else {
+    sound.enabled = false;
+    showAudio();
+    void sound.suspend();
+  }
+  if (event.detail && view === 'run') canvas.focus({ preventScroll: true });
+};
+$('motion').onclick = event => {
+  reduced = !reduced;
+  $('motion').setAttribute('aria-pressed', String(reduced));
+  $('motion').textContent = reduced ? 'MOTION REDUCED' : 'REDUCE MOTION';
+  if (event.detail && view === 'run') canvas.focus({ preventScroll: true });
+};
 function pauseSession(value) { userPaused = value; setInput({}); send({ type: 'pause', paused: value || (document.hidden && !controlled) }); }
 $('pause').onclick = () => pauseSession(!userPaused);
-$('resume').onclick = () => { pauseSession(false); canvas.focus(); };
+$('resume').onclick = () => pauseSession(false);
 function key(event, down) {
-  if (!code || event.target.matches('input, textarea, button, select') || controlled) return;
+  if (controlled) return;
+  const inArena = view === 'run' && event.target === canvas;
+  if (down && !event.repeat && event.code === 'Escape' && (inArena || view === 'local-pause')) {
+    event.preventDefault();
+    pauseSession(view === 'run');
+    return;
+  }
   const name = { KeyA: 'left', ArrowLeft: 'left', KeyD: 'right', ArrowRight: 'right', Space: 'special', KeyW: 'inward', ArrowUp: 'inward', KeyS: 'outward', ArrowDown: 'outward' }[event.code];
-  if (name) { event.preventDefault(); if (input[name] !== down) setInput({ ...input, [name]: down }); }
-  if (down && !event.repeat && event.code === 'Escape') pauseSession(!userPaused);
+  if (!name || (down && !inArena)) return;
+  if (inArena) event.preventDefault();
+  if (input[name] !== down) setInput({ ...input, [name]: down });
 }
 window.addEventListener('keydown', e => key(e, true)); window.addEventListener('keyup', e => key(e, false));
-window.addEventListener('blur', () => { if (!controlled) setInput({}); });
+function releaseInputs() {
+  if (!controlled && Object.values(input).some(Boolean)) setInput({});
+}
+window.addEventListener('blur', releaseInputs);
+canvas.addEventListener('blur', releaseInputs);
 document.addEventListener('visibilitychange', () => {
   if (controlled && diagnostics) return;
   setInput({}); send({ type: 'pause', paused: document.hidden || userPaused });
