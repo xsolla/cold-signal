@@ -1,84 +1,23 @@
-> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+# Cold Signal game-feel review
 
-# Delve Together — game-feel preparation
+Cold Signal aims for responsive orbiting and deliberate depth changes, with strong audiovisual payoffs for coordinated actions. The camera stays fixed in both motion settings following a report of nausea. [Design](design.md), [earlier game-feel plan](game-feel-delve-together.md), [camera decision](../evidence/cold-signal-pacing/README.md).
 
-**Status:** Local playable implemented; agent browser input/rescue checks and
-visual screenshots reviewed. The creator's quiet/effects comparison, physical
-audio review, and measured input latency remain pending. The creator reported the original prototype was fun;
-the creator then called the slower character variant “super fun” and asked for
-more depth. The new tunnel’s human readability and feel remain untested.
+A four-client Chromium keyboard pass covered the opening at the default 0.5× pace, at 1440×1000 with sound muted. A/D steered in both directions, holding W moved one rail, and the W/S and arrow aliases reached all three rails. Natural enemies emerged while the clients exercised the controls. A diagnostic wipe supplied the retry, and W worked on the fresh run. Escape paused all four clients and the Resume button restored play. Paused screenshots 180 ms apart had identical bytes in every run. The transform stayed at zero translation, zero rotation, and 1× zoom in all sampled frames. [Baseline measurements](../evidence/skill-trials/feel-art/baseline-feel.json), [candidate measurements](../evidence/skill-trials/feel-art/candidate-feel.json).
 
-**Evidence available:** The creator's chosen design: smooth orbit, A/D + Space,
-four-player threat coverage, proximity rescue with shooting available, fast
-pattern reading, audiovisual intensity, and a roughly 90-second gauntlet.
-The creator selected automatic fire, Space abilities, global 0.5× pace, stark high-contrast shapes, tight percussive pulses, and
-immediate start/stop/reversal with no drift.
-The four-browser functional observations are recorded in `verification.md`;
-human judgments of readability and tension remain pending.
+## Follow a depth tap
 
-## Selected targets
+| Stage | What the player sees and what drives it |
+| --- | --- |
+| Intent | W or Up requests the next inward rail. The browser sends the key edge and the server queues quick taps between ticks. |
+| Acknowledgment | The first frame with the new authoritative ring highlights the destination in cyan, and the footer names it. That frame followed the first W keydown by 26/22 ms in baseline full/reduced motion and 45/20 ms in the candidate. |
+| Travel | The fork travels toward the destination while automatic fire continues. One rail is 64 simulation units at 320 units per simulation second, about 400 ms at 0.5×. The sampled full/reduced arrivals were 408/405 ms in baseline and 429/454 ms in the candidate. |
+| Result and next choice | The fork settles on the named rail. A fresh tap can request the next rail, and the next tested Up tap reached inner. A held W stayed on middle. |
 
-- Presentation: stark high-contrast shapes with tight percussive pulses.
-- Movement response: immediate start, stop, and reversal without drift.
-- Player entry: create or join a private room using a short code.
+These are single loopback runs sampled at the renderer call from the browser's DOM key event. They measure when a new state reached the draw path. The configured travel time, display scanout, frame pacing, and perceived response are separate questions. [Input and HUD](../public/main.js), [tap queue](../server/index.mjs), [depth rules](../src/rules.js), [rail and fork rendering](../public/renderer.js).
 
-These are creator choices. Exact speeds, contrast values, sound timings, and
-effect strength still need implementation and human comparison. Use distinct
-ship/enemy outlines or symbols so color is optional rather than the only cue.
+## Prioritized findings
 
-## Follow one action
+1. **Show the reduced-motion Shockwave footprint.** In the baseline, Space started Ivo’s cooldown and drew a single cyan arc over Ivo’s cyan rail. From middle, the renderer used only the projected middle radius, 145.05. The initial Shockwave targets exposed enemies within ±0.8 radians across depths. The candidate draws a thin outline at that angle between the protected core and outer playable rail. Its shape stays fixed as opacity fades. It shows the direct cast sector across the playable rails. Death chains can reach exposed targets beyond its edges. The existing full-motion sweep still expands across the arena. Both runs registered `28s` on the default-pace cooldown after the accepted press. The baseline and candidate traces confirmed the reduced geometry at 41 and 40 sampled effect frames respectively. [Baseline reduced](../evidence/skill-trials/feel-art/baseline-reduce-shockwave.jpg), [candidate reduced](../evidence/skill-trials/feel-art/candidate-reduce-shockwave.jpg), [candidate full](../evidence/skill-trials/feel-art/candidate-no-preference-shockwave.jpg).
+2. **Keep the depth jump timing for the next playtest.** The keyboard sequence resolved consistently, the selected rail acknowledged the jump before travel finished, and held keys moved one rail. Ask a fresh player which rail is selected and when they feel in position to rescue during a hop. Compare their answer with the first highlighted frame and the fork’s arrival.
 
-| Action stage | Proposed player-facing target | Evidence needed |
-| --- | --- | --- |
-| Move | Immediate local start, stop, and reversal without drift; predictable A/D direction | Play the chosen response model; record configured parameters separately from measured input/render events |
-| Depth jump | W/Up inward, S/Down outward; one rail per tap, smooth visible travel, no held-key cascade | Verify aliases, quick re-presses, endpoints, projected scale, and consistent crew depth |
-| Automatic fire / Space | Ordinary shots need no button; a quick Space tap acknowledges one ability and exposes cooldown/result | Verify each power, rapid taps, held Space, and shared effect cues |
-| Read danger | Enemy silhouette, movement, and a clear hazard boundary explain the safe route | Human attempt on the target browser and actual display, with effects on and quiet |
-| Begin rescue | Depth, range, and progress cues make matching the partner’s rail and staying briefly understandable | Creator attempts rescue without a hint; record hints if needed |
-| Finish rescue | All clients show the same revival, and the next threat remains visible | Four-client state check plus the creator's account of what changed |
-| Lose or win | Outcome is recognizable and shared retry is available | Complete both paths and restart with no stale input |
-
-No input-to-render latency or physical-device performance measurement exists. Avoid inventing a universal
-response threshold or treating configured timings as observed latency.
-
-## First useful comparison
-
-Use the same starting positions, enemy/hazard script, rescue location, browser,
-input device, and build revision for a quiet presentation and the intended
-effects. Keep gameplay rules and timing fixed; change only presentation.
-
-Ask after the attempt: "What were you watching? What made you move? What told
-you the rescue was working?" Record a player's report separately from measured
-events and the facilitator's interpretation.
-
-The hypothesis is that audio and peripheral pulses increase perceived urgency
-without hiding enemy, hazard, partner, or rescue cues. Revise the presentation
-if the creator repeatedly attributes a hit or interrupted rescue to an obscured
-cue. This is a future comparison, not a finding.
-
-## Preserve and check
-
-Preserve smooth steering, shooting during rescue, positional exposure, and
-enemy variety. Suggested readability protections: stable playfield geometry,
-effects behind threats, distinct shapes as well as colors, and visible rescue
-progress. These are implementation proposals rather than observed defects.
-
-Provide mute and reduced motion while retaining essential cues. Verify audio
-starts after a player interaction, platform interruptions mute/pause correctly,
-and performance remains acceptable in the target iframe. Distinguish a local
-browser check from the GamePix hosted player. An agent-operated second client
-can check consistency; it supplies no second human reaction.
-
-## Tunnel readability pass
-
-The renderer and authoritative collision share a depth projection. Physical
-silhouettes, bullets, walls, warning arcs, and effects shrink toward the center;
-HUD text remains legible at a fixed size. The player’s rail is highlighted and
-crew chips name their depths. Skimmers use open diamonds; stalkers use double
-triangles. Shapes remain distinct inside the protected preview bullseye.
-
-Ask the creator to identify the next enemy before it emerges, change depth
-without a prompt, and reach a downed pilot on another rail. Record any hint.
-Check whether small inner targets are challenging for the intended aiming task
-or unreadable on the actual display. Tune from that observation; automated
-geometry checks alone cannot decide the right level of difficulty.
+For the first human comparison, place Ivo on middle at the same angle in two equivalent encounters. After Space, ask which depths the cast directly targeted and where a chain might continue. Run both reduced-motion cues at the same viewport, sound level, pace, and enemy layout. A human session can establish whether the fixed outline communicates the sector and feels comfortable. This trial establishes draw geometry and keyboard behavior in headless Chromium.

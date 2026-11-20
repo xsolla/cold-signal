@@ -239,25 +239,34 @@ export class Renderer {
         c.strokeStyle = e.character === 'sana' ? accent : acid;
         c.lineWidth = (e.character === 'ivo' ? 4 : 2) * ds;
         if (e.character === 'ivo') {
-          // The real Shockwave affects a 1.6-radian sector outside the sanctuary.
-          const r = projectRadius(reduced ? radius : T.coreRadius + (T.radius - T.coreRadius) * t);
-          const core = projectRadius(T.coreRadius), fade = c.globalAlpha;
-          if (!reduced) {
+          // The arena cue shows the 1.6-radian sector across all playable rails.
+          const start = e.angle - .8, end = e.angle + .8;
+          const core = projectRadius(T.coreRadius), outer = projectRadius(T.radius);
+          if (reduced) {
+            c.lineWidth = 2;
+            c.beginPath(); c.arc(0, 0, core, start, end);
+            const outerStart = pointAt(start, T.radius);
+            c.moveTo(outerStart.x, outerStart.y); c.arc(0, 0, outer, start, end);
+            for (const angle of [start, end]) {
+              const from = pointAt(angle, T.coreRadius), to = pointAt(angle, T.radius);
+              c.moveTo(from.x, from.y); c.lineTo(to.x, to.y);
+            }
+            c.stroke();
+          } else {
+            const r = projectRadius(T.coreRadius + (T.radius - T.coreRadius) * t), fade = c.globalAlpha;
             c.globalCompositeOperation = 'lighter';
             const fan = c.createRadialGradient(0, 0, core, 0, 0, Math.max(core + .01, r));
             fan.addColorStop(0, `${acid}00`); fan.addColorStop(.7, `${accent}0c`); fan.addColorStop(1, `${acid}45`);
-            c.fillStyle = fan; c.beginPath(); c.arc(0, 0, r, e.angle - .8, e.angle + .8);
-            c.arc(0, 0, core, e.angle + .8, e.angle - .8, true); c.closePath(); c.fill();
+            c.fillStyle = fan; c.beginPath(); c.arc(0, 0, r, start, end);
+            c.arc(0, 0, core, end, start, true); c.closePath(); c.fill();
             c.globalAlpha = fade * .25; c.lineWidth = 16;
-            c.beginPath(); c.arc(0, 0, r, e.angle - .8, e.angle + .8); c.stroke();
+            c.beginPath(); c.arc(0, 0, r, start, end); c.stroke();
             c.globalAlpha = fade; c.lineWidth = 5;
-          }
-          c.beginPath(); c.arc(0, 0, r, e.angle - .8, e.angle + .8); c.stroke();
-          if (!reduced) {
+            c.beginPath(); c.arc(0, 0, r, start, end); c.stroke();
             c.strokeStyle = paper; c.lineWidth = 1.2;
-            c.beginPath(); c.arc(0, 0, Math.max(core, r - 8), e.angle - .8, e.angle + .8); c.stroke();
+            c.beginPath(); c.arc(0, 0, Math.max(core, r - 8), start, end); c.stroke();
             for (let i = 0; i < 9; i++) {
-              const a = e.angle - .8 + i * .2; c.strokeStyle = i % 2 ? accent : acid; c.lineWidth = i % 2 ? 1.5 : 2.5;
+              const a = start + i * .2; c.strokeStyle = i % 2 ? accent : acid; c.lineWidth = i % 2 ? 1.5 : 2.5;
               c.beginPath(); c.moveTo(Math.cos(a) * Math.max(core, r - 65), Math.sin(a) * Math.max(core, r - 65));
               c.lineTo(Math.cos(a) * r, Math.sin(a) * r); c.stroke();
             }

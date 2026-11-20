@@ -1,0 +1,130 @@
+{
+  "revision": "dac1c9027cead078768573d03bdf65e436ffa176",
+  "label": "baseline",
+  "chromium": "157.0.8103.80",
+  "cases": [
+    {
+      "reducedMotion": "no-preference",
+      "input": "Chromium keyboard automation",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "pace": 0.5,
+      "source": "four loopback clients; natural spawn during input check; wipe is constructed",
+      "firstHop": {
+        "toFirstRenderedNewRingMs": 26,
+        "toFirstRenderedArrivalMs": 408,
+        "radiusSequence": [
+          240,
+          234.67,
+          232,
+          226.67,
+          224,
+          218.67,
+          216,
+          210.67,
+          208,
+          202.67,
+          200,
+          197.33,
+          194.67,
+          192,
+          186.67,
+          184,
+          181.33,
+          178.67,
+          176
+        ],
+        "heldMovesExactlyOnce": true,
+        "retried": true
+      },
+      "shockwave": {
+        "toFirstEffectCanvasCallMs": 36,
+        "actualInitialSectorRadians": 1.6,
+        "cooldown": "28s",
+        "effectFramesSampled": 42,
+        "firstArcSample": [
+          26.61,
+          26.61,
+          26.61,
+          26.61
+        ],
+        "reducedMiddleArcOnly": false,
+        "fixedSectorAcrossDepths": false,
+        "projectedCoreAndRails": [
+          26.61,
+          78.5,
+          145.05,
+          240
+        ]
+      },
+      "pause": {
+        "simTime": 2.1583333333333283,
+        "sameScreenHashAfter180ms": "18249d4b4270a9ca7e9987ed4374c582eadb08ec26a9e9187dea9091d9d7d132",
+        "allClientsPausedResumed": true
+      },
+      "lockedCameraErrors": 0
+    },
+    {
+      "reducedMotion": "reduce",
+      "input": "Chromium keyboard automation",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "pace": 0.5,
+      "source": "four loopback clients; natural spawn during input check; wipe is constructed",
+      "firstHop": {
+        "toFirstRenderedNewRingMs": 22,
+        "toFirstRenderedArrivalMs": 405,
+        "radiusSequence": [
+          240,
+          237.33,
+          234.67,
+          232,
+          229.33,
+          226.67,
+          224,
+          216,
+          213.33,
+          208,
+          205.33,
+          200,
+          197.33,
+          192,
+          189.33,
+          184,
+          181.33,
+          176
+        ],
+        "heldMovesExactlyOnce": true,
+        "retried": true
+      },
+      "shockwave": {
+        "toFirstEffectCanvasCallMs": 33,
+        "actualInitialSectorRadians": 1.6,
+        "cooldown": "28s",
+        "effectFramesSampled": 41,
+        "firstArcSample": [
+          145.05
+        ],
+        "reducedMiddleArcOnly": true,
+        "fixedSectorAcrossDepths": false,
+        "projectedCoreAndRails": [
+          26.61,
+          78.5,
+          145.05,
+          240
+        ]
+      },
+      "pause": {
+        "simTime": 2.149999999999995,
+        "sameScreenHashAfter180ms": "413290e2379dafb6b9bda34fdf96f3608f8d9f58ddca861b7f562708cc0991c9",
+        "allClientsPausedResumed": true
+      },
+      "lockedCameraErrors": 0
+    }
+  ],
+  "errors": []
+}
