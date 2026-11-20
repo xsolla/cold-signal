@@ -1,0 +1,195 @@
+{
+  "label": "candidate",
+  "browser": "157.0.8103.80",
+  "source": "fixed constructed snapshots over a mocked WebSocket; application Canvas, HUD and CSS at actual viewport sizes",
+  "results": [
+    {
+      "filename": "candidate-dense-1440-full.webp",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "reducedMotion": "no-preference",
+      "overlapSquareCssPixels": 0,
+      "now": 10180,
+      "effectsAge": 0.18,
+      "text": {
+        "P1 YOU": {
+          "left": 612.73514793431,
+          "right": 651.6018454532799,
+          "top": 307.6978955613223,
+          "bottom": 314.8071322578827,
+          "cssFontPixels": 11.021738648414612
+        },
+        "P2 / INNER": {
+          "left": 655.4198649873912,
+          "right": 720.9421638372193,
+          "top": 313.78306339938365,
+          "bottom": 322.0978027606144,
+          "cssFontPixels": 11.021738648414612
+        },
+        "RESCUE 50%": {
+          "left": 655.263795445983,
+          "right": 719.9734563388234,
+          "top": 327.5474777091012,
+          "bottom": 334.7535851555012,
+          "cssFontPixels": 11.021738648414612
+        }
+      },
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "zoom": 1
+      },
+      "effectsCount": 5,
+      "canvas": [
+        1364,
+        845
+      ],
+      "scrollWidth": 1440,
+      "footerBottom": 998
+    },
+    {
+      "filename": "candidate-dense-1440-reduced.webp",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "reducedMotion": "reduce",
+      "overlapSquareCssPixels": 0,
+      "now": 10180,
+      "effectsAge": 0.18,
+      "text": {
+        "P1 YOU": {
+          "left": 612.73514793431,
+          "right": 651.6018454532799,
+          "top": 307.6978955613223,
+          "bottom": 314.8071322578827,
+          "cssFontPixels": 11.021738648414612
+        },
+        "P2 / INNER": {
+          "left": 655.4198649873912,
+          "right": 720.9421638372193,
+          "top": 313.78306339938365,
+          "bottom": 322.0978027606144,
+          "cssFontPixels": 11.021738648414612
+        },
+        "RESCUE 50%": {
+          "left": 655.263795445983,
+          "right": 719.9734563388234,
+          "top": 327.5474777091012,
+          "bottom": 334.7535851555012,
+          "cssFontPixels": 11.021738648414612
+        }
+      },
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "zoom": 1
+      },
+      "effectsCount": 5,
+      "canvas": [
+        1364,
+        845
+      ],
+      "scrollWidth": 1440,
+      "footerBottom": 998
+    },
+    {
+      "filename": "candidate-dense-640-full.webp",
+      "viewport": [
+        640,
+        480
+      ],
+      "reducedMotion": "no-preference",
+      "overlapSquareCssPixels": 0,
+      "now": 10180,
+      "effectsAge": 0.18,
+      "text": {
+        "P1 YOU": {
+          "left": 260.6629797954144,
+          "right": 277.45155379483793,
+          "top": 132.91091775674204,
+          "bottom": 135.98177157192322,
+          "cssFontPixels": 4.76086950302124
+        },
+        "P2 / INNER": {
+          "left": 280.94400684059883,
+          "right": 328.4922328938251,
+          "top": 133.27577765696108,
+          "bottom": 139.30962244302148,
+          "cssFontPixels": 8.00000641722679
+        },
+        "RESCUE 50%": {
+          "left": 280.8307490884022,
+          "right": 327.78926237060523,
+          "top": 143.81472297303435,
+          "bottom": 149.04405502005739,
+          "cssFontPixels": 8.00000641722679
+        }
+      },
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "zoom": 1
+      },
+      "effectsCount": 5,
+      "canvas": [
+        604,
+        365
+      ],
+      "scrollWidth": 640,
+      "footerBottom": 480
+    },
+    {
+      "filename": "candidate-dense-640-reduced.webp",
+      "viewport": [
+        640,
+        480
+      ],
+      "reducedMotion": "reduce",
+      "overlapSquareCssPixels": 0,
+      "now": 10180,
+      "effectsAge": 0.18,
+      "text": {
+        "P1 YOU": {
+          "left": 260.6629797954144,
+          "right": 277.45155379483793,
+          "top": 132.91091775674204,
+          "bottom": 135.98177157192322,
+          "cssFontPixels": 4.76086950302124
+        },
+        "P2 / INNER": {
+          "left": 280.94400684059883,
+          "right": 328.4922328938251,
+          "top": 133.27577765696108,
+          "bottom": 139.30962244302148,
+          "cssFontPixels": 8.00000641722679
+        },
+        "RESCUE 50%": {
+          "left": 280.8307490884022,
+          "right": 327.78926237060523,
+          "top": 143.81472297303435,
+          "bottom": 149.04405502005739,
+          "cssFontPixels": 8.00000641722679
+        }
+      },
+      "camera": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "zoom": 1
+      },
+      "effectsCount": 5,
+      "canvas": [
+        604,
+        365
+      ],
+      "scrollWidth": 640,
+      "footerBottom": 480
+    }
+  ]
+}

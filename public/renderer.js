@@ -1,4 +1,4 @@
-import { T, RINGS, TAU, CREW, characterById, projectRadius, depthScale, pointAt, enemySize, ringName, safeInWall } from './rules.js';
+import { T, RINGS, TAU, CREW, characterById, projectRadius, depthScale, pointAt, enemySize, ringName, safeInWall, distance } from './rules.js';
 import { PALETTE, Presentation, drawFork, noise } from './cold-signal.js';
 const { bg: ink, paper, signal: acid, danger, accent, line, muted, field } = PALETTE;
 export class Renderer {
@@ -136,7 +136,7 @@ export class Renderer {
     }
     c.restore();
   }
-  player(p, slot, predicted, joined) {
+  player(p, slot, predicted) {
     const c = this.ctx, character = characterById(p.character);
     const a = p.id === slot && predicted !== null && !p.down ? predicted : p.angle;
     const radius = p.radius ?? T.radius, scale = depthScale(radius), { x, y } = pointAt(a, radius);
@@ -155,14 +155,51 @@ export class Renderer {
       if (p.protection > 0) { c.strokeStyle = paper; c.setLineDash([3, 4]); c.lineWidth = 1; c.beginPath(); c.arc(0, 0, 20, 0, TAU); c.stroke(); }
     }
     c.restore();
-    if (joined) {
-      const rescuing = !p.down && this.players.some(other => other.down && other.ring === p.ring && Math.abs(Math.atan2(Math.sin(a - other.angle), Math.cos(a - other.angle))) < .28);
-      const labelRadius = projectRadius(radius) + (rescuing ? 43 : p.down ? 33 : 20) * Math.max(.6, scale);
-      const x = Math.cos(a) * labelRadius, y = Math.sin(a) * labelRadius + (Math.sin(a) > 0 ? 10 : -5);
-      c.fillStyle = p.down ? danger : p.id === slot ? acid : muted; c.font = '9px monospace'; c.textAlign = 'center';
-      c.fillText(p.down ? `P${p.id + 1} / ${ringName(p.ring)}` : `P${p.id + 1}${p.id === slot ? ' YOU' : ''}`, x, y);
-      if (p.down) c.fillText(`RESCUE ${Math.round(p.rescue / T.rescueSeconds * 100)}%`, x, y + 11);
+  }
+  crewLabels(players, slot, predicted, arenaScale) {
+    const c = this.ctx, activeSize = 9;
+    const rescueSize = Math.max(activeSize, 8 / arenaScale);
+    const rescueStep = rescueSize + 2 / arenaScale, padding = 3 / arenaScale;
+    const labels = players.map(p => {
+      const angle = p.id === slot && predicted !== null && !p.down ? predicted : p.angle;
+      const depth = Math.max(.6, depthScale(p.radius));
+      const rescuing = !p.down && players.some(other => other.down && other.ring === p.ring
+        && distance(angle, other.angle) < .28);
+      const radius = projectRadius(p.radius) + (rescuing ? 43 : p.down ? 33 : 20) * depth;
+      const x = Math.cos(angle) * radius, y = Math.sin(angle) * radius + (Math.sin(angle) > 0 ? 10 : -5);
+      const text = p.down ? `P${p.id + 1} / ${ringName(p.ring)}` : `P${p.id + 1}${p.id === slot ? ' YOU' : ''}`;
+      return { player: p, x, y, text };
+    });
+    c.save(); c.textAlign = 'center';
+    c.font = `${rescueSize}px monospace`;
+    const rescues = labels.filter(label => label.player.down).map(label => {
+      const progress = `RESCUE ${Math.round(label.player.rescue / T.rescueSeconds * 100)}%`;
+      const width = Math.max(c.measureText(label.text).width, c.measureText(progress).width);
+      return { ...label, progress, left: label.x - width / 2, right: label.x + width / 2 };
+    });
+    c.font = `${activeSize}px monospace`;
+    for (const { player, text, x, y } of labels) {
+      if (player.down) continue;
+      let labelX = x;
+      const nearby = rescues.filter(rescue => y >= rescue.y - rescueSize - padding && y - activeSize <= rescue.y + rescueStep + padding);
+      if (nearby.length) {
+        const half = c.measureText(text).width / 2 + padding;
+        if (nearby.some(rescue => x + half > rescue.left && x - half < rescue.right)) {
+          const left = Math.min(...nearby.map(rescue => rescue.left)) - half;
+          const right = Math.max(...nearby.map(rescue => rescue.right)) + half;
+          labelX = x - left < right - x ? left : right;
+        }
+      }
+      c.fillStyle = player.id === slot ? acid : muted; c.fillText(text, labelX, y);
     }
+    // Put rescue text above other labels and use a navy outline against bursts.
+    c.font = `${rescueSize}px monospace`;
+    c.strokeStyle = ink; c.lineWidth = 2 / arenaScale; c.lineJoin = 'round'; c.fillStyle = danger;
+    for (const { text, progress, x, y } of rescues) {
+      c.strokeText(text, x, y); c.fillText(text, x, y);
+      c.strokeText(progress, x, y + rescueStep); c.fillText(progress, x, y + rescueStep);
+    }
+    c.restore();
   }
   bullet(b, slot, reduced) {
     const c = this.ctx, from = pointAt(b.angle, b.radius);
@@ -354,7 +391,9 @@ export class Renderer {
     entities.sort((a, b) => a.radius - b.radius).forEach(e => e.draw());
     if (state) this.effects(reduced);
     // Pilot silhouettes, rescue progress and the sanctuary stay above large FX.
-    [...players].sort((a, b) => a.radius - b.radius).forEach(p => this.player(p, slot, predicted, joined));
+    const crewByDepth = [...players].sort((a, b) => a.radius - b.radius);
+    crewByDepth.forEach(p => this.player(p, slot, predicted));
+    if (joined && scale > 0) this.crewLabels(crewByDepth, slot, predicted, scale);
     this.circle(projectRadius(T.coreRadius), muted, 1);
     this.circle(projectRadius(T.coreRadius) - 4, line, .7);
     this.circle(3, danger, .8); c.fillStyle = danger; c.fillRect(-.7, -.7, 1.4, 1.4);
