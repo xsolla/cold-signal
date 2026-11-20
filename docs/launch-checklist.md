@@ -1,110 +1,66 @@
-> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+# Cold Signal local release review
 
-# Delve Together — release preparation
+**Decision:** Local desktop browser review is the current handoff. GamePix is
+the later distribution target. The imported [Delve Together release plan](launch-checklist-delve-together.md)
+records November 22, 2026 at 8 p.m. Pacific (America/Los_Angeles) as the
+creator's candidate goal. Separate jam rules and a GamePix review window remain unknown.
 
-**Status:** Local Docker first playable verified. GamePix candidate packaging,
-hosted verification, submission, and publication remain pending. Local results
-below apply only to the identified build in `verification.md`.
+**Scope:** Two or four keyboard pilots join a private room by six-character
+code. Four pilots and 0.5× pace are the defaults. The crew survives a
+three-ring tunnel together, with shared pause, retry, and interruption.
+A Node.js process serves the game and runs authoritative WebSocket rooms.
+The verified target is the local Node server and desktop Chrome.
 
-**Release scope:** Keyboard browser co-op for four players joining by private
-room code; smooth immediate A/D orbit, W/Up and S/Down depth jumps, automatic fire and Space abilities, same-depth proximity rescue
-while shooting, distinct enemy behaviors, readable fast patterns, stark
-high-contrast presentation, tight percussion, and a roughly three-minute real-time gauntlet at global 0.5× pace.
-Difficulty should take several learning attempts. Rescue is a dangerous
-comeback gamble that often fails. Victory requires clearing the final surge with all crew active.
+**Candidate:** Cold Signal 0.3.0 at `9a6fd898d6548e9be90d5b1405b1b805b96c1772`. The
+[candidate manifest](../evidence/skill-trials/launch/candidate.json) pins the
+tested source bytes, Node and Chrome versions, server settings and captured
+artifacts. See the [source handoff](release/local-browser-review.md) for
+launch instructions, listing copy, screenshots and credits.
 
-**Target:** GamePix. No named competition or separate jam rules have been
-provided; do not claim competition eligibility.
+**Status keys:** Pass = checked on this candidate and environment. Fail =
+observed defect or known incompatibility. Untested = evidence unavailable.
+N/A = outside the stated review scope.
 
-**Deadline:** Sunday, November 22, 2026, at 8 p.m. Pacific
-(America/Los_Angeles), selected by the creator. GamePix review and publication
-timing are external dependencies.
+## Local player path
 
-**Title:** Delve Together, supplied by the creator.
-
-**Promised device/input scope:** Keyboard desktop browsers; touch/mobile is not
-promised. Record actual browser versions and devices tested before making
-specific compatibility claims.
-
-**Candidate identity:** Local 0.1.0 with runtime/source identities in
-`verification.md`. No GamePix processed upload/version exists. Changes
-invalidate affected checks; local passes do not establish hosted readiness.
-
-## Current official sources
-
-Checked 2026-11-18:
-
-- [GamePix submission guidelines](https://partners.gamepix.com/guidelines/submission)
-- [GamePix JavaScript SDK guide](https://partners.gamepix.com/sdk/doc/javascript)
-
-The submission guidelines require relative asset paths, loading feedback,
-iframe compatibility including a 640×480 check, compliant SDK use, and correct
-audio/pause handling. SDK eligibility and external backend access for this
-architecture remain unresolved. The SDK guide defines lifecycle callbacks and
-local simulation; a simulated local result does not prove hosted behavior.
-See [platform notes](platform-notes.md) for the detailed integration questions.
-
-Statuses: **Pass** means checked on the identified candidate/environment;
-**Fail** means an observed failure; **Untested** means evidence is absent or
-stale; **N/A** means outside the current promised scope, with a reason.
-
-## Candidate and player path
-
-| Priority | Check | Status | Required evidence / next action |
+| Priority | Check | Status | Evidence |
 | --- | --- | --- | --- |
-| Must | Candidate and configuration identity | Untested | Build/export the actual game; identify files, source, configuration, and package |
-| Must | Fresh browser launch and keyboard focus | Pass | Local Docker/Chrome agent pass exercised A/D + Space; GamePix player remains untested |
-| Must | Create/join private room and handle invalid/full room | Pass | Real sockets and two browser clients; room-expiry UI remains untested |
-| Must | Local real-time connection | Pass | Two Docker services, authoritative WebSocket state, two-client agreement; Extend is deferred |
-| Future hosted release | AGS/Extend and external host integration | Untested | Current local scope requires no AGS access; verify the eventual live architecture separately |
-| Must | Downing and exposed rescue | Pass | Constructed agent scenario completed through actual positional input while firing; human tactical/readability evidence pending |
-| Must | Both-active outcome, loss, and shared retry | Pass | Rule tests plus constructed final/wipe browser scenarios; natural full-run human clear pending |
-| Must | Partner disconnect and return path | Pass | Local agent pass interrupted the run, showed disconnect, and returned to a fresh room |
-| Must | Shared pause/recovery | Pass | Local pause button froze both clients; GamePix lifecycle callbacks remain untested |
-| Must | Audio start, mute, and resume | Untested | Test player-initiated audio and platform/visibility interruptions |
-| Must | Three-ring geometry, center sanctuary, and rail threats | Pass | Rule checks plus four-client depth input and constructed tunnel scenario; human cue readability remains pending |
-| Must | Display and resize | Pass | Local desktop and 640×480 screenshots/DOM bounds; human cue comprehension and hosted layout pending |
-| Must | GamePix processed player | Untested | Repeat the critical path against the actual hosted candidate/version |
-| Should | Stable performance and readable effects | Untested | Observe a complete representative attempt with intended effects and quieter settings |
-| Scope-dependent | Mid-run persistence | N/A | No mid-run save or persistent progression is promised; make reset behavior explicit |
-| Scope-dependent | Public matchmaking, mobile controls, host migration | N/A | Outside the selected private keyboard co-op scope |
+| Must | Source identity and review configuration | Pass | The source manifest includes runtime hashes and pinned dependencies. The normal server exposed no test tools. Analytics was off and no study log was created. |
+| Must | Fresh entry, room code, lobby and keyboard focus | Pass | Four fresh Chrome clients entered by keyboard, selected their pilots and reached arena focus after everyone readied. [Normal review](../evidence/skill-trials/launch/local-review.json). |
+| Must | Orbit, one-tap depth changes, auto-fire, Space and controls guide | Pass | P1 orbited, hopped to middle and cast Shockwave. Every pilot fired automatically. The [four-client check](../evidence/skill-trials/launch/four-client-browser.json) also covered keyboard aliases, end stops and all four abilities. |
+| Must | Representative attempt, outcome, retry, leave or regroup | Pass | The ordinary opening ended in a crew loss at 11.292 simulation seconds. The next run restored the crew and abilities. Constructed rescue and all-active final clear agreed across all four clients. [Normal review](../evidence/skill-trials/launch/local-review.json), [four-client check](../evidence/skill-trials/launch/four-client-browser.json). |
+| Must | Loss, crew interruption and reset | Pass | Reloading a pilot interrupted the other three clients. The reloaded client and the lead using Leave Room returned to entry. [Normal review](../evidence/skill-trials/launch/local-review.json). |
+| Must | Shared pause and sound gesture, mute and resume | Pass | Escape froze all clocks. Web Audio suspended on shared pause and mute and resumed on each return. The UI check also covered mute through ready and retry. [Normal review](../evidence/skill-trials/launch/local-review.json), [UI check](../evidence/skill-trials/launch/ui-browser.json), [audio check](../evidence/skill-trials/launch/audio-browser.json). |
+| Must | Resize, reduced motion and retained critical cues | Pass | The 1440 × 900 review resized to 640 × 480 and captured a reduced-motion pause with reachable Resume. The UI check exercised compact entry, selection and play. Presentation tests covered essential cues. [Capture](../evidence/skill-trials/launch/reduced-pause.jpg), [UI check](../evidence/skill-trials/launch/ui-browser.json), [test summary](../evidence/skill-trials/launch/node-tests.txt). |
+| Must | Current listing, representative images and attribution inventory | Pass | The review handoff contains current copy, native captures and credit and notice sources. |
+| Should | New-pilot rescue comprehension, comfort and full crew coordination | Untested | The [human retest](playtest.md#ready-to-run-human-retest) is prepared. Agent and constructed checks cover mechanics. |
+| Should | Cross-device LAN, browser coverage and longer performance observation | Untested | Evidence covers local desktop Chrome. |
+| Scope-dependent | Persistent run/score, mobile controls, matchmaking and host migration | N/A | The local release scope promises private keyboard rooms and fresh attempts. |
+| Scope-dependent | Hosted player, accounts and ads | N/A | The local review uses a loopback server. See the separate GamePix checks. |
 
-## Listing, assets, and submission
+## Later GamePix candidate
 
-| Priority | Item | Status | Remaining work |
+Official pages checked on November 19, 2026 Pacific. The submission guidelines
+call for a loading screen, relative resources, a minimum 640 × 480 iframe
+test, representative icon and cover imagery, and appropriate visibility and
+audio behavior. They allow SDK-free games as well as the GamePix and Xsolla
+SDKs and bar external analytics and ads. The developer page presents the
+SDK-based path. If that path is chosen, the JavaScript integration guide
+requires pause/resume callbacks and muting on pause. SDK-free distribution and
+requirements for this title still need confirmation. [Submission guidelines](https://partners.gamepix.com/guidelines/submission),
+[Developer program](https://partners.gamepix.com/developers),
+[JavaScript SDK guide](https://partners.gamepix.com/sdk/doc/javascript).
+
+| Priority | Check | Status | Evidence or next action |
 | --- | --- | --- | --- |
-| Must | Final title and truthful listing | Untested | Apply the creator's title and chosen victory rule; verify copy against the candidate |
-| Must | Current platform requirements | Untested | Sources are reviewed; candidate compliance and SDK eligibility are still unverified |
-| Must | Credits and asset/music sources | Untested | Inventory actual assets, permissions/notices, and representative promotional material |
-| Must | Icon, cover, and screenshots | Untested | Produce from/representative of the actual game; verify current submission formats |
-| Must | Final package and processing allowance | Untested | Package the tested revision and leave time for upload, processing, and a fresh check |
+| Must | Gameplay from a static upload of the current client | Fail | The client opens `/ws` at its own origin. The Node server supplies that transport and serves the shared rules as `/rules.js`. An upload of `public/` alone omits both. |
+| Must | Allowed route from the processed iframe to an authoritative backend | Untested | The SDK guide discusses developer backends for complex multiplayer data. Cold Signal's same-origin route, permitted external WSS origin/proxy, and deployment configuration need confirmation for this player. |
+| Must | Platform lifecycle, loading, visibility and audio | Untested | Confirm the integration path and test loading, visibility, shared pause and audio in the real player. If ads are required, put them at attempt boundaries and verify the crew stops together. |
+| Must | Actual processed iframe, keyboard focus and device scope | Untested | A local 640 × 480 viewport test leaves iframe delivery and host focus unverified. Confirm desktop-keyboard eligibility and repeat the critical path in the processed player. |
+| Must | HTML5 upload and listing fields | Untested | Confirm the dashboard's package format, entry path, limits and icon/cover specifications. The public guidelines specify `.gpx` for Unity. The JavaScript format remains open. |
+| Must | Candidate package, hosted version and processing time | Untested | GamePix packaging and hosting are pending. Confirm the requirements and leave time for processing and a fresh room-to-retry pass before any submission decision. |
 
-Draft copy, pending the actual candidate and final rule:
-
-> Four pilots. Three depths. Read fast-changing threats, cover your partner, and risk
-> everything on a rescue. Survive a short escalating gauntlet of stark shapes
-> and tight percussion. A/D orbits; W/S changes depth; ships fire automatically; Space activates a character ability. Match a downed partner’s ring and stay near them to
-> rescue them while you keep firing. Four keyboard players join by room code. Choose from four pilots with overlapping abilities.
-
-This copy describes intended features, not a verified available release. Final
-copy must state internet/partner requirements, supported environments, reset
-behavior, controls, and known limitations accurately.
-
-## Handoff and blockers
-
-The local loop is implemented and technically verified. GamePix release
-blockers are the unverified hosted/backend integration, missing final listing
-assets/package, and pending human readability and balance feedback on the 0.3 tunnel. AGS access is deferred
-and does not block the current local playtest. Title, final-clear rule, and deadline are selected. Rank observed defects only after evidence exists.
-
-The ten-hour plan reserves 1.5 hours for candidate preparation plus 1.5 hours
-of contingency. Freeze optional content before spending those reserves.
-
-**Action scope:** Prepare a concrete package, copy, assets, and evidence.
-No external submission or publication has been performed. Any required release
-decision should concern the actual reviewable candidate and reuse existing
-authorization rather than introduce a premature permission request.
-
-**Next action:** Execute the network/platform feasibility milestone and
-complete the minimal cooperative attempt. Revisit this
-checklist against the resulting candidate.
+Establish the hosted WebSocket path and target eligibility before packaging the
+client. Keep the current local source candidate available while resolving
+that route. Defer accounts, ads decisions and host-specific integrations
+until the distribution path is established. This handoff covers preparation and local verification. Upload, review submission and public release are future decisions.

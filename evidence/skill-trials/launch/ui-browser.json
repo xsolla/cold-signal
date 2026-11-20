@@ -1,0 +1,361 @@
+{
+  "mode": "candidate",
+  "base": "http://127.0.0.1:5188",
+  "deviceScale": 1,
+  "steps": [
+    "Entry selects, invalid and full room responses, radio and Ready flow, resize, explicit settings, real keyboard inputs, shared pause, constructed clear and wipe, retries, and interruption recovery exercised."
+  ],
+  "layouts": {
+    "entry-1440": {
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "scrollY": 0,
+      "footerBottom": 894,
+      "stageBottom": 829,
+      "overlayOverflow": 0,
+      "overlayHeight": 0,
+      "controls": {
+        "#crew-count": {
+          "top": 569,
+          "bottom": 604,
+          "width": 165,
+          "height": 35,
+          "hit": true
+        },
+        "#pace": {
+          "top": 569,
+          "bottom": 604,
+          "width": 165,
+          "height": 35,
+          "hit": true
+        },
+        "#create": {
+          "top": 614,
+          "bottom": 671,
+          "width": 340,
+          "height": 57,
+          "hit": true
+        },
+        "#room-input": {
+          "top": 681,
+          "bottom": 729,
+          "width": 266,
+          "height": 48,
+          "hit": true
+        },
+        "#join": {
+          "top": 681,
+          "bottom": 729,
+          "width": 72,
+          "height": 48,
+          "hit": true
+        }
+      }
+    },
+    "entry-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 389,
+      "stageBottom": 334,
+      "overlayOverflow": 0,
+      "overlayHeight": 0,
+      "controls": {
+        "#crew-count": {
+          "top": 132,
+          "bottom": 160,
+          "width": 140,
+          "height": 28,
+          "hit": true
+        },
+        "#pace": {
+          "top": 132,
+          "bottom": 160,
+          "width": 140,
+          "height": 28,
+          "hit": true
+        },
+        "#create": {
+          "top": 168,
+          "bottom": 211,
+          "width": 290,
+          "height": 43,
+          "hit": true
+        },
+        "#room-input": {
+          "top": 221,
+          "bottom": 259,
+          "width": 216,
+          "height": 38,
+          "hit": true
+        },
+        "#join": {
+          "top": 221,
+          "bottom": 259,
+          "width": 72,
+          "height": 38,
+          "hit": true
+        }
+      }
+    },
+    "lobby-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 480,
+      "stageBottom": 425,
+      "overlayOverflow": 0,
+      "overlayHeight": 260,
+      "controls": {
+        "#ready": {
+          "top": 365,
+          "bottom": 404,
+          "width": 550,
+          "height": 39,
+          "hit": true
+        },
+        "[data-character=\"ivo\"]": {
+          "top": 229,
+          "bottom": 324,
+          "width": 131,
+          "height": 95,
+          "hit": true
+        },
+        "#leave": {
+          "top": 80,
+          "bottom": 105,
+          "width": 26,
+          "height": 25,
+          "hit": true
+        }
+      }
+    },
+    "lobby-1440": {
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "scrollY": 0,
+      "footerBottom": 998,
+      "stageBottom": 933,
+      "overlayOverflow": 0,
+      "overlayHeight": 464,
+      "controls": {
+        "#ready": {
+          "top": 662,
+          "bottom": 719,
+          "width": 688,
+          "height": 57,
+          "hit": true
+        },
+        "[data-character=\"ivo\"]": {
+          "top": 400,
+          "bottom": 608,
+          "width": 165,
+          "height": 208,
+          "hit": true
+        },
+        "#leave": {
+          "top": 118,
+          "bottom": 146,
+          "width": 32,
+          "height": 28,
+          "hit": true
+        }
+      }
+    },
+    "waiting-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 480,
+      "stageBottom": 425,
+      "overlayOverflow": 0,
+      "overlayHeight": 260,
+      "controls": {
+        "#ready": {
+          "top": 365,
+          "bottom": 404,
+          "width": 550,
+          "height": 39,
+          "hit": true
+        },
+        "[data-character=\"ivo\"]": {
+          "top": 229,
+          "bottom": 324,
+          "width": 131,
+          "height": 95,
+          "hit": true
+        }
+      }
+    },
+    "room-error-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 389,
+      "stageBottom": 334,
+      "overlayOverflow": 0,
+      "overlayHeight": 0,
+      "controls": {
+        "#room-input": {
+          "top": 221,
+          "bottom": 259,
+          "width": 216,
+          "height": 38,
+          "hit": true
+        },
+        "#join": {
+          "top": 221,
+          "bottom": 259,
+          "width": 72,
+          "height": 38,
+          "hit": true
+        }
+      }
+    },
+    "run-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 480,
+      "stageBottom": 425,
+      "overlayOverflow": 0,
+      "overlayHeight": 0,
+      "controls": {
+        "#pause": {
+          "top": 441,
+          "bottom": 466,
+          "width": 26,
+          "height": 25,
+          "hit": true
+        },
+        "#ability": {
+          "top": 445,
+          "bottom": 462,
+          "width": 115,
+          "height": 17,
+          "hit": true
+        }
+      }
+    },
+    "paused-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 480,
+      "stageBottom": 425,
+      "overlayOverflow": 0,
+      "overlayHeight": 230,
+      "controls": {
+        "#resume": {
+          "top": 282,
+          "bottom": 339,
+          "width": 282,
+          "height": 57,
+          "hit": true
+        }
+      }
+    },
+    "clear-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 480,
+      "stageBottom": 425,
+      "overlayOverflow": 0,
+      "overlayHeight": 260,
+      "controls": {
+        "#ready": {
+          "top": 365,
+          "bottom": 404,
+          "width": 550,
+          "height": 39,
+          "hit": true
+        },
+        "[data-character=\"sana\"]": {
+          "top": 229,
+          "bottom": 324,
+          "width": 131,
+          "height": 95,
+          "hit": true
+        }
+      }
+    },
+    "wipe-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 480,
+      "stageBottom": 425,
+      "overlayOverflow": 0,
+      "overlayHeight": 260,
+      "controls": {
+        "#ready": {
+          "top": 365,
+          "bottom": 404,
+          "width": 550,
+          "height": 39,
+          "hit": true
+        },
+        "[data-character=\"sana\"]": {
+          "top": 229,
+          "bottom": 324,
+          "width": 131,
+          "height": 95,
+          "hit": true
+        }
+      }
+    },
+    "interrupted-640": {
+      "width": 640,
+      "height": 480,
+      "scrollWidth": 640,
+      "scrollY": 0,
+      "footerBottom": 480,
+      "stageBottom": 425,
+      "overlayOverflow": 0,
+      "overlayHeight": 266,
+      "controls": {
+        "#leave-interrupted": {
+          "top": 300,
+          "bottom": 357,
+          "width": 282,
+          "height": 57,
+          "hit": true
+        }
+      }
+    }
+  },
+  "errors": [],
+  "browser": "157.0.8103.80",
+  "entrySelectPointerFocus": {
+    "crew": true,
+    "pace": true
+  },
+  "initialRoomFocus": "mara",
+  "audioAfterCreate": "SOUND OFF",
+  "arrowSelection": {
+    "active": "ivo",
+    "checked": "ivo"
+  },
+  "compactDescriptionVisible": true,
+  "compactDescriptionFontSize": 11,
+  "waitingReadyFocus": "ready",
+  "audioAfterReady": "SOUND OFF",
+  "pausedFocus": "resume",
+  "peerPausedFocus": "overlay-title",
+  "activeInputWhilePaused": 0,
+  "clearFocus": "sana",
+  "audioAfterRetry": "SOUND OFF",
+  "interruptFocus": "leave-interrupted",
+  "status": "passed"
+}

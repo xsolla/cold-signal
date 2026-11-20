@@ -1,0 +1,11 @@
+First normal-start probe exited 1 after the peer reload interrupted the crew.
+Playwright waited for the old #leave header button, which the integrated
+interruption view hides. The actual player action is #leave-interrupted.
+The replay used that visible control and returned to entry. The runtime
+source was identical for both attempts. See local-review.json.
+
+Playwright trace excerpt
+  - waiting for locator('#leave')[22m
+[2m    - locator resolved to <button hidden="" id="leave" class="quiet">LEAVE</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m

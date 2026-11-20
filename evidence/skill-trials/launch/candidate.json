@@ -1,0 +1,62 @@
+{
+  "game": "Cold Signal",
+  "version": "0.3.0",
+  "sourceCommit": "9a6fd898d6548e9be90d5b1405b1b805b96c1772",
+  "sourceTree": "f10fc191a49251b2930ba32fa759ab2ccf0b9afa",
+  "runtimeAndTestSourceMatchedCommit": true,
+  "pocketStudioPin": "3f8b752cd6bd03ee5d719ceac2e37f5c7c3da7d4",
+  "recordedAt": "2026-11-19T23:09:20-08:00",
+  "environment": {
+    "os": "macOS 15.6",
+    "architecture": "arm64",
+    "node": "v20.11.0",
+    "npm": "10.2.4",
+    "browser": "headless Google Chrome 157.0.8103.80",
+    "dependencies": {
+      "ws": "8.23.0",
+      "playwright-core": "1.65.1"
+    }
+  },
+  "configuration": {
+    "normal": "HOST=127.0.0.1 PORT=5188 npm start",
+    "diagnostic": "HOST=127.0.0.1 PORT=5188 npm run dev",
+    "audio": "PORT=5184 npm run test:audio:browser (script owns its loopback diagnostic server)",
+    "analytics": "File environment variable omitted for browser checks. Normal startup has no collector and the review produced no JSONL output.",
+    "gamePixExport": null,
+    "hostedUpload": null
+  },
+  "checks": {
+    "node-tests.txt": "npm test",
+    "local-review.json": "Separate agent-operated normal-start review with four independent browser processes",
+    "four-client-browser.json": "COLD_SIGNAL_URL=http://127.0.0.1:5188 npm run test:browser",
+    "ui-browser.json": "COLD_SIGNAL_URL=http://127.0.0.1:5188 npm run test:ui",
+    "audio-browser.json": "PORT=5184 npm run test:audio:browser",
+    "probe-retry.txt": "First normal-start review selector failure and replay note"
+  },
+  "runtimeSha256": {
+    "package-lock.json": "63058f13d507724d6dd440d72122e038af7362d123c2d25d690166525ebb8ad7",
+    "package.json": "7ed05766ebfc3b75eb05730d672c2cf6011b7b2711ba99ed31e5179119903329",
+    "public/audio.js": "fb5479707d0dc1f09e2bf5748743d0a1a3b8eea17e37d73660caf80ad4b714d5",
+    "public/cold-signal.js": "d96bd221fb415424f8823b1b8709180236c343d43215661ba03460356be1a219",
+    "public/icon.svg": "86144d5052c16be0ac6c953edd8299bb458fe2da3f68fb510dbf544272e9acb7",
+    "public/index.html": "79dacb1ae14c5d6a83e0805a94f2a044cab50c9cce9b5bd634dd5a1119af9165",
+    "public/main.js": "3c73389119c73304953e03286eae0182b7c287e7bcbc302598c77cd70800d979",
+    "public/renderer.js": "84c64223b2d23812e6aa53e5b7754d5b95dc59b6127618d356b4845589be7168",
+    "public/style.css": "c2f6aa271c184a35e6715cc2a946ab3a4d6e8ddf36153d8df451c380fc329c7a",
+    "server/index.mjs": "841262c2031ced59b0edb82094337b296d20bb59a66df48b0d9a960aa2bdd227",
+    "server/playtest-analytics.mjs": "cd18f2860de5fc3374a29215a58a4fc6ad31cdeef4ef5d03952361e71cdcf169",
+    "src/rules.js": "241c7f54afba9e84d7809d951665198df9bbf9ba40bc5aa99b4751151355c3c4"
+  },
+  "evidenceSha256": {
+    "audio-browser.json": "9b779f2f08a34433768f97223c8651fe387b089657cb8fe499a2bc72ff106364",
+    "entry.jpg": "2318e1228091d37e64230d35100a7db3cb0687d13b5aa8109f12efea77af6048",
+    "four-client-browser.json": "46b963726f472396c057f2ece462d733f8698888ee9d26c3e2e63d9403101495",
+    "gameplay.jpg": "2d49e24b16ef0c1a103b585768bfd5560ae526c8ec94966909391fa9d1adb338",
+    "lobby.jpg": "57687c6ffa202cd62dd9e2dd8bdc162740af8fc18717177bef78cfa622647307",
+    "local-review.json": "a7ce81005a655053b261fd3cc43eedcf0a3d806187a2dd7bcfe9199b186b86d6",
+    "node-tests.txt": "0c9b6bbfb9b05ffcf2fef0186add26c1f0c8414d97f4ab38a94fe084b4509f19",
+    "probe-retry.txt": "3e20ce4d8c721ed0d082d6dc97e18307a2d77b796e14344bcce32062f35b8b32",
+    "reduced-pause.jpg": "3a9fd6bfd1aeacf11d28d8f93c56ce1bd0ee32b580335b8fc1e5808177daf1e2",
+    "ui-browser.json": "b1dda8b0798501cc5f94594947efed838c31dfd12b2f478ad0ed7c57240b672f"
+  }
+}

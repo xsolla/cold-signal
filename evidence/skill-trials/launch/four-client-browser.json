@@ -1,0 +1,18 @@
+{
+  "version": "0.3.0",
+  "mode": "four-client agent pass / constructed diagnostic scenarios",
+  "url": "http://127.0.0.1:5188",
+  "steps": [
+    "Four independent browser clients selected characters, all readied, and fired automatically without Space.",
+    "Observed half-speed simulation and three-minute display; A/D remained immediate at the slower velocity.",
+    "W/Up and S/Down moved through all three depths on all four clients; holding hopped once, end stops clamped, and constructed core preview plus both rail patrols were visible.",
+    "Space triggered the four selected abilities; usage and cooldown state agreed on every client.",
+    "Constructed positional rescue completed across all four clients while automatic fire continued; pause froze the whole crew.",
+    "Three-depth all-active victory, whole-crew loss, reset ability state on retry, and interruption on one crew disconnect passed.",
+    "Three separately launched controlled browser clients filled a four-pilot crew; selection, ability HUD, and gameplay fit 640×480."
+  ],
+  "measuredSimulationToWallRatio": 0.508,
+  "browser": "157.0.8103.80",
+  "errors": [],
+  "status": "passed"
+}

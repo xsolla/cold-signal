@@ -1,0 +1,96 @@
+{
+  "mode": "ordinary agent-operated browser review via npm start",
+  "assistedSlots": "P1 operated with keyboard and snapshot observation. P2–P4 only joined, selected, and readied.",
+  "url": "http://127.0.0.1:5188",
+  "diagnostics": false,
+  "screens": {
+    "entry.jpg": {
+      "width": 1440,
+      "height": 900
+    },
+    "lobby.jpg": {
+      "width": 1440,
+      "height": 900,
+      "localPilot": "Ivo",
+      "connectedPilots": 4
+    },
+    "gameplay.jpg": {
+      "width": 1440,
+      "height": 900,
+      "seed": 17321,
+      "simulationSeconds": 4.008,
+      "enemyCountAtCheck": 9,
+      "localRail": 1
+    },
+    "reduced-pause.jpg": {
+      "width": 640,
+      "height": 480,
+      "simulationSeconds": 4.075,
+      "reducedMotion": true,
+      "allClientsFrozen": true
+    }
+  },
+  "steps": [
+    "Entered from a fresh landing, created via Enter, joined via keyboard room-code submission, selected four distinct pilots.",
+    "Arena received focus automatically. P1 orbited, moved one ring inward, and used Shockwave. All four fired before Space.",
+    "Resized to 640 × 480, toggled reduced motion, pressed Escape, observed all four clocks frozen, and resumed. The Web Audio context suspended and resumed on shared pause and explicit mute.",
+    "Ordinary run ended in a crew loss, readying created a clean retry, reloading one pilot interrupted the other three, and Leave returned the lead to entry."
+  ],
+  "browser": "157.0.8103.80",
+  "audioContext": {
+    "afterInput": "running",
+    "sharedPause": "suspended",
+    "resumed": "running",
+    "muted": "suspended",
+    "unmuted": "running"
+  },
+  "compactLayout": {
+    "width": 640,
+    "height": 480,
+    "contentWidth": 640,
+    "footerBottom": 480,
+    "resumeBottom": 338.65625,
+    "scrollY": 0
+  },
+  "naturalOutcome": {
+    "status": "lost",
+    "seed": 17321,
+    "simulationSeconds": 11.292,
+    "downed": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "score": 900
+  },
+  "retry": {
+    "seed": 17322,
+    "restoredAllPilots": true,
+    "resetAbilities": true
+  },
+  "httpRequests": [
+    "/",
+    "/audio.js",
+    "/cold-signal.js",
+    "/icon.svg",
+    "/main.js",
+    "/renderer.js",
+    "/rules.js",
+    "/style.css"
+  ],
+  "webSocketUrls": [
+    "ws://127.0.0.1:5188/ws"
+  ],
+  "webSocketMessageTypes": [
+    "character",
+    "create",
+    "input",
+    "join",
+    "leave",
+    "pause",
+    "ready"
+  ],
+  "errors": [],
+  "status": "passed"
+}

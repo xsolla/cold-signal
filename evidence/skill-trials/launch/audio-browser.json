@@ -1,0 +1,104 @@
+{
+  "browser": "157.0.8103.80",
+  "seed": 17321,
+  "baseline": "24fd042e63691ef93a5c5013b080ee6eb8bcc4c5",
+  "variants": {
+    "A": {
+      "keyboardSpecialPitches": [
+        82,
+        1200
+      ],
+      "isolated": {
+        "killsReceived": 1,
+        "killPitches": [
+          440
+        ],
+        "rescuePitches": []
+      },
+      "crowded": {
+        "killsReceived": 48,
+        "killPitches": [
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440,
+          440
+        ],
+        "rescuePitches": [
+          330,
+          660
+        ]
+      },
+      "errors": []
+    },
+    "B": {
+      "keyboardSpecialPitches": [
+        82,
+        1200
+      ],
+      "isolated": {
+        "killsReceived": 1,
+        "killPitches": [
+          440
+        ],
+        "rescuePitches": []
+      },
+      "crowded": {
+        "killsReceived": 48,
+        "killPitches": [
+          440,
+          560,
+          700
+        ],
+        "rescuePitches": [
+          330,
+          660
+        ]
+      },
+      "errors": []
+    }
+  }
+}
