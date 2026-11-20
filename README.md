@@ -25,6 +25,9 @@ motion settings.
 
 ## Develop with Pocket Studio
 
+[Review the autonomous skill trials](docs/skill-trials/README.md) for each
+skill's changes, commits, screenshots, audio comparisons, checks and limits.
+
 Pocket Studio is an editable, version-pinned submodule in `tools/pocket-studio`.
 The active pin's skills are linked into `.agents/skills`, so experiments here
 directly exercise the source you can contribute upstream. Use

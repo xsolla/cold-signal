@@ -29,6 +29,12 @@ and captures in ignored `artifacts/`.
 
 ## Recorded evidence
 
+- [Combined autonomous trial verification](skill-trials/README.md#final-integration-verification)
+  covers candidate `9a6fd89`: 68 Node tests, four-client flow, UI, audio and
+  normal-start checks. The [candidate manifest](../evidence/skill-trials/launch/candidate.json)
+  identifies the tested runtime bytes and environment.
+
+
 The autonomous skill trials add [current UI findings](ui-ux.md),
 [art calibration](art-direction.md), [sound comparison](sound-design.md),
 [agent playtest](playtest.md), [paired rescue diagnostics](balance-plan.md),
