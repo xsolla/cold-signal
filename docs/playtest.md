@@ -1,127 +1,71 @@
-> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+# Cold Signal playtest
 
-# Delve Together — playtest preparation
+**Question** — Can a pilot identify the rail of a downed teammate and tell when
+an attempted rescue has started, including while a wall is crossing the arena?
 
-**Mode and status:** An agent four-browser functional pass has run against the
-local Docker game. The creator reported the 0.1 prototype was “incredibly fun” and requested
-the character/half-speed variant. The creator then called 0.2 “super fun”
-and requested the three-depth tunnel. There is no second human participant or four-human study.
+**Session** — November 19, 2026 Pacific. A rules-familiar agent operated local
+Chrome 157 (1200 × 900, desktop keyboard) against the standalone game at
+`dac1c9027cead078768573d03bdf65e436ffa176`. Four independent browser clients
+joined by room code at the default 0.5× pace. The lead pilot used Ivo, the other
+three held their starting lanes and saved their abilities. The operator could
+read WebSocket snapshots to assist steering. See the
+[trace](../evidence/skill-trials/playtest-balance/playtest-trace.json) and
+[trial record](skill-trials/2026-11-19-playtest.md).
 
-**Primary question — retained:** Does rescuing crew create a readable, tense
-positional choice? For 0.3, check whether changing depth creates understandable choices about
-coverage, avoidance, and rescue while firing is automatic.
+## Observations
 
-**Creative target:** Rescue is a dangerous comeback gamble that often fails;
-the whole gauntlet should take an arcade-minded new group several learning
-attempts. Record whether failure follows a readable tactical risk or an unclear
-cue/rule. Do not treat frequent failure alone as a usability defect.
+Times below are simulation seconds. At 0.5×, wall time in play is about double.
 
-**Build identity:** Local 0.3.0 four-player tunnel, source and Docker identities in
-`verification.md`. Chrome 157 agent checks used both actual inputs and labeled
-constructed rescue/final/wipe scenarios. Record the creator's actual browser,
-device, and starting scenario when their session begins.
-An editor/local browser check and GamePix hosted play are separate evidence.
+| Source | Action and result |
+| --- | --- |
+| Normal run, seed 17321 | P1 tapped W into the middle lane. P2 and P4 fell on the outer rail at 6.51. The crew HUD showed `DOWN OUTER` and the bottom message explained the match-and-stay rule. P1 moved out toward P2 and went down at 6.98, with P2 still at 0% rescue. P3 fell at 10.72, ending the run in a crew loss. Ordinary enemies, walls and damage were active throughout. No scenario or special was used. |
+| [Natural first down](../evidence/skill-trials/playtest-balance/natural-first-down.jpg) | The outer wall and bright down bursts crossed the outer downed markers and their text in this frame. In the crew strip, both `DOWN OUTER` labels remained unobstructed. The trace records when each pilot fell and leaves the specific hit source unresolved. |
+| Constructed rescue, fresh room | The Rescue scenario put P2 on P1’s middle rail, cleared active enemy and wall pressure, delayed new spawns and placed a warning zone on the marker. P1 held within rescue angle on the outer rail for about 0.28 seconds and saw zero progress. W back to the middle rail brought the progress cue up while shots continued. P1 used Shockwave to clear the warning zone, and all four clients saw P2 recover. |
+| [Full motion](../evidence/skill-trials/playtest-balance/rescue-full-motion.jpg), [reduced motion](../evidence/skill-trials/playtest-balance/rescue-reduced-motion.jpg) | Both near-concurrent views of the same constructed rescue rendered the downed marker, percentage and progress arc. The views are from different pilots. The reduced-motion view suppresses the full shot trails. |
+| Constructed loss, clean retry, then peer closure | Team-wipe check showed the loss overlay across all four clients. Readying again changed the seed from 17321 to 17322 and reset rings, downed and ability-use state. Closing P3 during the retry interrupted the three peers. The regroup prompt directed the lead pilot back to entry through Leave. |
 
-**Participant availability — confirmed:** Only the creator initially, with controlled crew clients. The creator already knows the design, so their
-session can reveal cue clarity and decisions but cannot establish first-time
-discovery of the rescue mechanic. A later session with an unfamiliar human
-would address that gap; no such participant is currently available.
+## Priorities for the next test
 
-**Duration — proposed:** Approximately ten minutes of play and debrief inside
-the one-hour playtest/fix timebox. Stop earlier for a blocker, then use the
-remaining time for a bounded fix and retest.
+| Priority | Finding and hypothesis | Smallest follow-up and acceptance |
+| --- | --- | --- |
+| 1. Read the rescue marker in pressure | The natural down captured one frame of the outer marker text crossing bright geometry. Its effect on a new pilot’s recognition is unknown. The crew strip may already provide a useful fallback. | Present the first outer down at normal desktop scale. Before any cue is pointed out, record whether a first-time pilot can locate the teammate, name or join the correct ring, and explain which visual cue they used. If the arena text consistently stalls that decision, try moving the label clear of the wall and burst, then repeat the same scene and a fresh one. |
+| 2. Identify why an attempted rescue has stalled | Inside the correct angular window on the wrong rail, progress stayed at zero. Matching the rail made the progress indicator change in both motion settings. The agent knew the rule and received snapshot assistance. | Record what an unfamiliar pilot expects when aligned on the wrong rail, how they change depth, and whether they independently identify advancing or reset progress. If the on-screen guidance is missed, test a more local match-ring cue and preserve the existing progress cue in both motion settings. |
+| 3. Assess the approach risk under ordinary pressure | One ordinary attempt traded middle coverage for an outer rescue and ended before progress. Three stationary teammates constrain what this run says about crew strategy. The elapsed time alone gives no reason to change rescue timing. | Observe at least one fresh attempt with a moving crew. Record whether the rescuer sees a viable route, whether they wait or commit, and whether their reason matches the threats on screen. Link each interpretation to an observed decision. |
 
-## Minimum build and test state
+The browser session confirmed the flows above and generated priorities for
+human testing. It produced no human comprehension, difficulty, comfort or
+four-player coordination measurements. There was no runtime change.
 
-Four clients can create/join the same private room, start, move, shoot, experience
-at least one enemy and one hazard, become downed, attempt a proximity rescue,
-reach a team outcome, and retry. Rescue progress and teammate state must be
-visible. Use stark shapes, percussive pulses, and immediate steering as chosen.
+## Ready-to-run human retest
 
-Use an isolated room and fresh run; record seed or fixed encounter script,
-starting positions, and reset steps. A deliberately arranged downed state is a
-diagnostic setup and must be labeled as such. Do not claim the same situation
-occurs naturally with the same frequency.
+Allow about ten minutes with one unfamiliar desktop keyboard player and three
+crew members or controlled clients. Give the player a room code in a fresh
+private room and use default pace. Let them choose a pilot and a motion preference.
+Write down the build, room settings, roster, who controls each slot, and any
+help. Use [the local run guide](../README.md#play-without-docker) to prepare the
+session. If using controlled peers, record that they act autonomously and can
+complete a rescue independently.
 
-## Session guide
+1. Say “Join the crew and start a run.” Observe entry, selection and readiness.
+2. Say “Try to get everyone through together.” Let the first natural run play.
+   Record the first depth choice and why the player made it. On a down, record
+   what they notice and what they do before supplying a hint. If the run ends,
+   ask “Start another attempt with the same crew” and observe retry.
+3. If there was no recoverable down, reset to a fresh room. While the player is
+   active on the desired rail, have that client trigger **Rescue scenario**
+   under **Local test tools**. A facilitator can operate that button so the
+   player does not have to read the debug menu. Log the constructed setup and
+   any autonomous peer rescue. Say “Continue the attempt with your crew.”
+   Observe whether the player finds the marker, changes depth, and can describe
+   the progress or the threat that made them leave. If a pilot stays stalled for
+   about ten seconds, first ask what they were trying to do. Then give the
+   smallest necessary hint and log the time. Keep assisted success distinct.
+4. Ask “What did you think the marker meant?” and “What told you to move, stay,
+   or leave?” Replay the most important unclear moment once with the same starting
+   state and the other motion setting. Capture order and any learning so the
+   second attempt can be interpreted accordingly.
 
-| Task | Neutral goal for the player | What to observe | Stop/help condition |
-| --- | --- | --- | --- |
-| Entry | Join your partner and begin an attempt | Code discovery, feedback, ready state, failures, whether every client agrees that play began | Stop a connection blocker; record the error and assistance before retrying |
-| Threat coverage | Survive the opening together | Which enemy/hazard cues drive movement, what each player covers, accidental actions | Stop repeated identical failure once it adds no evidence |
-| Recovery | Continue the attempt if a ship becomes disabled | Whether the marker is noticed, intended route, rescue progress, shots during rescue, interruption, and subsequent survival | Let the player try before explaining rescue; record hints and assisted completion separately |
-| Outcome and retry | Finish an attempt, then begin another together | Whether win/loss is understood, retry is shared, and prior input/state resets | Stop a blocked retry and preserve the error/state |
-
-For a recovery-focused diagnostic, replay a fixed exposed downing scenario
-after the initial attempt. Keep starting state and rules fixed while comparing
-quiet versus intended presentation. This is a controlled comparison, not proof
-of typical whole-run outcomes. Do not coach a new player through the solution
-and then label their completion unaided.
-
-## Debrief
-
-- What were you trying to do when your partner went down?
-- What did you expect to happen when you approached their marker?
-- What told you whether rescue was progressing or had stopped?
-- What made you leave, stay, or change route?
-- What made you want to try again or stop?
-
-Ask about observed moments. Do not solicit agreement with a claim that the
-rescue was tense or fun. Keep actual words or attributed paraphrases separate
-from facilitator explanations.
-
-## Observations and fixes
-
-Agent functional observations are recorded in `verification.md`. The creator's attributed 0.1 reaction is positive and led to this 0.2
-experiment. The creator subsequently called 0.2 “super fun”; no detailed natural rescue
-account or full-run observations accompanied that reaction. During the creator session, retain:
-
-| Source / time | Context and action | Observable result | Help given / player words |
-| --- | --- | --- | --- |
-
-For an actionable finding, record observation, cause hypothesis/confidence,
-smallest intervention, player impact, and a concrete retest. Prioritize blocked
-entry, unintended movement, inconsistent down/rescue state, and misunderstood
-consequences before optional effects. A rendered progress bar alone is not
-evidence a player noticed or understood it.
-
-## Limits and next session
-
-An agent-operated partner can help exercise the recovery path and client-state
-agreement. It supplies no second human reaction or evidence of natural verbal
-coordination. One human's preference cannot establish broad prevalence.
-
-After the first session, retest the highest-impact finding in the same scenario,
-then try a fresh encounter to check whether the explanation transfers. Request
-recording arrangements only if a recording is actually useful and agreed; a
-small text observation log is sufficient for this session.
-
-## 0.2 comparison interview
-
-Source: creator feedback in this chat on 2026-11-18. “Incredibly fun” describes
-the first prototype; no recording, duration, or specific rescue account was
-supplied. Preserve that positive reaction without inferring its cause.
-
-Try a four-player, 0.5× room, select a pilot, add three controlled crew clients,
-and attempt one rescue. Repeat with another character. Ask what they intended,
-what each ability changed, and why they stayed or left. The three-minute active
-run is an explicit creator choice. Everyone can fire and rescue; no role is
-required. Duplicate character picks allow composition experiments.
-
-The original on port 5174 changes several variables together. For a narrower
-pace comparison, use 0.2's half/full speed room options with the same crew size,
-characters, and scenario. No preference is inferred before actual feedback.
-
-## 0.3 depth interview
-
-Source: creator request in this chat, 2026-11-18. Add two inner rails, W/Up and
-S/Down jumping, enemies that patrol those rails, Tempest-like scaling into the
-tunnel, and an enemy preview bullseye that blocks bullets. These are requested
-design changes, not observed problems from a recorded session.
-
-In a four-pilot 0.5× room with controlled crew, try an inward jump, return
-outward, identify a preview enemy, and attempt a same-depth rescue. The Tunnel
-scenario is a constructed mechanics demonstration; use a fresh normal run to
-check transfer. Ask afterward: “What made you change rings? Which enemy did you
-notice before it became hittable? What made you stay for or abandon the rescue?”
-Avoid attributing enjoyment or safety to the new depth before hearing the answer.
+Log time, participant action, visible state, exact hint if any, and the player’s
+own explanation. Save genuine reactions separately from facilitator hypotheses.
+The [Delve Together playtest record](playtest-delve-together.md) retains the earlier
+creator feedback and historical interview plan.

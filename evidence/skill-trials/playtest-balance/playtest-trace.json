@@ -1,0 +1,873 @@
+{
+  "status": "passed",
+  "mode": "Agent-operated local browser pass",
+  "url": "http://127.0.0.1:5183",
+  "viewport": {
+    "width": 1200,
+    "height": 900
+  },
+  "naturalStopSimulationSeconds": 16,
+  "controls": "Browser mouse and keyboard; browser WebSocket snapshots read for assisted steering and checks.",
+  "help": "Operator knew the controls and rescue rule beforehand. Other three browser pilots stayed on their initial lanes without using abilities.",
+  "steps": [
+    {
+      "stage": "room-entry",
+      "wallSecondsFromLaunch": 3.186,
+      "action": "Created default room, joined three peers by code with Enter, selected Ivo",
+      "count": 4,
+      "timeScale": 0.5
+    },
+    {
+      "stage": "natural",
+      "wallSecondsFromLaunch": 3.382,
+      "action": "All four readied; arena has keyboard focus",
+      "seed": 17321,
+      "time": 0,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "natural",
+      "wallSecondsFromLaunch": 6.865,
+      "action": "Tapped W to cover the middle rail with ordinary enemies, walls, and damage enabled",
+      "seed": 17321,
+      "time": 1.742,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "natural",
+      "wallSecondsFromLaunch": 16.417,
+      "action": "Chose to follow the first fallen teammate; HUD indicated depth and snapshots assisted precise steering",
+      "seed": 17321,
+      "time": 6.517,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "target": 2,
+      "arenaNote": "MATCH THEIR RING. STAY CLOSE TO RESCUE. FIRE IS AUTOMATIC.",
+      "crewLabels": [
+        "◇ P1 YOU MIDDLE",
+        "◇ P2 IVO DOWN OUTER",
+        "⬟ P3 SANA OUTER",
+        "⬡ P4 ROOK DOWN OUTER"
+      ]
+    },
+    {
+      "stage": "natural",
+      "wallSecondsFromLaunch": 16.459,
+      "action": "Captured browser viewport",
+      "seed": 17321,
+      "time": 6.533,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "image": "natural-first-down.jpg",
+      "motion": "full"
+    },
+    {
+      "stage": "natural",
+      "wallSecondsFromLaunch": 17.385,
+      "action": "Attempted to match ring and angle without any special input",
+      "seed": 17321,
+      "time": 6.992,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 5.41,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "target": 2
+    },
+    {
+      "stage": "natural",
+      "wallSecondsFromLaunch": 24.835,
+      "action": "Ended natural attempt",
+      "seed": 17321,
+      "time": 10.717,
+      "status": "lost",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 5.41,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "stop": "lost",
+      "outcomeLabel": "CREW LOST · 21 SECONDS"
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 25.169,
+      "action": "Created default room, joined three peers by code with Enter, selected Ivo",
+      "count": 4,
+      "timeScale": 0.5
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 25.36,
+      "action": "All four readied; arena has keyboard focus",
+      "seed": 17321,
+      "time": 0,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 25.903,
+      "action": "Used Rescue scenario to down P2, clear live threats, delay natural spawns and add a warning zone",
+      "seed": 17321,
+      "time": 0.258,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": true,
+          "angle": 5.162,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 27.139,
+      "action": "Held angular alignment on the wrong ring; progress stayed at zero",
+      "seed": 17321,
+      "time": 0.883,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 5.048,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": true,
+          "angle": 5.162,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 27.786,
+      "action": "Tapped W while remaining aligned; progress became positive with auto-fire still visible",
+      "seed": 17321,
+      "time": 1.217,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 5.048,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": true,
+          "angle": 5.162,
+          "rescue": 0.183,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "leadBullets": 5,
+      "arenaNote": "MATCH THEIR RING. STAY CLOSE TO RESCUE. FIRE IS AUTOMATIC.",
+      "crewLabels": [
+        "◇ P1 YOU MIDDLE",
+        "◇ P2 IVO DOWN MIDDLE",
+        "⬟ P3 SANA OUTER",
+        "⬡ P4 ROOK OUTER"
+      ]
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 27.819,
+      "action": "Captured browser viewport",
+      "seed": 17321,
+      "time": 1.233,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 5.048,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": true,
+          "angle": 5.162,
+          "rescue": 0.2,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "image": "rescue-full-motion.jpg",
+      "motion": "full"
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 27.824,
+      "action": "Captured browser viewport",
+      "seed": 17321,
+      "time": 1.233,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 5.048,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": true,
+          "angle": 5.162,
+          "rescue": 0.2,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "image": "rescue-reduced-motion.jpg",
+      "motion": "reduced"
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 27.866,
+      "action": "Used Space to clear the scripted warning zone with Shockwave",
+      "seed": 17321,
+      "time": 1.258,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 5.048,
+          "rescue": 0,
+          "specialUses": 1
+        },
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": true,
+          "angle": 5.162,
+          "rescue": 0.225,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "constructed-rescue",
+      "wallSecondsFromLaunch": 30.724,
+      "action": "Matched middle-ring rescue completed while the group kept firing",
+      "seed": 17321,
+      "time": 2.683,
+      "status": "playing",
+      "rescues": 1,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 5.048,
+          "rescue": 0,
+          "specialUses": 1
+        },
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": false,
+          "angle": 5.162,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "constructed-outcome",
+      "wallSecondsFromLaunch": 30.799,
+      "action": "Used Team-wipe check; all four got the loss and retry overlay",
+      "seed": 17321,
+      "time": 2.717,
+      "status": "lost",
+      "rescues": 1,
+      "crew": [
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": true,
+          "angle": 5.048,
+          "rescue": 0,
+          "specialUses": 1
+        },
+        {
+          "ring": "middle",
+          "radius": 176,
+          "down": true,
+          "angle": 5.162,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": true,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "outcomeLabel": "CREW LOST · 5 SECONDS"
+    },
+    {
+      "stage": "constructed-outcome",
+      "wallSecondsFromLaunch": 31.023,
+      "action": "All four readied; arena has keyboard focus",
+      "seed": 17322,
+      "time": 0,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "constructed-outcome",
+      "wallSecondsFromLaunch": 31.023,
+      "action": "Retried by readying all four; seed advanced and crew, ring and ability state reset",
+      "seed": 17322,
+      "time": 0,
+      "status": "playing",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ]
+    },
+    {
+      "stage": "interruption",
+      "wallSecondsFromLaunch": 31.064,
+      "action": "Closed P3 client during the active retry; peers received interruption and leave instructions",
+      "seed": 17322,
+      "time": 0,
+      "status": "interrupted",
+      "rescues": 0,
+      "crew": [
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 4.712,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 0,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 1.571,
+          "rescue": 0,
+          "specialUses": 0
+        },
+        {
+          "ring": "outer",
+          "radius": 240,
+          "down": false,
+          "angle": 3.142,
+          "rescue": 0,
+          "specialUses": 0
+        }
+      ],
+      "outcomeLabel": "CONNECTION INTERRUPTED",
+      "prompt": "A crew member disconnected. Leave this room to form a fresh crew."
+    },
+    {
+      "stage": "interruption",
+      "wallSecondsFromLaunch": 31.095,
+      "action": "Returned to room entry using Leave",
+      "entryVisible": true
+    }
+  ],
+  "naturalEvents": [
+    {
+      "id": 10,
+      "type": "down",
+      "time": 6.508,
+      "player": 2,
+      "radius": 240
+    },
+    {
+      "id": 11,
+      "type": "down",
+      "time": 6.508,
+      "player": 4,
+      "radius": 240
+    },
+    {
+      "id": 12,
+      "type": "down",
+      "time": 6.983,
+      "player": 1,
+      "radius": 240
+    },
+    {
+      "id": 13,
+      "type": "down",
+      "time": 10.717,
+      "player": 3,
+      "radius": 240
+    },
+    {
+      "id": 14,
+      "type": "lost",
+      "time": 10.717
+    }
+  ],
+  "errors": [],
+  "browser": "157.0.8103.80"
+}
