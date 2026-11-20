@@ -56,8 +56,10 @@ function connect() {
         const a = snapshot.players[slot].angle;
         if (predicted === null || Math.abs(delta(a, predicted)) > .35 || snapshot.players[slot].down) predicted = a;
         else predicted = wrap(predicted + delta(a, predicted) * .22);
-        for (const e of snapshot.events) {
-          if (e.id > lastEvent) { if (!pauses.some(Boolean)) sound.event(e); lastEvent = e.id; }
+        const events = snapshot.events.filter(event => event.id > lastEvent);
+        if (events.length) {
+          lastEvent = events.at(-1).id;
+          if (!pauses.some(Boolean)) sound.events(events);
         }
       }
       if (controlled && diagnostics && connected[slot] && !ready[slot] && snapshot?.status !== 'playing') send({ type: 'ready' });

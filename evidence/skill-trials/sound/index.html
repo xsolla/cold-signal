@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cold Signal audio audition</title>
+  <style>
+    :root { color-scheme: dark; font: 1rem/1.55 system-ui, sans-serif; background: #101621; color: #edf4fc; }
+    body { max-width: 36rem; margin: 8vh auto; padding: 0 1.25rem; }
+    h1 { line-height: 1.13; }
+    section { margin: 1.25rem 0; padding: 0 1rem 1rem; border: 1px solid #52647c; border-radius: .5rem; }
+    audio { width: 100%; }
+    dt { float: left; min-width: 4.5rem; font-variant-numeric: tabular-nums; color: #8de5fd; }
+    dd { margin-left: 4.5rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Cold Signal audio audition</h1>
+    <p>Both reels use the same actions and preview gain. Listen for the two-note rescue at 2.77 seconds, where it overlaps the largest chain.</p>
+    <section aria-labelledby="take-a">
+      <h2 id="take-a">A</h2>
+      <audio controls preload="metadata" aria-labelledby="take-a" src="reel-a.wav">
+        <a href="reel-a.wav">Download A</a>
+      </audio>
+    </section>
+    <section aria-labelledby="take-b">
+      <h2 id="take-b">B</h2>
+      <audio controls preload="metadata" aria-labelledby="take-b" src="reel-b.wav">
+        <a href="reel-b.wav">Download B</a>
+      </audio>
+    </section>
+    <h2>Action timings</h2>
+    <dl>
+      <dt>0.51 s</dt><dd>Isolated hits</dd>
+      <dt>1.14 s</dt><dd>Shockwave</dd>
+      <dt>1.43 s</dt><dd>Pilot down</dd>
+      <dt>2.24 s</dt><dd>Three-kill chain</dd>
+      <dt>2.77 s</dt><dd>48-kill chain and rescue</dd>
+    </dl>
+  </main>
+  <script>
+    const tracks = [...document.querySelectorAll('audio')];
+    for (const [index, track] of tracks.entries()) {
+      const other = tracks[1 - index];
+      track.addEventListener('play', () => other.pause());
+      track.addEventListener('volumechange', () => {
+        other.volume = track.volume;
+        other.muted = track.muted;
+      });
+    }
+  </script>
+</body>
+</html>

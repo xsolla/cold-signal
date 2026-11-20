@@ -1,0 +1,16 @@
+{
+  "seed": 17321,
+  "sampleRate": 48000,
+  "seconds": 3.8,
+  "previewGain": 0.8,
+  "pulseStart": 0.2,
+  "pulseSeconds": 0.42857142857142855,
+  "events": [
+    { "at": 0.51, "kills": 1 },
+    { "at": 0.77, "kills": 1 },
+    { "at": 1.14, "type": "special", "character": "ivo" },
+    { "at": 1.43, "type": "down" },
+    { "at": 2.24, "kills": 3 },
+    { "at": 2.7714285714285714, "kills": 48, "rescue": true }
+  ]
+}

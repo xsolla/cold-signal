@@ -1,0 +1,50 @@
+{
+  "evidence/skill-trials/sound/reel-a.wav": {
+    "peak": 0.845794677734375,
+    "peak_dbfs": -1.4547010406247571,
+    "rms": 0.01702271867043666,
+    "rms_dbfs": -35.379421565076065,
+    "loop_step": 0.0,
+    "channel_metrics": [
+      {
+        "peak": 0.845794677734375,
+        "rms": 0.01702271867043666,
+        "dc": 0.00011651072585791873,
+        "first": 0.0,
+        "last": 0.0,
+        "loop_step": 0.0,
+        "max_internal_step": 0.058746337890625
+      }
+    ],
+    "frames": 182400,
+    "channels": 1,
+    "sample_rate": 48000,
+    "seconds": 3.8,
+    "full_scale_samples": 0,
+    "sha256": "8c5784eab49733ef3a416a296be96fa6033e5a7d2c19feef1e5dd8c9ba9a12fe"
+  },
+  "evidence/skill-trials/sound/reel-b.wav": {
+    "peak": 0.08221435546875,
+    "peak_dbfs": -21.70104687145502,
+    "rms": 0.0054778792627628,
+    "rms_dbfs": -45.22775088411554,
+    "loop_step": 0.0,
+    "channel_metrics": [
+      {
+        "peak": 0.08221435546875,
+        "rms": 0.0054778792627628,
+        "dc": 5.370809320817914e-05,
+        "first": 0.0,
+        "last": 0.0,
+        "loop_step": 0.0,
+        "max_internal_step": 0.058746337890625
+      }
+    ],
+    "frames": 182400,
+    "channels": 1,
+    "sample_rate": 48000,
+    "seconds": 3.8,
+    "full_scale_samples": 0,
+    "sha256": "a585a414b78b27b61ca9a20a65afd7dde39244518a21fa956897ddf50977dc31"
+  }
+}
