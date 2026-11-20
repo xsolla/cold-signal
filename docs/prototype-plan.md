@@ -1,122 +1,83 @@
-> Imported planning record from the Delve Together phase. See [Cold Signal](../README.md) for current run instructions.
+# Cold Signal — read the rescue window
 
-# Delve Together — first playable plan
+**Question.** Can players tell where to hold for a rescue and weigh that
+position against an impending hazard? The [design brief](design.md) calls
+for a deliberate choice between taking that risk and keeping the crew's
+remaining ships safe.
 
-**Question:** Can four players cover distinct threats and make a readable,
-risky rescue while responding to fast patterns?
+**Completed.** The standalone browser build already supports four-pilot
+rooms, keyboard orbit and depth changes, auto fire and abilities, proximity
+rescue, team outcomes, and ready/retry. Four local browser clients completed
+a constructed middle-rail rescue on the mechanical path. Whether a human
+recognizes the hold position and chooses to commit is open.
+[Agent-scaffolding verification](skill-trials/2026-11-19-agent-scaffolding.md)
 
-**Current starting point:** A local 0.3 three-depth tunnel now exists in `game/`, with
-separate Docker web/backend containers. The creator explicitly deferred AGS
-access. Native JavaScript rules, server-authoritative WebSockets, private rooms,
-rescue, outcome/retry, and controlled crew-client diagnostics are implemented. W/Up and S/Down jump
-between three rails; perspective, protected center previews, and two new rail
-enemies are included in this creator-requested iteration.
-See `verification.md` for the tested build and limits. The timeboxes below are
-the original plan, not a claim that all release work is complete.
+**Proposed.** Two hours for one developer with Codex and a desktop Chromium
+target. Build and check one small candidate. Use the final test slot for a
+human comparison if four players are available. The
+[original ten-hour plan](prototype-plan-delve-together.md) records the first
+playable.
 
-**Budget:** Ten focused hours from one creator working with Codex. The timeboxes
-below are planning limits, not benchmarked estimates or a release guarantee.
-Existing account access reduces onboarding work but does not prove integration.
-The creator explicitly expanded the original scope to four compact characters and four-player testing; cut optional systems and content
-volume before weakening the selected cooperative experience.
+## Comparison
 
-**Complete loop:** Open browser game → create or join a private
-four-player room → choose characters → everyone ready → move with auto fire and Space powers → cover threats or attempt an
-exposed rescue → complete the gauntlet or all go down → see team result → everyone
-ready for retry. Private room codes and the finite gauntlet are selected;
-ready/retry is implemented locally.
+- **Baseline** — The current rescue marker, depth label, progress ring, and
+  warning arcs at Cold Signal revision `dac1c9027cead078768573d03bdf65e436ffa176`.
+- **Candidate** — In the downed-pilot draw path, add two static ticks just
+  outside the marker's rail at the two angular edges of the hold area
+  (`angle ± T.rescueArc`). Use one subdued light color so they read as
+  position marks beside the existing warning arc. Draw the same ticks in both
+  motion settings. Use a separate local commit so a revert restores the
+  baseline. [Renderer](../public/renderer.js) · [Rescue rule](../src/rules.js)
+- **Fixed conditions** — Use the existing *Rescue scenario* in generation-one
+  rooms with four slots at 0.5×. Match browser, viewport, sound, full-motion
+  setting, pilot picks, and player-to-slot assignments across versions.
+  Keep the hazard, rescue rules, abilities, and shared locked-camera framing
+  fixed. [Diagnostic and room setup](../server/index.mjs)
+- **Reset and repetition** — Serve both versions locally on separate ports
+  with `npm run dev`. For a four-human session, expose both servers on the
+  intended local network with `HOST=0.0.0.0` and verify that all four desktops
+  can join during setup. Use a fresh room per attempt and ready all four
+  clients. At the start, have slot 1 tap inward once. When the pilot has settled on
+  the middle rail, trigger *Local test tools → Rescue scenario* from slot 1.
+  Match this setup across attempts. It downs slot 2 at a fixed angular offset
+  and puts a timed warning at the marker. Use fresh rooms even after a clear
+  or loss to restore the same first-run seed and slot positions. Record the exact build and
+  scenario conditions for each capture.
 
-## Scope
+## Two-hour sequence
 
-**Essential:** Four networked players (two-player option) in one arena, A/D orbit, W/S depth, auto fire and Space powers, distinct enemy
-behaviors, a readable hazard pattern, downed state, exposed rescue, team outcome,
-retry, essential feedback, audio controls, and partner interruption handling.
-AccelByte Extend stays in the backend plan. Demonstrate its real role rather
-than treating any successful REST call as working real-time multiplayer.
+| Time | Milestone and dependency | Playable proof |
+| --- | --- | --- |
+| 00–20 | Start the baseline in desktop Chromium. Rehearse the setup and capture the marker and warning on the same frame. | The room starts with four clients, the fixture places the downed marker on the middle rail, and an operator completes the rescue while firing. |
+| 20–45 | Once the drill is repeatable, add the ticks in the candidate renderer and load it in the same browser. | The same drill still plays. Both ends of the hold area are visible in full and reduced motion, separate from the warning arc. The ticks clear on rescue or retry. |
+| 45–80 | Once the candidate renders, run the focused rules/presentation tests and the existing four-client browser check in the candidate. Compare the rescue frame to the baseline. | Holding inside the same-ring window advances rescue, leaving it resets progress, and approaching from the wrong rail leaves progress at zero. The clients agree on revival and fresh retry. Inspect that the warning, progress ring, and pilot silhouettes remain readable. |
+| 80–110 | After the candidate clears mechanical checks, run the brief human task if a crew is available. | Capture unassisted actions and explanations for each version. If a crew is unavailable, rehearse the protocol and keep the human result open. |
+| 110–120 | Record the build pair, conditions, and result or blocker. | Keep the candidate commit available for another run if the technical checks pass. Revert it if the cue obscures gameplay feedback. |
 
-**Temporary:** Simple high-contrast shapes, a single fixed layout, scripted wave
-ordering, and a small original/procedural percussive sound palette. The
-first connected slice uses one enemy and one hazard. A local transport adapter
-can isolate game-rule work, but does not establish online multiplayer or release
-readiness. A controlled second client is a functional test tool, not an in-game
-AI companion feature.
+Use `node --test tests/rules.test.mjs tests/presentation.test.mjs` for the
+focused checks and the [browser verification instructions](verification.md)
+for the candidate. If the drill or cue is unresolved at minute 45, use the
+rest of the block for a baseline rehearsal and preserve the existing playable
+room-to-retry loop. **Deferred work** includes cue animation, new onboarding,
+tuning changes, and a dense natural-wave comparison. The drill isolates
+angular positioning and immediate danger. It removes live waves and starts
+the rescuer on the correct rail, leaving depth comprehension and broader
+combat readability open.
 
-**Deferred — recommended cuts:** Extra arenas, upgrades, persistent
-progression, public matchmaking, host migration, mobile controls, a standalone
-boss, and custom operator dashboards. Account or network failures retain a
-clear return/retry path rather than adding another mode.
+## Human task and decision
 
-**Selected rules:** Four-player rooms, automatic fire, Space abilities, global 0.5× pace, and smooth continuous orbit; stay near a downed partner's marker
-briefly to rescue while still shooting; approximately 90-second escalating
-gauntlet with a final surge. Immediate movement, stop, and reversal without
-drift; stark high-contrast shapes with tight percussive pulses; private room
-codes. Propose hold-to-repeat shooting, all crew down ends the run,
-no automatic next-wave revival, and brief signaled revival protection.
-Exact speeds, radii, protection, and rescue timing are provisional tuning.
+After a separate control warm-up, say “Play this attempt together. Continue
+as you normally would if the situation changes.” Give room and control
+instructions only. Note the first helper, attempted hold position, progress
+starts and resets, hazard activation, ability use, and whether the helper
+waits, retreats, or takes a hit. Follow with “What were you trying to do there?”
+and “What on screen told you where to stop or move?” Record any help separately.
 
-**Qualitative targets:** Several learning attempts before a clear; rescue is a
-dangerous comeback gamble that often fails. Inspired by the researched Left 4
-Dead principles, propose a simple build/surge/lull sequence and enemy behaviors
-with distinct cooperation pressures. Keep these additions inside the existing
-content/pacing timebox. The final clear requires all crew active. The selected candidate deadline is
-November 22, 2026, at 8 p.m. Pacific.
-
-## Build order and timeboxes
-
-The local connection, minimal loop, and compact enemy/pattern implementation
-are verified by agent checks. Human feel/playtest and GamePix release work
-remain open. Keep a runnable build after every step.
-
-| Milestone | Depends on | Tasks | Playable proof / acceptance | Budget |
-| --- | --- | --- | --- | --- |
-| Connection and platform feasibility | First slice and transport choice | Verify intended live tool authentication; establish Extend's role; prototype the chosen transport; check GamePix SDK eligibility, origin access, and interruption constraints | Two clients exchange actual movement/input through the selected architecture; one browser reaches the intended Extend API; record direct/relay or server path and limits. GamePix hosted access remains explicitly untested until exercised | 1.5 h |
-| Complete minimal co-op attempt | Connection proof; rescue and movement decisions | One arena, shooting, one enemy, one hazard, down/rescue, team outcome, ready/retry | Client A goes down; B reaches the exposed rescue position; both agree on revival. Both down produces one result and a clean shared restart | 2 h |
-| Enemy variety and pattern sequence | Complete attempt | Add the two remaining compact behaviors and bounded pattern combinations; teach behaviors before mixing | Each behavior creates a different positional response; the chosen run can finish; a fresh run resets all threats and rescue state | 1.25 h |
-| Game-feel comparison | Runnable representative sequence | Refine movement response, warning hierarchy, rescue progress, impact, audio, and reduced motion | Same recorded scenario can run with quiet and intended effects; essential cues remain readable and muted play works | 0.75 h |
-| Playtest and critical fixes | Identified playable build | Run neutral tasks with the creator; use an agent-operated second client if no other human is available; fix blocked play or misunderstood rescue | Record actual observations, assistance, inputs, build, and outcome; retest the most consequential change | 1 h |
-| Focused balance pass | Actual shared rules and useful traces | Examine whether rescue is plausible versus postponing it; use fixed scenarios and shared rule execution if available | Record real rule traces and comparison limits. Only call a simulation complete if a reproducible runner and replay agreement actually exist | 0.5 h |
-| GamePix candidate preparation | Stable build and required fixes | Package, verify loading/iframe/input/audio/pause, prepare representative assets, copy, credits, and known limitations | Identify the exact candidate and mark checks Pass/Fail/Untested/N/A. Recheck affected evidence after changes; hosted checks require the processed host version | 1.5 h |
-| Contingency | Blocker with highest player impact | Resolve a bounded connection, rescue, performance, or packaging failure; recheck its player path | A reproducible fix and remaining-risk record, or an explicit release blocker if unresolved | 1.5 h |
-
-Total planned effort: **10 hours**, including integration, human checks,
-packaging, and contingency. Do not spend the contingency on new content.
-
-## Cut and stop points
-
-- At 1.5 hours, if there is no credible verified connection path, record the
-  precise failure and seek a focused architecture decision. Continue independent
-  local rules work where useful, but do not call it a multiplayer candidate.
-- At 3.5 hours, preserve a complete minimal attempt with rescue and retry.
-  If it is incomplete, use the content timebox to close the loop first.
-- At 4.75 hours, freeze content. Preserve distinct enemy responses with simple
-  shapes and a small reusable pattern set. If fewer behaviors are proposed,
-  explain the effect on the creator's enemy-variety priority.
-- At 7 hours, prioritize release blockers and packaging. Do not remove exposed
-  rescue or substitute single-player to disguise a missed scope target.
-- If co-op or platform compatibility remains unresolved, deliver a truthful
-  prototype/blocker record rather than claim the GamePix release is ready.
-  Submission approval and a public date are outside the ten-hour guarantee.
-
-## Try the first slice
-
-**Setup:** Record build identity, browser/input, connection path, starting
-positions, scenario seed or script, and reset steps. Use isolated test rooms.
-
-**Technical checks:** Identical critical state on both clients; simultaneous
-downing; boundary of rescue range; leaving before rescue completes; repeated
-Space; conflicting A/D; revival inside a hazard; a partner disappearing during
-rescue; one player pausing/muting; retry clearing prior input and state. Select
-the actual expected rules before implementing these checks.
-
-**Neutral human task:** "Complete an attempt together. If a ship becomes
-disabled, continue as you think the game allows." Let the creator try before
-explaining the rescue. Record any hint and assisted completion separately.
-
-**Observe:** Which cues the creator uses, what they expect rescue to do, whether
-the route feels chosen or forced, why a hit occurs, and whether effects obscure
-the next decision. Do not infer a second human's reactions from an agent client.
-
-**Next decision:** Keep the rule if positional rescue is understood and creates
-an interesting choice; otherwise adjust its cue, exposure, or timing and replay
-the same scenario. The creator's positive 0.1 report is recorded in `playtest.md`. The creator then called 0.2 “super fun” and requested this tunnel iteration.
-The 0.3 technical record is in `verification.md`; human depth/readability feedback remains pending.
+Try the same brief drill in each version and vary version order across crews
+if available. Treat a single crew's second exposure as a repeat with practice.
+Keep the candidate for a natural-wave retest if first-exposure players
+find the hold area more readily and can still explain the warning.
+If players reach the hold area in both versions and explain why they chose
+to wait or escape, pursue the risk question with the baseline. If the ticks
+confuse the warning or the observations are mixed, record the ambiguity before
+changing rescue timing.

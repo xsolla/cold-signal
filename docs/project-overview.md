@@ -55,7 +55,8 @@ Confirmed by the creator:
 - Design inspiration: Left 4 Dead's cooperative design philosophy. Research
   notes and original arena proposals are in the balance plan.
 
-See [the design brief](design-delve-together.md), [the ten-hour plan](prototype-plan.md),
+See [the design brief](design-delve-together.md),
+[the ten-hour plan](prototype-plan-delve-together.md),
 [game-feel preparation](game-feel.md), [playtest preparation](playtest.md),
 [balance preparation](balance-plan.md), [launch checklist](launch-checklist.md),
 and [platform notes](platform-notes.md).
