@@ -1,0 +1,267 @@
+{
+  "base": "18791157b1e1c278fac55e115a375971ef3a0c1b",
+  "build": "18791157b1e1+analytics-v1",
+  "sourceBlobs": {
+    "server/index.mjs": "b2f517944958f6f98fbade2d22434c21d611da1d",
+    "server/playtest-analytics.mjs": "1adcd8bc230f14cbfc65869accf4a63c7a24c06f",
+    "scripts/analytics-report.mjs": "20a73b8490574a0f8f8050bf1bfeb7a6c3b65d1b",
+    "src/rules.js": "7d5b20b8159bda4b2a10794124efd2b2ced98c29"
+  },
+  "node": "v20.11.0",
+  "diagnosticBrowser": {
+    "status": "passed",
+    "browser": "157.0.8103.80",
+    "url": "http://127.0.0.1:5185",
+    "steps": [
+      "Four independent browser clients selected characters, all readied, and fired automatically without Space.",
+      "Observed half-speed simulation and three-minute display; A/D remained immediate at the slower velocity.",
+      "W/Up and S/Down moved through all three depths on all four clients; holding hopped once, end stops clamped, and constructed core preview plus both rail patrols were visible.",
+      "Space triggered the four selected abilities; usage and cooldown state agreed on every client.",
+      "Constructed positional rescue completed across all four clients while automatic fire continued; pause froze the whole crew.",
+      "Three-depth all-active victory, whole-crew loss, reset ability state on retry, and interruption on one crew disconnect passed.",
+      "Three separately launched controlled browser clients filled a four-pilot crew; selection, ability HUD, and gameplay fit 640×480."
+    ],
+    "errors": []
+  },
+  "automatedBrowser": {
+    "browser": "157.0.8103.80",
+    "status": "passed",
+    "url": "http://127.0.0.1:5185",
+    "purpose": "automated browser check without development tools",
+    "crew": 4,
+    "pace": 0.5,
+    "firstObservedDown": {
+      "time": 6.5083333333334465,
+      "downRings": [
+        2,
+        2
+      ],
+      "rescues": 0
+    },
+    "ending": "interrupted",
+    "actions": [
+      "Created and joined via UI",
+      "Readied all four clients",
+      "Pressed W into the middle rail",
+      "Allowed ordinary play to create a down",
+      "Closed one peer to interrupt the run"
+    ]
+  },
+  "defaultStudy": {
+    "selection": {
+      "schema": 1,
+      "build": "18791157b1e1+analytics-v1",
+      "cohort": "study"
+    },
+    "logHealth": {
+      "malformedRows": 0,
+      "duplicateRows": 0,
+      "conflictingIds": 0,
+      "invalidRuns": 0
+    },
+    "runOutcomes": {
+      "starts": 0,
+      "won": 0,
+      "lost": 0,
+      "interrupted": 0,
+      "missingEnd": 0
+    },
+    "opportunities": {
+      "eligible": 0,
+      "started": 0,
+      "reset": 0,
+      "rescued": 0,
+      "lost": 0,
+      "interrupted": 0,
+      "missingEnd": 0,
+      "diagnosticRemoved": 0,
+      "startPerEligible": {
+        "numerator": 0,
+        "denominator": 0,
+        "rate": null
+      },
+      "resetPerStarted": {
+        "numerator": 0,
+        "denominator": 0,
+        "rate": null
+      },
+      "rescuePerResolved": {
+        "numerator": 0,
+        "denominator": 0,
+        "rate": null
+      }
+    },
+    "byCrewPaceRing": []
+  },
+  "cohorts": {
+    "diagnostic": {
+      "report": {
+        "selection": {
+          "schema": 1,
+          "build": "18791157b1e1+analytics-v1",
+          "cohort": "diagnostic"
+        },
+        "logHealth": {
+          "malformedRows": 0,
+          "duplicateRows": 0,
+          "conflictingIds": 0,
+          "invalidRuns": 0
+        },
+        "runOutcomes": {
+          "starts": 4,
+          "won": 1,
+          "lost": 1,
+          "interrupted": 2,
+          "missingEnd": 0
+        },
+        "opportunities": {
+          "eligible": 1,
+          "started": 1,
+          "reset": 0,
+          "rescued": 1,
+          "lost": 0,
+          "interrupted": 0,
+          "missingEnd": 0,
+          "diagnosticRemoved": 0,
+          "startPerEligible": {
+            "numerator": 1,
+            "denominator": 1,
+            "rate": 1
+          },
+          "resetPerStarted": {
+            "numerator": 0,
+            "denominator": 1,
+            "rate": 0
+          },
+          "rescuePerResolved": {
+            "numerator": 1,
+            "denominator": 1,
+            "rate": 1
+          }
+        },
+        "byCrewPaceRing": [
+          {
+            "crew": 4,
+            "pace": 0.5,
+            "ring": 1,
+            "eligible": 1
+          }
+        ]
+      },
+      "durableRecords": 11,
+      "example": {
+        "run": "224048e6-6bd4-4005-9444-4b14ae45decf",
+        "observations": [
+          {
+            "seq": 1,
+            "type": "run_start",
+            "crew": 4,
+            "pace": 0.5
+          },
+          {
+            "seq": 2,
+            "type": "rescue_exposed",
+            "ring": 1
+          },
+          {
+            "seq": 3,
+            "type": "rescue_started",
+            "opportunity": 2
+          },
+          {
+            "seq": 4,
+            "type": "rescue_completed",
+            "opportunity": 2
+          },
+          {
+            "seq": 5,
+            "type": "run_end",
+            "outcome": "won"
+          }
+        ]
+      }
+    },
+    "automated": {
+      "report": {
+        "selection": {
+          "schema": 1,
+          "build": "18791157b1e1+analytics-v1",
+          "cohort": "automated"
+        },
+        "logHealth": {
+          "malformedRows": 0,
+          "duplicateRows": 0,
+          "conflictingIds": 0,
+          "invalidRuns": 0
+        },
+        "runOutcomes": {
+          "starts": 1,
+          "won": 0,
+          "lost": 0,
+          "interrupted": 1,
+          "missingEnd": 0
+        },
+        "opportunities": {
+          "eligible": 2,
+          "started": 0,
+          "reset": 0,
+          "rescued": 0,
+          "lost": 0,
+          "interrupted": 2,
+          "missingEnd": 0,
+          "diagnosticRemoved": 0,
+          "startPerEligible": {
+            "numerator": 0,
+            "denominator": 2,
+            "rate": 0
+          },
+          "resetPerStarted": {
+            "numerator": 0,
+            "denominator": 0,
+            "rate": null
+          },
+          "rescuePerResolved": {
+            "numerator": 0,
+            "denominator": 0,
+            "rate": null
+          }
+        },
+        "byCrewPaceRing": [
+          {
+            "crew": 4,
+            "pace": 0.5,
+            "ring": 2,
+            "eligible": 2
+          }
+        ]
+      },
+      "durableRecords": 4,
+      "example": {
+        "run": "13651c3a-e9c7-497c-98fe-669614292b1a",
+        "observations": [
+          {
+            "seq": 1,
+            "type": "run_start",
+            "crew": 4,
+            "pace": 0.5
+          },
+          {
+            "seq": 2,
+            "type": "rescue_exposed",
+            "ring": 2
+          },
+          {
+            "seq": 3,
+            "type": "rescue_exposed",
+            "ring": 2
+          },
+          {
+            "seq": 4,
+            "type": "run_end",
+            "outcome": "interrupted"
+          }
+        ]
+      }
+    }
+  }
+}

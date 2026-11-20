@@ -6,11 +6,19 @@ import { readFile } from 'node:fs/promises';
 import { performance } from 'node:perf_hooks';
 import { WebSocketServer, WebSocket } from 'ws';
 import { makeMatch, step, cleanInput, T, downPlayer, CREW, RINGS } from '../src/rules.js';
+import { localRescueAnalytics } from './playtest-analytics.mjs';
 
 const pulseKeys = ['special', 'inward', 'outward'];
 const clearPending = room => room.pending.forEach(input => pulseKeys.forEach(key => { input[key] = false; }));
 
-export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep = null } = {}) {
+export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep = null, analytics = null } = {}) {
+  let observe = analytics && ((state, transition) => {
+    try { analytics.observe(state, transition, diagnostics); }
+    catch {
+      observe = null;
+      console.warn('Cold Signal analytics observer stopped after an error.');
+    }
+  });
   const rooms = new Map();
   const webRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../public');
   const server = http.createServer(async (req, res) => {
@@ -45,7 +53,10 @@ export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep
     ws.room = null;
     room.clients[ws.slot] = null;
     room.ready.fill(false); room.paused.fill(true); clearPending(room);
-    if (room.state?.status === 'playing') room.state.status = 'interrupted';
+    if (room.state?.status === 'playing') {
+      room.state.status = 'interrupted';
+      observe?.(room.state, 'interrupt');
+    }
     room.clients.forEach(client => send(client, { type: 'notice', text: 'A crew member disconnected. Leave this room to form a fresh crew.' }));
     broadcast(room);
     if (room.clients.every(client => !client)) rooms.delete(room.code);
@@ -111,6 +122,7 @@ export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep
           room.state = makeMatch(17320 + ++room.generation, { ...room.config, characters: room.characters });
           room.ready.fill(false); room.inputs = room.clients.map(() => cleanInput()); clearPending(room);
           room.paused.fill(false); room.lastTick = performance.now(); room.accumulator = 0;
+          observe?.(room.state, 'start');
         }
       }
       if (msg.type === 'diagnostic' && diagnostics && room.state?.status === 'playing') {
@@ -138,6 +150,7 @@ export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep
           room.state.enemyClock = 10; room.state.wallClock = 10;
         }
         if (msg.action === 'wipe') for (const p of room.state.players) { p.protection = 0; p.ward = 0; p.wardCharges = 0; downPlayer(room.state, p.id); }
+        observe?.(room.state, 'diagnostic');
       }
       broadcast(room);
     });
@@ -159,6 +172,7 @@ export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep
         while (room.accumulator >= T.step) {
           const tickInputs = room.inputs.map((input, i) => ({ ...input, taps: { ...room.pending[i] } }));
           step(room.state, tickInputs); room.accumulator -= T.step; clearPending(room);
+          observe?.(room.state, 'step');
           if (onStep) onStep({ seed: room.state.seed, inputs: structuredClone(tickInputs), state: structuredClone(room.state) });
         }
       } else room.accumulator = 0;
@@ -182,9 +196,14 @@ export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep
   return { server, rooms, close };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  const game = createGameServer({ diagnostics: process.argv.includes('--dev-tools') || process.env.DEV_TOOLS === '1' });
+  const analytics = localRescueAnalytics();
+  const game = createGameServer({ diagnostics: process.argv.includes('--dev-tools') || process.env.DEV_TOOLS === '1', analytics });
   game.server.listen(Number(process.env.PORT || 5176), process.env.HOST || '127.0.0.1', () => {
     console.log(`Cold Signal local server listening on ${game.server.address().port}`);
   });
-  for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, async () => { await game.close(); process.exit(0); });
+  for (const signal of ['SIGTERM', 'SIGINT']) process.once(signal, async () => {
+    await game.close();
+    await analytics?.flush();
+    process.exit(0);
+  });
 }
