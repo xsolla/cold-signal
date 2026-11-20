@@ -40,8 +40,15 @@ machine-local image aliases described in the run guide.
 
 ## Verification
 
-The migration is checked with a clean dependency installation, the full rules
-and network test suite, and the pacing comparison using only files in this
-repository. Current source hashes and migrated file identities are recorded in
-`verification.json`. Browser captures and smoke-check results are recorded
-alongside this file after the standalone runtime is started.
+The independently installed game passed all **55** rules/network tests, and its
+pacing report is identical to the accepted Pocket Studio build. Docker Compose
+configuration was validated. An HTTP/WebSocket smoke check confirmed the served
+rules, Cold Signal title and developer controls. The browser showed the new
+[entry screen](standalone-menu.jpg) and a [four-client ready room](standalone-ready.jpg).
+The primary server at port 5176 now runs from this checkout. Source hashes and
+verification outcomes are in [verification.json](verification.json).
+
+Pocket Studio removal is committed as `16786c4`; the original working directory
+was preserved as a recoverable local migration backup. Local environment files
+and ignored caches were excluded from this repository. A GitHub remote awaits
+the creator’s owner/visibility selection.

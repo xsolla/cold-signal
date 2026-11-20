@@ -16,5 +16,17 @@
   "docker_compose_config_valid": true,
   "local_checkout": "/Users/samfarmer/Documents/GitHub/cold-signal",
   "environment_files_copied": false,
-  "ignored_caches_copied": false
+  "ignored_caches_copied": false,
+  "primary_runtime": "http://localhost:5176",
+  "runtime_cwd": "/Users/samfarmer/Documents/GitHub/cold-signal",
+  "runtime_brand": "Cold Signal",
+  "http_health_ok": true,
+  "served_rules_match": true,
+  "cli_dev_tools_verified": true,
+  "browser_menu_verified": true,
+  "browser_four_clients_ready": true,
+  "browser_errors": [],
+  "pocket_studio_game_directory_removed": true,
+  "pocket_studio_cleanup_commit": "16786c4",
+  "github_remote": "awaiting owner and visibility selection"
 }
