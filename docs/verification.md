@@ -13,6 +13,11 @@ once with `npm ci`.
 | `npm run test:browser` | Four independent Chromium clients drive lobby entry, keyboard input, pause, depth movement, abilities, diagnostic rescue and outcomes, retry, disconnect, and compact layouts. |
 | `npm run pacing` | Fixed-seed firing, spawn pressure, and controlled traces compared with the [versioned pre-arcade rules](baselines/README.md). |
 | `npm run balance` | The existing two-pilot full-speed rescue fixture. |
+| `npm run playtest:rescue` | Self-hosted browser session: ordinary assisted rescue attempt, labeled constructed rescue, retry and interruption. |
+| `npm run balance:rescue` | Paired first-down rescue policies across fixed seeds and two/four-pilot profiles; prints JSON without changing tuning. |
+| `npm run test:ui` | Pointer room options, keyboard pilot selection, settings, paused input, outcomes and interruption at desktop and compact sizes. Requires a diagnostics-enabled server; defaults to port 5187. |
+| `npm run test:audio:browser` | Self-hosted browser probe for real keyboard ability audio and the constructed maximum-chain/rescue overlap. |
+| `npm run analytics:report -- LOG --build BUILD` | Validated, deduplicated local rescue counts for one build; the default study cohort excludes automated and diagnostic runs. |
 
 Start `npm run dev` in a separate terminal for the browser check. It needs local
 test tools enabled and an installed Chrome or Chromium. Override `CHROME_PATH`
@@ -23,6 +28,15 @@ Check the exit status and `artifacts/browser-check-v03.json`. Keep generated log
 and captures in ignored `artifacts/`.
 
 ## Recorded evidence
+
+The autonomous skill trials add [current UI findings](ui-ux.md),
+[art calibration](art-direction.md), [sound comparison](sound-design.md),
+[agent playtest](playtest.md), [paired rescue diagnostics](balance-plan.md),
+and an [opt-in local rescue study](playtest-analytics.md). Their captures and
+reports identify their own source revisions; a baseline capture is not evidence
+of the final integrated candidate. `npm run audio:audition` rebuilds the recorded
+WAV comparisons and signal report, so it intentionally changes evidence files.
+
 
 - [Standalone migration](migration/README.md) and [verification data](migration/verification.json)
   identify the standalone runtime, smoke check, and Docker Compose validation.

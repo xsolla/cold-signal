@@ -17,7 +17,13 @@
     "skills:link": "node scripts/pocket-studio.mjs link",
     "skills:links": "node scripts/pocket-studio.mjs links",
     "skills:status": "node scripts/pocket-studio.mjs status",
-    "skills:check": "node scripts/pocket-studio.mjs check"
+    "skills:check": "node scripts/pocket-studio.mjs check",
+    "test:ui": "node scripts/ui-ux-check.mjs candidate",
+    "test:audio:browser": "node scripts/audio-browser-check.mjs",
+    "audio:audition": "node scripts/audio-audition.mjs",
+    "playtest:rescue": "node scripts/playtest-depth-rescue.mjs",
+    "balance:rescue": "node scripts/balance-rescue-windows.mjs",
+    "analytics:report": "node scripts/analytics-report.mjs"
   },
   "dependencies": {
     "ws": "8.23.0"

@@ -17,6 +17,12 @@ opt-in LAN setup.
 | Entry, controls, and HUD | [`public/index.html`](../public/index.html) loads [`public/main.js`](../public/main.js). The client samples keyboard input, sends intent, and displays room and match snapshots. It predicts only the local ship's angle for display. |
 | Visuals and sound | [`public/renderer.js`](../public/renderer.js) draws Canvas using shared projection helpers. [`public/cold-signal.js`](../public/cold-signal.js) owns palette, ship geometry, and transient presentation state. [`public/audio.js`](../public/audio.js) renders event and state feedback via Web Audio. The browser serves the shared rules as `/rules.js`. |
 
+Optional rescue analytics observes committed server state through
+[`server/playtest-analytics.mjs`](../server/playtest-analytics.mjs). It writes
+bounded local records only when configured and keeps measurements outside
+match state and gameplay randomness. Use the [study contract](playtest-analytics.md)
+when changing hooks, cohorts or report denominators.
+
 Presentation consumes server events by ID. Keep visual effects out of the
 simulation and use the shared projection when aligning silhouettes and
 collisions. The renderer keeps pilots and rescue progress above large effects.
