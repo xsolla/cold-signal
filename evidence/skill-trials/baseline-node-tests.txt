@@ -1,0 +1,309 @@
+
+> cold-signal@0.3.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: four pilots sustain 60 automatic shots per second at full pace; half pace preserves simulation cadence
+ok 1 - four pilots sustain 60 automatic shots per second at full pace; half pace preserves simulation cadence
+  ---
+  duration_ms: 11.810917
+  ...
+# Subtest: natural squads provide sustained density with crew-scaled population bounds
+ok 2 - natural squads provide sustained density with crew-scaled population bounds
+  ---
+  duration_ms: 41.380417
+  ...
+# Subtest: one bullet cascades through adjacent escorts and credits every kill exactly once
+ok 3 - one bullet cascades through adjacent escorts and credits every kill exactly once
+  ---
+  duration_ms: 0.688208
+  ...
+# Subtest: chains preserve the sanctuary, respect range and damage armor without erasing it
+ok 4 - chains preserve the sanctuary, respect range and damage armor without erasing it
+  ---
+  duration_ms: 0.119208
+  ...
+# Subtest: a full population cascade terminates without duplicate rewards or lost kill events
+ok 5 - a full population cascade terminates without duplicate rewards or lost kill events
+  ---
+  duration_ms: 0.709709
+  ...
+# Subtest: escaped escorts do not multiply lingering danger zones; leaders keep their warning
+ok 6 - escaped escorts do not multiply lingering danger zones; leaders keep their warning
+  ---
+  duration_ms: 0.107417
+  ...
+# Subtest: whole-folder links expose live edits and survive moving the project
+ok 7 - whole-folder links expose live edits and survive moving the project
+  ---
+  duration_ms: 28.660791
+  ...
+# Subtest: a conflicting installation prevents all link writes and preserves its content
+ok 8 - a conflicting installation prevents all link writes and preserves its content
+  ---
+  duration_ms: 15.755542
+  ...
+# Subtest: verification detects missing, misdirected and stale links while preserving unrelated skills
+ok 9 - verification detects missing, misdirected and stale links while preserving unrelated skills
+  ---
+  duration_ms: 13.452833
+  ...
+# Subtest: an uninitialized submodule gives setup instructions instead of using the parent repository
+ok 10 - an uninitialized submodule gives setup instructions instead of using the parent repository
+  ---
+  duration_ms: 2.31175
+  ...
+# Subtest: network replays emit each presentation event once without changing authoritative state
+ok 11 - network replays emit each presentation event once without changing authoritative state
+  ---
+  duration_ms: 1.561083
+  ...
+# Subtest: pausing freezes effects and trails; resuming does not accumulate wall time
+ok 12 - pausing freezes effects and trails; resuming does not accumulate wall time
+  ---
+  duration_ms: 0.432083
+  ...
+# Subtest: retry resets event IDs, transient particles, trails, and observed bullet origins
+ok 13 - retry resets event IDs, transient particles, trails, and observed bullet origins
+  ---
+  duration_ms: 0.443208
+  ...
+# Subtest: reduced motion immediately removes movement ghosts while keeping functional feedback
+ok 14 - reduced motion immediately removes movement ghosts while keeping functional feedback
+  ---
+  duration_ms: 0.083084
+  ...
+# Subtest: projectile trails retain their first observed depth and release vanished IDs
+ok 15 - projectile trails retain their first observed depth and release vanished IDs
+  ---
+  duration_ms: 0.078625
+  ...
+# Subtest: presentation history is bounded and the fork fits the previous painted ship envelope
+ok 16 - presentation history is bounded and the fork fits the previous painted ship envelope
+  ---
+  duration_ms: 1.967167
+  ...
+# Subtest: camera stays completely locked during stacked kills and specials in both motion settings
+ok 17 - camera stays completely locked during stacked kills and specials in both motion settings
+  ---
+  duration_ms: 1.314
+  ...
+# Subtest: inputs accept explicit booleans and tolerate malformed payloads
+ok 18 - inputs accept explicit booleans and tolerate malformed payloads
+  ---
+  duration_ms: 1.022333
+  ...
+# Subtest: steering starts, stops, reverses, and cancels conflicting keys
+ok 19 - steering starts, stops, reverses, and cancels conflicting keys
+  ---
+  duration_ms: 0.615791
+  ...
+# Subtest: proximity rescue completes while the survivor continues firing
+ok 20 - proximity rescue completes while the survivor continues firing
+  ---
+  duration_ms: 1.86225
+  ...
+# Subtest: leaving the rescue arc resets uncompleted progress
+ok 21 - leaving the rescue arc resets uncompleted progress
+  ---
+  duration_ms: 0.265959
+  ...
+# Subtest: revival protection blocks an immediate repeat hit then expires
+ok 22 - revival protection blocks an immediate repeat hit then expires
+  ---
+  duration_ms: 1.185791
+  ...
+# Subtest: both down at the finish is a loss, never a victory
+ok 23 - both down at the finish is a loss, never a victory
+  ---
+  duration_ms: 0.102167
+  ...
+# Subtest: the final clear waits for both ships; the survivor can rescue in overtime
+ok 24 - the final clear waits for both ships; the survivor can rescue in overtime
+  ---
+  duration_ms: 0.53
+  ...
+# Subtest: hazard gaps wrap through zero and warning zones do not hit early
+ok 25 - hazard gaps wrap through zero and warning zones do not hit early
+  ---
+  duration_ms: 0.402167
+  ...
+# Subtest: fixed seed and recorded inputs reproduce all authoritative state
+ok 26 - fixed seed and recorded inputs reproduce all authoritative state
+  ---
+  duration_ms: 90.67025
+  ...
+# Subtest: diagnostic control policy uses the current state without mutating it
+ok 27 - diagnostic control policy uses the current state without mutating it
+  ---
+  duration_ms: 0.329875
+  ...
+# Subtest: four pilots shoot automatically; downed pilots stop firing
+ok 28 - four pilots shoot automatically; downed pilots stop firing
+  ---
+  duration_ms: 0.096417
+  ...
+# Subtest: global half-speed scales movement, projectiles, timers, and match duration
+ok 29 - global half-speed scales movement, projectiles, timers, and match duration
+  ---
+  duration_ms: 0.113
+  ...
+# Subtest: Space is edge-triggered and holding it does not recast after cooldown
+ok 30 - Space is edge-triggered and holding it does not recast after cooldown
+  ---
+  duration_ms: 2.924667
+  ...
+# Subtest: Mara wards nearby crew; one absorbed hit grants brief repeat-hit protection
+ok 31 - Mara wards nearby crew; one absorbed hit grants brief repeat-hit protection
+  ---
+  duration_ms: 0.310917
+  ...
+# Subtest: Ivo clears a sector of enemies and zones and opens a shared wall gap
+ok 32 - Ivo clears a sector of enemies and zones and opens a shared wall gap
+  ---
+  duration_ms: 0.161625
+  ...
+# Subtest: any pilot can rescue any downed crew member; Sana accelerates it without a required healer
+ok 33 - any pilot can rescue any downed crew member; Sana accelerates it without a required healer
+  ---
+  duration_ms: 1.194584
+  ...
+# Subtest: Rook shares faster movement and brief cover with nearby crew
+ok 34 - Rook shares faster movement and brief cover with nearby crew
+  ---
+  duration_ms: 0.277375
+  ...
+# Subtest: four-player victory needs all four; the last survivor can keep a rescue alive
+ok 35 - four-player victory needs all four; the last survivor can keep a rescue alive
+  ---
+  duration_ms: 0.781291
+  ...
+# Subtest: all four down loses and walls track collision independently for four slots
+ok 36 - all four down loses and walls track collision independently for four slots
+  ---
+  duration_ms: 0.099542
+  ...
+# Subtest: unknown characters fall back to a valid choice and downed pilots cannot cast
+ok 37 - unknown characters fall back to a valid choice and downed pilots cannot cast
+  ---
+  duration_ms: 0.135916
+  ...
+# Subtest: depth keys hop one rail per press, clamp at both ends, and cancel opposing keys
+ok 38 - depth keys hop one rail per press, clamp at both ends, and cancel opposing keys
+  ---
+  duration_ms: 0.748292
+  ...
+# Subtest: a downed jumper settles on their target ring and fires no further shots
+ok 39 - a downed jumper settles on their target ring and fires no further shots
+  ---
+  duration_ms: 0.152084
+  ...
+# Subtest: automatic fire originates at the actual depth, including during a hop
+ok 40 - automatic fire originates at the actual depth, including during a hop
+  ---
+  duration_ms: 0.074333
+  ...
+# Subtest: rescue requires matching depth and completes after reaching that rail
+ok 41 - rescue requires matching depth and completes after reaching that rail
+  ---
+  duration_ms: 0.6915
+  ...
+# Subtest: support abilities reach an adjacent rail but not through two depths
+ok 42 - support abilities reach an adjacent rail but not through two depths
+  ---
+  duration_ms: 0.088458
+  ...
+# Subtest: walls survive the outer rim and threaten all three rails
+ok 43 - walls survive the outer rim and threaten all three rails
+  ---
+  duration_ms: 0.458666
+  ...
+# Subtest: jumping across a solid wall cannot tunnel through its collision
+ok 44 - jumping across a solid wall cannot tunnel through its collision
+  ---
+  duration_ms: 0.081666
+  ...
+# Subtest: both new enemies approach a rail, patrol it, and mark danger at that depth
+ok 45 - both new enemies approach a rail, patrol it, and mark danger at that depth
+  ---
+  duration_ms: 0.705291
+  ...
+# Subtest: patrol contact and warning zones threaten the occupied rail, not a distant one
+ok 46 - patrol contact and warning zones threaten the occupied rail, not a distant one
+  ---
+  duration_ms: 0.107917
+  ...
+# Subtest: projection and silhouettes grow continuously toward the player
+ok 47 - projection and silhouettes grow continuously toward the player
+  ---
+  duration_ms: 0.244
+  ...
+# Subtest: swept bullets hit small distant targets without skipping them
+ok 48 - swept bullets hit small distant targets without skipping them
+  ---
+  duration_ms: 0.111917
+  ...
+# Subtest: distant silhouettes have a narrower angular hit window than near targets
+ok 49 - distant silhouettes have a narrower angular hit window than near targets
+  ---
+  duration_ms: 0.12025
+  ...
+# Subtest: bullseye absorbs every bullet, protects preview enemies from all attacks, and allows emergence
+ok 50 - bullseye absorbs every bullet, protects preview enemies from all attacks, and allows emergence
+  ---
+  duration_ms: 0.303375
+  ...
+# Subtest: a release and new press between ticks still jumps when the previous tick held inward
+ok 51 - a release and new press between ticks still jumps when the previous tick held inward
+  ---
+  duration_ms: 0.060792
+  ...
+# Subtest: normal spawning previews all five enemy behaviors during the gauntlet
+ok 52 - normal spawning previews all five enemy behaviors during the gauntlet
+  ---
+  duration_ms: 187.889583
+  ...
+# Subtest: two real sockets join one room; invalid/full rooms are recoverable
+ok 53 - two real sockets join one room; invalid/full rooms are recoverable
+  ---
+  duration_ms: 59.127791
+  ...
+# Subtest: ready, shared movement, pause, wipe, and retry use authoritative room state
+ok 54 - ready, shared movement, pause, wipe, and retry use authoritative room state
+  ---
+  duration_ms: 377.484333
+  ...
+# Subtest: disconnect interrupts the run instead of silently playing on
+ok 55 - disconnect interrupts the run instead of silently playing on
+  ---
+  duration_ms: 46.076875
+  ...
+# Subtest: diagnostic commands are ineffective when server test tools are disabled
+ok 56 - diagnostic commands are ineffective when server test tools are disabled
+  ---
+  duration_ms: 116.121084
+  ...
+# Subtest: a recorded live server input tape agrees with headless replay at every tick
+ok 57 - a recorded live server input tape agrees with headless replay at every tick
+  ---
+  duration_ms: 1407.120458
+  ...
+# Subtest: four sockets select characters, all ready, cast abilities, and reject a fifth pilot
+ok 58 - four sockets select characters, all ready, cast abilities, and reject a fifth pilot
+  ---
+  duration_ms: 304.345083
+  ...
+# Subtest: brief depth key taps reach all four clients and retry resets everyone to the outer rail
+ok 59 - brief depth key taps reach all four clients and retry resets everyone to the outer rail
+  ---
+  duration_ms: 1480.768042
+  ...
+1..59
+# tests 59
+# suites 0
+# pass 59
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3892.891

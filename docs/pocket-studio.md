@@ -24,6 +24,8 @@ in `tools/pocket-studio/.venv/`. It requires Git, Python 3.9+ and network access
 It preserves an initialized checkout's current branch and local changes. Clone
 with `git clone --recurse-submodules` to initialize it during cloning instead.
 Git access to Pocket Studio is required wherever setup runs, including CI.
+For this local trial pin, follow [bundle recovery](#recover-the-local-trial-pin)
+before setup in a fresh clone.
 
 Use `npm run skills:status` to read the recorded pin and the checked-out
 revision. The autonomous trial branch assembles eleven skills from the original
@@ -48,6 +50,37 @@ project; another personal copy with the same name can also appear in selectors.
 On Windows, enable Git symlink support and the permissions needed to create
 directory symlinks before setup; existing regular-file link placeholders are
 reported as conflicts for review.
+
+## Recover the local trial pin
+
+The autonomous review branch pins Pocket Studio `3f8b752`, assembled locally
+from the recorded upstream skill sources. It has not been pushed. The
+[Git bundle](../evidence/skill-trials/pocket-studio-trials.bundle) preserves
+that candidate relative to the original `8ccab1c` baseline. An independent
+baseline-plus-bundle recovery produced the identical source tree and all
+eleven skills; [recovery evidence](../evidence/skill-trials/skill-bundle-recovery.json)
+records its checksum and limits.
+
+For an initialized checkout missing the candidate commit, fetch the bundle,
+then return to Cold Signal's recorded pin:
+
+```sh
+git -C tools/pocket-studio fetch ../../evidence/skill-trials/pocket-studio-trials.bundle refs/heads/codex/autonomous-skill-trials
+git submodule update -- tools/pocket-studio
+npm run skills:setup
+```
+
+For a **fresh clone only**, initialize the fetchable upstream update target
+before those commands:
+
+```sh
+git submodule update --init --remote -- tools/pocket-studio
+```
+
+This temporary upstream checkout supplies the bundle's prerequisites; the
+ordinary update above restores the exact trial pin. Save contributor work
+before changing an existing submodule checkout. The bundle recovery check was
+local; it did not exercise a new network clone.
 
 ## Try a skill on real development work
 

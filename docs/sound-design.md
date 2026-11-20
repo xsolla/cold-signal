@@ -12,8 +12,11 @@ and a rescue. The original client sent 48 copies of the same short triangle
 pulse to Web Audio, with a float peak of 1.057 in the matched reel. The revised
 client plays the original pulse for a single kill. An event batch with two to
 five kills adds a higher tap. Six or more add a third. The largest roll fits
-within 63 ms, during which incoming kill events share that roll. Rescue and
-ability cues have their own scheduling. [Runtime implementation](../public/audio.js).
+within 63 ms. Later kill batches arriving before the active cue ends are
+suppressed; they do not extend or upgrade that cue. This trades one audible
+notification per kill for bounded overlap. The visuals and score retain every
+kill. Rescue and ability cues have their own scheduling.
+[Runtime implementation](../public/audio.js).
 
 | Check | A | B |
 | --- | ---: | ---: |

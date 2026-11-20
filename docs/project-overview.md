@@ -57,8 +57,8 @@ Confirmed by the creator:
 
 See [the design brief](design-delve-together.md),
 [the ten-hour plan](prototype-plan-delve-together.md),
-[game-feel preparation](game-feel.md), [playtest preparation](playtest.md),
-[balance preparation](balance-plan.md), [launch checklist](launch-checklist.md),
+[game-feel preparation](game-feel-delve-together.md), [playtest preparation](playtest-delve-together.md),
+[balance preparation](balance-plan-delve-together.md), [launch checklist](launch-checklist.md),
 and [platform notes](platform-notes.md).
 
 ## Guided skill walkthrough

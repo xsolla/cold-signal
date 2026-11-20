@@ -1,0 +1,11 @@
+{
+  "mode": "Offline Git bundle recovery into an independently initialized repository",
+  "baseline": "8ccab1cb03ea6b8311d6d6e09fa25db2751fe56a",
+  "recoveredCommit": "3f8b752cd6bd03ee5d719ceac2e37f5c7c3da7d4",
+  "expectedTree": "d95d022b586579d3907e3e1e9c1503860d969553",
+  "recoveredTree": "d95d022b586579d3907e3e1e9c1503860d969553",
+  "bundleSha256": "6e643652d1b64e4a84becfff2a6339cf35eef1369c7b53d231147e408ce44110",
+  "skillCount": 11,
+  "result": "passed",
+  "limits": "This verifies local baseline-plus-bundle object recovery. Remote service availability and a fresh network clone were not tested."
+}
