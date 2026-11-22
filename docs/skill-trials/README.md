@@ -6,6 +6,10 @@ subagents, starting with agent scaffolding. Agent scaffolding completed before
 any other skill trial began. Every trial ran in an isolated game worktree
 with its own canonical Pocket Studio worktree.
 
+These records preserve the skill names and versions used for those trials.
+The [November 22 update](2026-11-22-pocket-studio-update.md) records the current
+upstream pin and renamed skills; it does not rerun or revise the trial results.
+
 ## Changes by skill
 
 Commit IDs below refer to the integrated Cold Signal history. Trial records
@@ -53,7 +57,7 @@ Commit `839e8c3` preserves it separately from the trials; original HEAD was
 `752efef`. No work was discarded. The [frozen suite input](../../evidence/skill-trials/suite-input.json)
 records the exact request, source revisions and model settings.
 
-The trial pin is Pocket Studio `3f8b752`, combining eleven canonical skills.
+The historical trial pin is Pocket Studio `3f8b752`, combining eleven canonical skills.
 [Source provenance and local recovery](../pocket-studio.md#recover-the-local-trial-pin)
 include a verified Git bundle. The baseline-plus-bundle recovery reproduced
 the exact source tree. No upstream branch was pushed and no publication,

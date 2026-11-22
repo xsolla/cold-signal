@@ -52,6 +52,6 @@ the repository root. The probe starts and stops its own loopback server on port
 ```sh
 node scripts/audio-audition.mjs
 node scripts/audio-browser-check.mjs
-python3 .agents/skills/generative-sound-design/scripts/inspect_wav.py \
+python3 .agents/skills/create-game-sounds-and-music/scripts/inspect_wav.py \
   evidence/skill-trials/sound/reel-a.wav evidence/skill-trials/sound/reel-b.wav
 ```

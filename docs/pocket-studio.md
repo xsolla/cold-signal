@@ -24,17 +24,21 @@ in `tools/pocket-studio/.venv/`. It requires Git, Python 3.9+ and network access
 It preserves an initialized checkout's current branch and local changes. Clone
 with `git clone --recurse-submodules` to initialize it during cloning instead.
 Git access to Pocket Studio is required wherever setup runs, including CI.
-For this local trial pin, follow [bundle recovery](#recover-the-local-trial-pin)
-before setup in a fresh clone.
 
 Use `npm run skills:status` to read the recorded pin and the checked-out
-revision. The autonomous trial branch assembles eleven skills from the original
-suite and upstream feature branches. Its combined Pocket Studio commit is
-local. Setup from a fresh clone needs a copy of that commit or a fetchable pin.
-The upstream update target in `.gitmodules` still points to `codex/art-direction`.
-Cold Signal's root `art-direction/` folder contains game art studies and
-evidence. After switching Pocket Studio revisions, run `npm run skills:link`
-to expose the skills present in that checkout.
+revision. The November 22 update selects upstream `main` at `c5dbe95`, with
+eighteen skills. `.gitmodules` tracks `main` as the update target; ordinary setup
+uses Cold Signal's exact recorded commit. This revision is fetchable from
+upstream and needs no recovery bundle. The [migration record](skill-trials/2026-11-22-pocket-studio-update.md)
+maps the retired skill names to their replacements. Cold Signal's root
+`art-direction/` folder contains game art studies and evidence.
+
+After switching Pocket Studio revisions, inspect the installed links and run
+`npm run skills:link` to expose the skills present in that checkout. The helper
+reports stale links before writing anything. Remove a retired link only after
+checking that it is a relative symlink into `tools/pocket-studio/skills/`;
+preserve local copies or customizations for review. `skills:link` and `skills:setup`
+preserve unrelated skills and report conflicting destinations.
 
 `skills:check` verifies the links, runs upstream metadata/resource/demo checks and
 unit tests, and packages every skill. ZIPs and the virtual environment stay ignored
@@ -53,7 +57,11 @@ reported as conflicts for review.
 
 ## Recover the local trial pin
 
-The autonomous review branch pins Pocket Studio `3f8b752`, assembled locally
+These instructions apply to a **separate historical Cold Signal checkout** at
+`c1a92de` (or the original autonomous trial revision), whose recorded submodule
+pin and skill links still use the old names. The current pin uses ordinary setup.
+
+The autonomous review branch pinned Pocket Studio `3f8b752`, assembled locally
 from the recorded upstream skill sources. It has not been pushed. The
 [Git bundle](../evidence/skill-trials/pocket-studio-trials.bundle) preserves
 that candidate relative to the original `8ccab1c` baseline. An independent
@@ -82,23 +90,30 @@ ordinary update above restores the exact trial pin. Save contributor work
 before changing an existing submodule checkout. The bundle recovery check was
 local; it did not exercise a new network clone.
 
-## Try a skill on real development work
+## Choose a skill
 
 Use the request that matches the task; these are independent specialists:
 
 | Skill | Example request |
 | --- | --- |
-| `agent-scaffolding` | Use $agent-scaffolding to reconcile Cold Signal's agent guide with the runtime and verify two common change paths. |
-| `game-design-doc` | Use $game-design-doc to review Cold Signal's current design against our latest decisions. |
-| `prototype-plan` | Use $prototype-plan to scope the next two-hour Cold Signal experiment with a baseline and acceptance checks. |
-| `game-feel` | Use $game-feel to review Cold Signal's pacing evidence and reduced-motion behavior. Keep the camera locked. |
-| `art-direction` | Use $art-direction to review Cold Signal's approved visual language and current gameplay captures, then propose a bounded readability experiment. |
-| `ui-ux-design` | Use $ui-ux-design to check the ready room, HUD, and keyboard flow. |
-| `generative-sound-design` | Use $generative-sound-design to review how ability, warning, and rescue cues compete in combat. |
+| `pocket-studio-help` | Use $pocket-studio-help to check the installed skills and choose the next useful request. |
+| `write-ai-project-guide` | Use $write-ai-project-guide to reconcile Cold Signal's agent guide with the runtime and verify two common change paths. |
+| `write-game-brief` | Use $write-game-brief to review Cold Signal's current design against our latest decisions. |
+| `plan-game-prototype` | Use $plan-game-prototype to scope the next two-hour Cold Signal experiment with a baseline and acceptance checks. |
+| `build-game-prototype` | Use $build-game-prototype to implement the approved next milestone and verify a complete attempt and retry. |
+| `plan-game-project` | Use $plan-game-project to scope the remaining work for the next Cold Signal update and compare cuts. |
+| `develop-game-art-style` | Use $develop-game-art-style to review Cold Signal's approved visual language and current gameplay captures, then propose a bounded readability experiment. |
+| `create-2d-game-art` | Use $create-2d-game-art to produce a matching icon set using the approved visual guide and check it at HUD size. |
+| `design-game-interfaces` | Use $design-game-interfaces to check the ready room, HUD, and keyboard flow. |
+| `create-levels-and-scenes` | Use $create-levels-and-scenes to build a bounded encounter using the game's existing mechanics. |
+| `create-game-sounds-and-music` | Use $create-game-sounds-and-music to review how ability, warning, and rescue cues compete in combat. |
+| `review-controls-and-feedback` | Use $review-controls-and-feedback to review Cold Signal's pacing evidence and reduced-motion behavior. Keep the camera locked. |
+| `fix-game-bugs` | Use $fix-game-bugs to reproduce a reported defect, fix its cause, and verify the affected path. |
 | `playtest` | Use $playtest to prepare a four-human session and turn my observed findings into a retest plan. |
-| `chatgpt-playtest-analytics` | Use $chatgpt-playtest-analytics to inspect an available playtest event export and identify what it can measure. |
-| `launch-checklist` | Use $launch-checklist to identify the next release evidence we need for Cold Signal. |
-| `time-bandits-game-balance` | Use $time-bandits-game-balance to inspect src/rules.js and the existing balance and pacing checks, then propose the next bounded experiment. |
+| `track-playtest-data` | Use $track-playtest-data to inspect an available playtest event export and identify what it can measure. |
+| `prepare-game-release` | Use $prepare-game-release to identify the next release evidence we need for Cold Signal. |
+| `test-game-balance` | Use $test-game-balance to inspect src/rules.js and the existing balance and pacing checks, then propose the next bounded experiment. |
+| `pocket-studio-feedback` | Use $pocket-studio-feedback to draft feedback about an observed Pocket Studio workflow problem, with evidence and a success check. |
 
 Copy [the trial template](skill-trials/TEMPLATE.md) to a dated file alongside it.
 Record the original request, game revision and dirty diff, skill version and commit,
@@ -115,9 +130,11 @@ the observed problem and an unaffected request. Label self-review, independent
 agent review and human playtests accurately. For broader comparisons, use
 [upstream behavioral scenarios](../tools/pocket-studio/tests/skill-scenarios.md)
 and the evaluation guide rather than treating a single trial as a benchmark.
-Art direction has its own [document-based trials](../tools/pocket-studio/tests/skill-scenarios.md#art-direction);
-the browser comparison suite covers the six original skills. Use the art-direction
-trials and actual Cold Signal outputs when assessing its behavior.
+Art style has its own [document-based trials](../tools/pocket-studio/tests/skill-scenarios.md#develop-game-art-style);
+the browser comparison suite covers the six original capabilities under their
+current names. Use the art-style trials and actual Cold Signal outputs when
+assessing its behavior. Historical trial files retain the names and versions
+used when they ran.
 
 ## Make an upstream improvement
 
@@ -136,10 +153,9 @@ including version metadata and visible version updates. Generalize the instructi
 that failed; keep Cold Signal's game implementation and trial results here. Add a
 portable regression scenario upstream when it helps others reproduce the failure.
 
-While art direction is on its development branch, target `codex/art-direction`
-with fixes based on this installed version, as below. After that skill merges to
-`main`, use `main` as the PR base. For an independent change to a main-only skill,
-start from `origin/main` in a separate checkout so its PR contains only that fix.
+Target upstream `main` with fixes based on the installed version. If upstream
+has advanced, use a separate checkout based on `origin/main` and rerun the
+reproduction there so the PR contains only the relevant fix.
 
 ```sh
 npm run skills:check
@@ -156,7 +172,7 @@ the GitHub CLI, write its exact description to `artifacts/skill-trials/upstream-
 and run:
 
 ```sh
-gh pr create --repo xsolla/xsolla-pocket-studio --base codex/art-direction \
+gh pr create --repo xsolla/xsolla-pocket-studio --base main \
   --head codex/cold-signal-skill-fix \
   --title "Fix the skill behavior observed in Cold Signal" \
   --body-file artifacts/skill-trials/upstream-pr.md
@@ -170,12 +186,12 @@ own repository; Pocket Studio's `origin` is scoped to the submodule.
 
 ## Adopt a skill revision in Cold Signal
 
-After the upstream change merges into `codex/art-direction`, first commit or save
+After the upstream change merges into `main`, first commit or save
 local submodule work, then:
 
 ```sh
-git -C tools/pocket-studio fetch origin codex/art-direction
-git -C tools/pocket-studio switch --detach origin/codex/art-direction
+git -C tools/pocket-studio fetch origin main
+git -C tools/pocket-studio switch --detach origin/main
 npm run skills:link
 npm run skills:check
 npm test
@@ -188,19 +204,9 @@ Review the staged files and remove links to any retired upstream skills when
 `skills:link` reports them. Cold Signal records the selected submodule SHA, not the
 skill files themselves. For a pre-merge trial pin, push its Pocket Studio commit
 first so other clones can fetch it; return to the merged branch commit after review.
-The submodule's `branch = codex/art-direction` is an update target, not an automatic updater.
+The submodule's `branch = main` is an update target, not an automatic updater.
 An ordinary `git submodule update --init` checks out the recorded pin and may move
 away from a contributor branch, so use the preserving setup command during work.
 
-Once art direction is merged into `main`, move the update target and pin together:
-
-```sh
-git -C tools/pocket-studio fetch origin main
-git -C tools/pocket-studio cat-file -e origin/main:skills/art-direction/SKILL.md
-git submodule set-branch --branch main tools/pocket-studio
-git -C tools/pocket-studio switch --detach origin/main
-```
-
-Then run `npm run skills:link`, `npm run skills:check` and `npm test`, and stage
-`.gitmodules` alongside the submodule pin. The existence check ensures the switch
-keeps the art-direction skill available.
+When changing the update branch, review the destination's skill catalog first
+and record `.gitmodules` alongside the selected submodule pin and link migrations.

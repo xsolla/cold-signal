@@ -32,6 +32,9 @@ Pocket Studio is an editable, version-pinned submodule in `tools/pocket-studio`.
 The active pin's skills are linked into `.agents/skills`, so experiments here
 directly exercise the source you can contribute upstream. Use
 `npm run skills:status` to identify the checkout and pin.
+The update target is upstream `main`; the [current catalog](docs/pocket-studio.md#choose-a-skill)
+and [migration record](docs/skill-trials/2026-11-22-pocket-studio-update.md)
+cover the renamed skills.
 
 ```sh
 npm run skills:setup

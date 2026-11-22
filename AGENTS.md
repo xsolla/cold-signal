@@ -7,10 +7,11 @@ Cold Signal is a cooperative vector arcade game for desktop browsers.
   observed play, constructed scenarios, and hypotheses distinct.
 - **Runtime changes and local checks:** Use [architecture and workflows](docs/architecture.md)
   to find the owner of state and the relevant test path.
-- **Pocket Studio:** For agent scaffolding, game design, prototype planning,
-  game feel, art direction, UI/UX, sound design, playtesting, playtest analytics,
-  release preparation, or balance, read the matching
-  `.agents/skills/<skill>/SKILL.md` and its relevant references.
+- **Pocket Studio:** For project guidance, design, planning, implementation,
+  bug fixing, art, interfaces, sound, levels, controls and feedback, playtesting,
+  analytics, release preparation, or balance, select the matching skill from the
+  [current catalog](docs/pocket-studio.md#choose-a-skill), then read its
+  `.agents/skills/<skill>/SKILL.md` and relevant references.
   If the links are missing, run `npm run skills:setup`.
 - **Skill trials and fixes:** Follow the [contribution workflow](docs/pocket-studio.md).
   Edit canonical skills in `tools/pocket-studio/skills/` and record the game and
