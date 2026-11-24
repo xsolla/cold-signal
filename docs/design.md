@@ -41,6 +41,25 @@ at 0.5× simulation pace. Two-pilot and 1× rooms are available. Shared pause
 freezes the run, and a disconnect interrupts it. Solo supports both paces, pauses
 when the game loses focus, and offers a fresh attempt after each clear or wipe.
 
+Each pilot has a part in the score. Their instrument drops out when they fall
+and returns on the next beat after a rescue. The same beat still drives the
+enemy waves, so the crew can hear who is missing while the run continues.
+
+The [three-minute solo chart](sound-design.md#three-minute-synced-run) adds
+reinforcements on separate beats and attack angles so covering one lane leaves
+another exposed. Wall gaps tighten through Pressure and the later stages.
+The chart calls for 60, 91, 170, 142, and 208 enemies respectively across the
+five combat stages. Shorter later stages increase the enemy rate from 3.75
+per bar in Ingress to 10.95 in Final Surge. Three Breath sections suspend
+new threats for recovery.
+
+Four formations recur across the run. Sweeps carry curved rush packs around
+the tunnel. Pincers attack from two sides and bend toward the same sector.
+Staggered rail attacks bring an inner stalker, a middle-rail skimmer, and a
+suppression lane into play on different beats. Alternating wall gaps make the
+crew orbit between openings while other waves approach. The finale combines
+those phrases across neighboring bars.
+
 ## Presentation
 
 Keep the camera locked in both motion settings, with zero translation and
@@ -50,6 +69,11 @@ uses streaming lines, trails, fragments, and links between chained kills.
 Reduced motion suppresses decorative effects. Both settings keep warning,
 ability, and rescue cues, with pilots and rescue progress above the large
 effects.
+
+The chart shows each formation's route or wall gaps a beat ahead. Dashed
+previews become solid on the reveal and subside behind the combat silhouettes.
+The preview follows the same projected curve as the rush formation and stays
+visible with reduced motion.
 
 ## Scope and next test
 

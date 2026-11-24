@@ -2,6 +2,9 @@ import { BAR_SECONDS, BAR_STEPS, STEP_SECONDS, chords, suspendedChord } from './
 
 export { BPM, STEP_SECONDS } from './audio-chart.js';
 export const CUE_STEP_SECONDS = STEP_SECONDS / 2;
+export const pilotInstruments = Object.freeze({
+  mara: 'Pulse bass', ivo: 'Synth brass', sana: 'Bowed strings', rook: 'Metal pluck',
+});
 
 const phaseEnergy = {
   BREATH: 0,
@@ -77,9 +80,15 @@ function bass(play, at, position, root, energy, answerBar, syncopated = false) {
   const pitch = hz(root + (syncopated ? interval : pickup && position === 15 ? 7 : 0));
   const duration = pickup ? .107 : position === 6 && energy >= 2 ? .12 : .211;
   const volume = [0, .116, .174, .218, .25][energy] * (pickup ? .55 : 1);
-  play({ pitch: pitch / 2, duration, volume, attack: .016, hold: pickup ? .022 : .068 }, at + .007);
+  play({ pitch: pitch / 2, duration, volume, attack: .016, hold: pickup ? .022 : .068 }, at + .007, 'mara');
   play({ pitch, type: 'round', cutoff: energy >= 3 ? 730 : 510, sweep: 165,
-    duration, volume: volume * .81, attack: .012, hold: pickup ? .016 : .048 }, at + .007);
+    duration, volume: volume * .81, attack: .012, hold: pickup ? .016 : .048 }, at + .007, 'mara');
+}
+
+function bassPedal(play, at, position, chord) {
+  if (position !== 2 && position !== 10) return;
+  play({ pitch: hz(chord.bass), type: 'round', cutoff: 340, sweep: 160, duration: .47,
+    volume: .095, attack: .026, hold: .07 }, at, 'mara');
 }
 
 function pad(play, at, chord, energy) {
@@ -89,7 +98,7 @@ function pad(play, at, chord, energy) {
     play({ pitch: hz(note) * (index % 2 ? 1.0027 : .9971), type: 'strings',
       cutoff: 330 + index * 65, bloom: [energy >= 3 ? 1240 : 760, .93], sweep: 380,
       duration: BAR_SECONDS + .94, attack: .63 + index * .088, hold: .63,
-      volume, pan: spread[index], wet: .68 }, at);
+      volume, pan: spread[index], wet: .68 }, at, 'sana');
   });
 }
 
@@ -102,16 +111,30 @@ function lead(play, at, position, chord, energy, answerBar, octave = 0) {
   const volume = [.029, .052, .088, .112, .139][energy];
   const duration = position <= 3 ? .78 : .67;
   const brightness = energy >= 3 ? 2100 : 1120;
-  play({ pitch, type: 'horn', cutoff: 530, bloom: [brightness, .235], sweep: 460,
-    duration, volume, attack: .066, hold: .18, pan: -.25, wet: .53 }, at);
-  play({ pitch: pitch * 1.005, type: 'horn', cutoff: 610, bloom: [brightness * .76, .29], sweep: 440,
-    duration, volume: volume * .65, attack: .112, hold: .16, pan: .45, wet: .83 }, at + .035);
+  play({ pitch, type: 'brass', cutoff: 530, bloom: [brightness, .235], sweep: 460,
+    duration, volume, attack: .066, hold: .18, pan: -.25, wet: .53 }, at, 'ivo');
+  play({ pitch: pitch * 1.005, type: 'brass', cutoff: 610, bloom: [brightness * .76, .29], sweep: 440,
+    duration, volume: volume * .65, attack: .112, hold: .16, pan: .45, wet: .83 }, at + .035, 'ivo');
   if (energy === 4) {
-    play({ pitch: position <= 3 ? pitch / 2 : pitch * 2, type: 'strings', cutoff: 1390, sweep: 680,
-      duration: .86, volume: .071, attack: .15, hold: .17, pan: -.51, wet: .66 }, at + .066);
+    play({ pitch: position <= 3 ? pitch / 2 : pitch * 2, type: 'brass', cutoff: 1390, sweep: 680,
+      duration: .86, volume: .069, attack: .15, hold: .17, pan: -.51, wet: .66 }, at + .066, 'ivo');
   }
-  play({ pitch, type: 'horn', cutoff: 760, sweep: 390, duration: .70,
-    volume: volume * .28, attack: .091, pan: .77, wet: .70 }, at + 3 * STEP_SECONDS);
+  play({ pitch, type: 'brass', cutoff: 760, sweep: 390, duration: .70,
+    volume: volume * .28, attack: .091, pan: .77, wet: .70 }, at + 3 * STEP_SECONDS, 'ivo');
+}
+
+function brassAnswer(play, at, position, chord, energy) {
+  if (position !== 11) return;
+  play({ pitch: hz(chord.lead[1]), type: 'brass', cutoff: 640, bloom: [1400, .19], sweep: 520,
+    duration: .51, volume: .057 + energy * .011, attack: .058, hold: .12, pan: -.30, wet: .58 }, at, 'ivo');
+}
+
+function pluck(play, at, position, chord, energy, answerBar) {
+  const pattern = answerBar ? { 1: 2, 5: 1, 13: 0, 15: 1 } : { 1: 0, 5: 1, 9: 2, 13: 1 };
+  if (!(position in pattern) || (energy <= 1 && position !== 5 && position !== 13)) return;
+  play({ pitch: hz(chord.lead[pattern[position]] + 12), type: 'pluck',
+    cutoff: 1620 + energy * 380, sweep: 760, duration: .23, volume: .058 + energy * .011,
+    attack: .007, hold: .022, pan: position < 8 ? .44 : -.38, wet: .40 }, at, 'rook');
 }
 
 export function playScoreStep(play, step, at, phase) {
@@ -125,8 +148,10 @@ export function playScoreStep(play, step, at, phase) {
   if (energy > 0) {
     drums(play, at, position, energy);
     bass(play, at, position, chord.bass, energy, answerBar);
-  }
-  if (!overtime || answerBar) lead(play, at, position, chord, energy, answerBar);
+  } else bassPedal(play, at, position, chord);
+  if ((!overtime && energy > 0) || answerBar) lead(play, at, position, chord, energy, answerBar);
+  else brassAnswer(play, at, position, chord, energy);
+  pluck(play, at, position, chord, energy, answerBar);
   if (energy >= 3 && answerBar && position === 12) {
     play({ noise: 'bandpass', cutoff: 360, bloom: [3800, .37], sweep: 5200, duration: 4 * STEP_SECONDS,
       attack: .35, volume: .25, pan: -.31, wet: .55 }, at);
@@ -138,58 +163,128 @@ const surgeChords = [...chords, suspendedChord];
 const fullSurge = [0, 0, 1, 3, 2, 1, 4, 4];
 const halfSurge = [0, 0, 1, 1, 3, 3, 2, 2, 0, 0, 1, 3, 2, 1, 4, 4];
 
-function overtimePulse(play, position, at) {
-  if (position === 0) pad(play, at, suspendedChord, 1);
+function overtimePulse(play, position, at, chord = suspendedChord) {
+  if (position === 0) pad(play, at, chord, 1);
   if (position % 8 === 0) {
-    play({ pitch: 72, slide: 43, slideTime: .09, duration: .27, volume: .22, hold: .035 }, at);
+    const transpose = 2 ** ((chord.bass - suspendedChord.bass) / 12);
+    play({ pitch: 72 * transpose, slide: 43 * transpose, slideTime: .09, duration: .27, volume: .22, hold: .035 }, at);
   }
-  if (position === 11) lead(play, at, position, suspendedChord, 1, false);
-  return suspendedChord;
+  if (position === 11) lead(play, at, position, chord, 1, false);
+  bassPedal(play, at, position, chord);
+  pluck(play, at, position, chord, 1, false);
+  return chord;
+}
+
+const percussionSteps = [[], [7, 15], [3, 7, 11, 15], [1, 5, 9, 13, 15], [1, 3, 5, 7, 9, 11, 13, 15]];
+
+function stageRhythm(play, chord, position, at, drive) {
+  if (percussionSteps[drive].includes(position)) {
+    play({ noise: 'bandpass', cutoff: 4800 + drive * 650, sweep: 3700, offset: .18 + position * .005,
+      duration: .043 + drive * .007, volume: .055 + drive * .013, pan: position % 4 === 1 ? -.37 : .34 }, at);
+  }
+  if (drive >= 2 && (position === 5 || position === 13)) {
+    const pitch = hz(chord.bass + (position === 5 ? 12 : 19));
+    play({ pitch, type: 'round', cutoff: 410 + drive * 113, sweep: 290,
+      duration: .14, attack: .008, hold: .024, volume: .061 + drive * .013, wet: .16 }, at, 'mara');
+  }
+  if (drive >= 3 && (position === 7 || (drive === 4 && position === 15))) {
+    play({ pitch: hz(chord.lead[position === 7 ? 1 : 2] + 12), type: 'brass',
+      cutoff: 950, bloom: [2050, .1], sweep: 680, duration: .32, volume: .040 + drive * .009,
+      attack: .039, wet: .42, pan: position === 7 ? -.44 : .44 }, at, 'ivo');
+  }
+}
+
+function breathTexture(play, chord, position, at, pulse) {
+  if (position === 0) {
+    play({ noise: 'bandpass', cutoff: 430, bloom: [730 + pulse * 140, .72],
+      sweep: 510, offset: .035, duration: .43, attack: .15, volume: .055, pan: .24, wet: .72 }, at);
+  }
+  if (pulse > 1 && position % (pulse === 3 ? 4 : 8) === 0) {
+    play({ pitch: hz(chord.bass), type: 'round', cutoff: 245, sweep: 140, duration: .31, volume: .071 + pulse * .021,
+      attack: .044, hold: .052, wet: .19 }, at, 'mara');
+  }
+}
+
+function formationAccent(play, { kind, degree, squads }, chord, at) {
+  if (kind === 'gate-crossing') {
+    play({ noise: 'bandpass', cutoff: 2500, sweep: 460, offset: .13,
+      duration: .19, attack: .005, volume: .16, wet: .27 }, at);
+    return;
+  }
+  if (kind === 'gate') {
+    play({ pitch: hz(chord.bass), type: 'steel', cutoff: 1150, sweep: 365,
+      duration: .25, attack: .014, volume: .14, wet: .37 }, at);
+    return;
+  }
+  for (const [index, squad] of squads.entries()) {
+    const pan = Math.cos(squad.angle) * .67;
+    const pitch = hz(chord.lead[degree ?? index]);
+    const sweep = kind === 'sweep';
+    play({ pitch, type: kind === 'pincer' ? 'horn' : 'strike',
+      ...(sweep && { slide: pitch * 2 ** (Math.sign(squad.bend) * 2 / 12), slideTime: .102 }),
+      cutoff: kind === 'ladder' ? 1950 + degree * 390 : 2250, sweep: 740,
+      duration: kind === 'pincer' ? .32 : .18, hold: .034, attack: .008,
+      volume: kind === 'pincer' ? .095 : .154, pan, wet: .32 }, at);
+  }
 }
 
 export function playChartStep(play, chart, step, at, crewDown) {
   const bar = Math.floor(step / BAR_STEPS), position = step % BAR_STEPS;
   const phrase = chart.bars[bar];
-  if (!phrase) return crewDown ? overtimePulse(play, position, at) : suspendedChord;
+  const overtime = chart.overtimeChord ?? suspendedChord;
+  if (!phrase) return crewDown ? overtimePulse(play, position, at, overtime) : overtime;
 
-  const { chord, energy, motif, syncopated, octave, kickUntil = 4 } = phrase;
+  const { chord, energy, motif, syncopated, octave, drive = 0, breathPulse, kickUntil = 4 } = phrase;
   const answerBar = bar % 2 === 1;
-  const resting = energy > 0 && crewDown;
-  const harmony = resting ? suspendedChord : chord;
+  const accents = chart.accents[step];
   const wall = phrase.spawns.some(spawn => spawn.wall && spawn.beat * 4 === position);
   const wallPickup = position === 12 && chart.bars[bar + 1]?.spawns.some(spawn => spawn.wall && spawn.beat === 0);
   if (position === 0) {
-    pad(play, at, harmony, resting ? 1 : energy);
+    pad(play, at, chord, energy);
     if (phrase.drop) {
-      play({ pitch: hz(resting ? 49 : chord.bass + 7), type: 'horn', cutoff: 650,
-        bloom: [1850, .19], sweep: 580, duration: .81, volume: resting ? .075 : .15,
+      play({ pitch: hz(chord.bass + 7), type: 'horn', cutoff: 650,
+        bloom: [1850 + drive * 230, .19], sweep: 580, duration: .81, volume: .15,
         attack: .025, hold: .17, pan: -.25, wet: .75 }, at);
     }
   }
-  if (motif && !resting) lead(play, at, position, chord, energy, answerBar, octave);
+  if (breathPulse) breathTexture(play, chord, position, at, breathPulse);
+  if (!accents) {
+    if (motif && (energy > 1 || answerBar)) lead(play, at, position, chord, energy, answerBar, octave);
+    else brassAnswer(play, at, position, chord, energy);
+    pluck(play, at, position, chord, energy, answerBar);
+  }
   const longSwell = phrase.swell && position === 8;
   if (longSwell || wallPickup) {
     play({ noise: 'bandpass', cutoff: 360, bloom: [4100, .30], sweep: 4700,
       duration: longSwell ? .90 : .45, volume: longSwell ? .20 : .125,
       attack: .29, pan: -.34, wet: .58 }, at);
   }
-  if (wall) {
-    play({ pitch: hz(harmony.bass), type: 'round', cutoff: 960, sweep: 620,
+  if (wall && !accents?.some(cue => cue.kind === 'gate')) {
+    play({ pitch: hz(chord.bass), type: 'round', cutoff: 960, sweep: 620,
       duration: .48, volume: .10, attack: .025, wet: .52 }, at);
   }
-  if (energy && position < kickUntil * 4 && (!resting || position % 8 === 0)) {
-    drums(play, at, position, resting ? 1 : energy, resting || wall);
-    if (!resting && (energy > 1 || phrase.bass)) bass(play, at, position, chord.bass, energy, answerBar, syncopated);
-  }
-  return harmony;
+  if (energy && position < kickUntil * 4) {
+    drums(play, at, position, energy, wall);
+    if (energy > 1 || phrase.bass) {
+      bass(play, at, position, chord.bass, energy, answerBar, syncopated || drive >= 3);
+    }
+    if (energy > 1 && drive && !wall && !accents) {
+      stageRhythm(play, chord, position, at, drive);
+    }
+  } else if (!energy && !(breathPulse > 1)) bassPedal(play, at, position, chord);
+  for (const cue of accents ?? []) formationAccent(play, cue, chord, at);
+  return chord;
 }
 
-export function playFinaleStep(play, step, at, section, marks, crewDown, timeScale) {
+export function playFinaleStep(play, step, at, section, marks, timeScale) {
   const bar = Math.floor(step / BAR_STEPS);
   const position = step % BAR_STEPS;
   if (section === 'breath') {
     const chord = bar === 0 ? chords[1] : suspendedChord;
     if (position === 0) pad(play, at, chord, 0);
+    bassPedal(play, at, position, chord);
+    brassAnswer(play, at, position, chord, 0);
+    pluck(play, at, position, chord, 0, bar % 2 === 1);
     const toSurge = marks.surgeAt - marks.breathAt - step * STEP_SECONDS;
     if (toSurge > .34 && toSurge <= .34 + STEP_SECONDS) {
       play({ noise: 'bandpass', cutoff: 300, bloom: [2500, .31], sweep: 3300, duration: .42,
@@ -207,18 +302,19 @@ export function playFinaleStep(play, step, at, section, marks, crewDown, timeSca
   if (remaining <= 0) return suspendedChord;
   const chord = surgeChords[bars[Math.min(bar, bars.length - 1)]];
   const cadence = remaining <= 12 * STEP_SECONDS;
-  const harmony = crewDown || cadence ? suspendedChord : chord;
-  if (position === 0) pad(play, at, harmony, crewDown || cadence ? 1 : 4);
+  const harmony = cadence ? suspendedChord : chord;
+  if (position === 0) pad(play, at, harmony, cadence ? 1 : 4);
   if (step === 0) {
     play({ pitch: hz(49), type: 'horn', cutoff: 680, bloom: [1480, .12], sweep: 510,
       duration: .92, volume: .14, attack: .018, hold: .11, wet: .65 }, at);
   }
-  if (!cadence) drums(play, at, position, crewDown ? 1 : 4, crewDown);
-  if (!crewDown && !cadence) {
+  if (!cadence) {
+    drums(play, at, position, 4);
     bass(play, at, position, chord.bass, 4, bar % 2 === 1);
     lead(play, at, position, chord, 4, bar % 2 === 1);
   } else if (position === 11) {
     lead(play, at, position, suspendedChord, 1, false);
   }
+  pluck(play, at, position, harmony, cadence ? 1 : 4, bar % 2 === 1);
   return harmony;
 }

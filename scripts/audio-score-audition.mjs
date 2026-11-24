@@ -81,7 +81,7 @@ function finaleTape(withFeedback) {
     const feedback = observer && observer.update(state);
     if (feedback) for (const type of Object.keys(activations)) if (feedback[type]) activations[type]++;
     frames.push({ at, events, feedback, status: state.status, phase: state.phase, elapsed: state.elapsed,
-      timeScale: state.timeScale, finale: { ...state.finale }, players: state.players.map(({ down }) => ({ down })) });
+      timeScale: state.timeScale, finale: { ...state.finale }, players: state.players.map(({ character, down }) => ({ character, down })) });
     if (state.status === 'won') sections.push({ at, name: 'RESCUE AND CLEAR' });
   }
   assert.ok(squad && overtime && state.status === 'won');
@@ -91,10 +91,10 @@ function finaleTape(withFeedback) {
 }
 
 // Replay an input sequence through the actual solo session for both mixes.
-function soloTape(chart, steer) {
-  const game = createSoloSession();
+function soloTape(chart, steer, { pilot = 'mara', firstSeed } = {}) {
+  const game = createSoloSession(firstSeed);
   const observer = new AudioFeedback();
-  game.start('mara', .5, { encounter: chart });
+  game.start(pilot, .5, { encounter: chart });
   const state = game.state;
   const sections = chart.phases.map(({ phase, at }) => ({ name: phase, at }));
   const frames = [];
@@ -103,7 +103,7 @@ function soloTape(chart, steer) {
     const { elapsed, events, status, phase, timeScale } = state;
     const feedback = observer.update(state);
     frames.push({ at: elapsed, elapsed, status, phase, timeScale, encounter: { id: chart.id },
-      players: state.players.map(({ down }) => ({ down })), feedback,
+      players: state.players.map(({ character, down }) => ({ character, down })), feedback,
       events: events.filter(event => event.id > lastEvent) });
     lastEvent = state.eventId;
     if (status !== 'playing') break;
@@ -128,12 +128,33 @@ function pressureTape() {
   return tape;
 }
 
+// A controlled listening pass. Reuse the chart clock and mute each part in
+// turn, holding combat effects out so its absence is easy to compare.
+function crewTape() {
+  const start = sortieChart.phases.find(phase => phase.phase === 'PRESSURE').at;
+  const pilots = ['mara', 'ivo', 'sana', 'rook'];
+  const transitions = [null, 'mara', null, 'ivo', null, 'sana', null, 'rook', null];
+  const sections = transitions.map((down, i) => ({ at: i * 2 * bar, name: down ? `${down} down` : 'Full crew' }));
+  const frames = [];
+  for (let frame = 0; frame < (sections.at(-1).at + 2 * bar) * 60; frame++) {
+    const at = frame / 60;
+    const down = transitions[Math.min(transitions.length - 1, Math.floor(at / (2 * bar)))];
+    frames.push({ at, elapsed: start + at, status: 'playing', encounter: { id: sortieChart.id }, events: [],
+      players: pilots.map(character => ({ character, down: character === down })) });
+  }
+  sections.push({ at: frames.at(-1).at + T.step, name: 'Room tail' });
+  return { frames, sections, seconds: Math.ceil(frames.at(-1).at + 6) };
+}
+
 const withFeedback = process.argv.includes('--feedback'), withPressure = process.argv.includes('--pressure');
-const withSortie = process.argv.includes('--sortie');
-const tape = withSortie ? soloTape(sortieChart, (state, frame) => frame % 4 === 0 ? controlledInput(state, 0) : null)
+const withSortie = process.argv.includes('--sortie'), withCrew = process.argv.includes('--crew');
+const tape = withCrew ? crewTape()
+  : withSortie ? soloTape(sortieChart, (state, frame) => frame % 4 === 0 ? controlledInput(state, 0) : null,
+  { pilot: 'mara', firstSeed: 31 })
   : withPressure ? pressureTape()
   : withFeedback || process.argv.includes('--finale') ? finaleTape(withFeedback) : null;
-const takes = withSortie ? [{ name: 'cold-signal-99-bars', synced: true }]
+const takes = withCrew ? [{ name: 'cold-signal-pilot-parts', synced: true }]
+  : withSortie ? [{ name: 'cold-signal-ensemble-run', synced: true }]
   : withPressure ? [{ name: 'pressure-original', synced: false }, { name: 'pressure-synced', synced: true }]
   : withFeedback ? [{ name: 'cue-variations', synced: true }]
   : tape ? [{ name: 'finale-original', synced: false }, { name: 'finale-synced', synced: true }]

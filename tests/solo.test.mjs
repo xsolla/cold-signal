@@ -3,17 +3,25 @@ import test from 'node:test';
 import { botInputs } from '../src/bots.js';
 import { BAR_SECONDS, pressureChart, sortieChart } from '../public/audio-chart.js';
 import { createSoloSession } from '../src/solo-session.js';
-import { RINGS, T, distance, downPlayer, makeMatch, step } from '../src/rules.js';
+import { RINGS, T, distance, downPlayer, makeMatch, rushAngle, step } from '../src/rules.js';
 
 test('the three-minute chart drives every phase, the finale reveal and both deadline outcomes', () => {
   const { bars, phases, endAt, spawns } = sortieChart;
   assert.equal(bars.length, 99);
   assert.equal(endAt, 180);
   assert.deepEqual(phases.map(({ at }) => Math.round(at / BAR_SECONDS)), [0, 16, 32, 36, 56, 60, 76, 80]);
-  assert.deepEqual(bars.slice(32, 48), pressureChart.bars);
+  let previousEnemiesPerBar = 0;
   for (const [index, { phase, at }] of phases.entries()) {
-    if (phase !== 'BREATH') continue;
-    assert.ok(!spawns.some(spawn => spawn.at >= at && spawn.at < phases[index + 1].at));
+    const end = phases[index + 1]?.at ?? endAt;
+    const spawnsInPhase = spawns.filter(spawn => spawn.at >= at && spawn.at < end);
+    if (phase === 'BREATH') {
+      assert.equal(spawnsInPhase.length, 0);
+      continue;
+    }
+    const enemies = spawnsInPhase.reduce((count, spawn) => count + (spawn.squad?.size ?? 0), 0);
+    const enemiesPerBar = enemies * BAR_SECONDS / (end - at);
+    assert.ok(enemiesPerBar > previousEnemiesPerBar, phase);
+    previousEnemiesPerBar = enemiesPerBar;
   }
 
   const state = makeMatch(17321, { encounter: sortieChart });
@@ -27,7 +35,7 @@ test('the three-minute chart drives every phase, the finale reveal and both dead
     entered.push({ phase: state.phase, at: state.elapsed });
     if (state.phase === 'FINAL SURGE') {
       const preview = state.enemies.filter(enemy => enemy.preview >= .65 - T.step);
-      const planned = spawns.filter(spawn => spawn.at === surgeAt).reduce((count, { squad }) => count + squad.size, 0);
+      const planned = spawns.filter(spawn => spawn.at === surgeAt).reduce((count, { squad }) => count + (squad?.size ?? 0), 0);
       assert.equal(preview.length, planned);
     }
   }
@@ -84,6 +92,33 @@ test('Pressure rehearsals reveal fixed waves at the chart positions and clear on
     return opening;
   };
   assert.deepEqual(take(), take());
+});
+
+test('charted curves and wall crossings follow their shared cues in the simulation', () => {
+  const sweep = sortieChart.cues.find(cue => cue.kind === 'sweep');
+  const gate = sortieChart.cues.find(cue => cue.kind === 'gate');
+  const crossing = sortieChart.cues.find(cue => cue.kind === 'gate-crossing');
+  assert.ok(Math.abs(crossing.at - gate.at - gate.wall.travelSeconds) < 1e-8);
+  for (const timeScale of [.5, 1]) {
+    const state = makeMatch(17, { timeScale, encounter: sortieChart });
+    for (const pilot of state.players) {
+      pilot.protection = 99;
+      pilot.cooldown = 99;
+    }
+    while (state.elapsed < sweep.at) step(state);
+    const leader = state.enemies.find(enemy => !enemy.escort);
+    assert.ok(leader && leader.bend === sweep.squads[0].bend);
+    assert.ok(state.elapsed - sweep.at < T.step);
+    while (leader.radius < RINGS[0]) step(state);
+    assert.equal(leader.angle, rushAngle(leader.base, leader.bend, leader.radius));
+    assert.ok(distance(leader.angle, leader.base) > .1);
+    while (state.elapsed < gate.at) step(state);
+    const wall = state.walls.find(wall => wall.gaps[0].angle === gate.wall.angle && wall.gaps[0].width === gate.wall.width);
+    assert.ok(wall);
+    while (wall.radius > T.radius) step(state);
+    assert.ok(Math.abs(state.elapsed - crossing.at) <= T.step + 1e-8);
+    assert.equal(state.walls.includes(wall), true);
+  }
 });
 
 test('finale rehearsals repeat the seed and stamp the first visible squad at either pace', () => {

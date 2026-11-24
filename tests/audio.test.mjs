@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Sound } from '../public/audio.js';
 import { CUE_STEP_SECONDS, hz, playChartStep, STEP_SECONDS } from '../public/audio-score.js';
-import { BAR_STEPS, pressureChart, sortieChart, suspendedChord } from '../public/audio-chart.js';
+import { BAR_SECONDS, BAR_STEPS, pressureChart, sortieChart } from '../public/audio-chart.js';
 import { AudioFeedback } from '../src/audio-feedback.js';
 import { makeMatch, RINGS, step, T } from '../src/rules.js';
 import { cascade, seed } from '../scripts/audio-fixture.mjs';
@@ -12,10 +12,18 @@ function mixer() {
     currentTime: 1, state: 'running',
     async suspend() { this.state = 'suspended'; },
     async resume() { this.state = 'running'; },
+    createGain() {
+      const automation = [];
+      return { automation, connect() {}, disconnect() {}, gain: {
+        setValueAtTime(level, at) { automation.push({ level, at }); },
+        cancelAndHoldAtTime(at) { automation.push({ cancel: at }); },
+        setTargetAtTime(level, at) { automation.push({ level, at }); },
+      } };
+    },
   };
   const sound = new Sound(context), notes = [], ducks = [];
   sound.enabled = true;
-  sound.play = (patch, at, bus = 'effects') => notes.push({ ...patch, at, bus });
+  sound.play = (patch, at, bus = 'effects', pilot) => notes.push({ ...patch, at, bus, pilot });
   sound.bus = () => ({ gain: {
     cancelScheduledValues() {},
     setTargetAtTime(value, at) { if (value < 1) ducks.push({ value, at }); },
@@ -126,11 +134,36 @@ test('the full score leaves three Breath breaks and cadences or holds on the 99-
   const patches = [];
   const play = patch => patches.push(patch);
   const finalStep = sortieChart.bars.length * BAR_STEPS;
-  assert.equal(playChartStep(play, sortieChart, finalStep, 180, false), suspendedChord);
+  assert.equal(playChartStep(play, sortieChart, finalStep, 180, false), sortieChart.overtimeChord);
   assert.equal(patches.length, 0);
-  assert.equal(playChartStep(play, sortieChart, finalStep, 180, true), suspendedChord);
-  assert.ok(patches.some(({ pitch }) => pitch === 72));
+  assert.equal(playChartStep(play, sortieChart, finalStep, 180, true), sortieChart.overtimeChord);
+  assert.ok(patches.some(({ pitch }) => pitch === 72 * 2 ** (5 / 12)));
   assert.ok(!patches.some(({ pitch }) => pitch === 148));
+});
+
+test('the chart establishes a new tonic at each stage and resolves the clear in the final key', () => {
+  const roots = sortieChart.phases.map(({ at }) =>
+    playChartStep(() => {}, sortieChart, Math.round(at / BAR_SECONDS) * BAR_STEPS, at, false).bass);
+  assert.deepEqual(roots, [42, 43, 39, 44, 40, 46, 37, 47]);
+  const { sound, notes } = mixer();
+  sound.events([{ type: 'won' }], { status: 'won', encounter: { id: sortieChart.id } });
+  assert.equal(notes[0].pitch, hz(47));
+});
+
+test('formation instruments use the same beat subdivisions as the visual and spawn cues', () => {
+  const sweep = sortieChart.cues.find(cue => cue.kind === 'sweep');
+  const pincer = sortieChart.cues.find(cue => cue.kind === 'pincer');
+  const crossing = sortieChart.cues.find(cue => cue.kind === 'gate-crossing');
+  const at = 30;
+  const playAt = cue => {
+    const attacks = [];
+    playChartStep((patch, time) => attacks.push({ ...patch, time }), sortieChart,
+      Math.round(cue.at / STEP_SECONDS), at, false);
+    return attacks;
+  };
+  assert.ok(playAt(sweep).some(note => note.time === at && note.slideTime === .102 && note.slide > note.pitch));
+  assert.equal(playAt(pincer).filter(note => note.time === at && note.type === 'horn' && note.attack === .008).length, 2);
+  assert.ok(playAt(crossing).some(note => note.time === at && note.noise && note.cutoff === 2500));
 });
 
 test('pause clears queued voices, Breath drops the drums and retry opens on a downbeat', async () => {
@@ -169,12 +202,13 @@ test('pause clears queued voices, Breath drops the drums and retry opens on a do
   assert.ok(notes.some(note => note.pitch === 148));
 });
 
-test('the finale waits for the first squad at either pace and restores bass on the beat after a rescue', () => {
+test('the finale waits for the first squad and keeps its kick on the grid during a rescue at either pace', () => {
   for (const timeScale of [.5, 1]) {
     const { sound, context, notes } = mixer();
     const breathAt = T.finalBreathAt / timeScale, surgeAt = T.finalSurgeAt / timeScale;
     const state = { status: 'playing', phase: 'FINAL SURGE', timeScale, elapsed: surgeAt,
-      finale: { breathAt, surgeAt, deadlineAt: T.duration / timeScale, squadAt: null }, players: [{ down: true }] };
+      finale: { breathAt, surgeAt, deadlineAt: T.duration / timeScale, squadAt: null },
+      players: [{ character: 'mara', down: true }, { character: 'ivo', down: false }] };
     sound.tick(state, false);
     assert.equal(sound.finaleSection, 'breath');
     assert.ok(!notes.some(note => note.pitch === 148));
@@ -194,9 +228,9 @@ test('the finale waits for the first squad at either pace and restores bass on t
         sound.tick(state, false);
       }
     };
-    const bass = () => notes.filter(note => note.pitch < 67 && note.bus === 'music');
     run(1, 35);
-    assert.equal(bass().length, 0);
+    assert.equal(sound.pilotParts.get('mara').level, 0);
+    assert.equal(sound.pilotParts.get('ivo').level, 1);
     state.players[0].down = false;
     const before = notes.length;
     sound.events([{ type: 'rescue' }], state);
@@ -204,9 +238,62 @@ test('the finale waits for the first squad at either pace and restores bass on t
     assert.equal(rescue.find(note => note.noise).at, context.currentTime);
     assert.ok(rescue.filter(note => note.pitch).every(note => onCueGrid(note.at, drop)));
     run(36, 92);
-    assert.ok(bass().length > 0);
-    assert.ok(bass()[0].at >= drop + 8 * STEP_SECONDS);
+    const recovery = sound.pilotParts.get('mara').dry.automation.at(-1);
+    assert.equal(recovery.level, 1);
+    assert.ok(Math.abs(recovery.at - drop - 8 * STEP_SECONDS) < 1e-8);
+    const kicks = notes.filter(note => note.pitch === 148);
+    assert.ok(kicks.length > 3);
+    assert.ok(kicks.every((note, index) => Math.abs(note.at - drop - index * 4 * STEP_SECONDS) < 1e-9));
   }
+});
+
+test('crew instruments duck independently with a continuous wave mix, including duplicate picks and resets', async () => {
+  const { sound, context, notes, ducks } = mixer();
+  const state = makeMatch(seed);
+  state.encounter = { id: sortieChart.id };
+  state.elapsed = 0;
+  const advance = (first, last) => {
+    for (let frame = first; frame <= last; frame++) {
+      state.elapsed = frame / 60;
+      context.currentTime = 1 + state.elapsed;
+      sound.tick(state, false);
+    }
+  };
+  advance(0, 90);
+  const roles = new Set(notes.map(note => note.pilot));
+  assert.ok(['mara', 'ivo', 'sana', 'rook'].every(pilot => roles.has(pilot)));
+
+  const [, ivo, sana] = state.players;
+  const { dry, wet } = sound.pilotParts.get('ivo');
+  ivo.down = true;
+  sound.events([{ type: 'down', player: ivo.id }], state);
+  assert.deepEqual(dry.automation.at(-1), { level: 0, at: context.currentTime });
+  assert.deepEqual(wet.automation, dry.automation);
+  assert.deepEqual([...sound.pilotParts.values()].map(part => part.level), [1, 0, 1, 1]);
+  assert.deepEqual(ducks, []);
+  advance(91, 125);
+  assert.ok(notes.some(note => note.slideTime === .102 && !note.pilot), 'charted sweep still plays');
+
+  ivo.down = false;
+  sound.events([{ type: 'rescue', player: ivo.id }], state);
+  const returnAt = dry.automation.at(-1).at;
+  assert.ok(returnAt > context.currentTime && returnAt < context.currentTime + 4 * STEP_SECONDS);
+  assert.ok(onCueGrid(returnAt, 1.022));
+  ivo.down = true;
+  sound.events([{ type: 'down', player: ivo.id }], state);
+  assert.deepEqual(dry.automation.slice(-2), [{ cancel: context.currentTime }, { level: 0, at: context.currentTime }]);
+
+  sana.character = 'ivo';
+  sound.tick(state, false);
+  assert.equal(sound.pilotParts.get('ivo').level, .5);
+  assert.equal(sound.pilotParts.get('sana').level, 0);
+  await sound.suspend();
+  assert.equal(sound.pilotParts.size, 0);
+  await sound.resume();
+  sound.tick(state, false);
+  assert.deepEqual(sound.pilotParts.get('ivo').dry.automation, [{ level: .5, at: context.currentTime }]);
+  sound.reset();
+  assert.equal(sound.pilotParts.size, 0);
 });
 
 test('overtime holds the pulse and the final rescue sounds before the clear chord', () => {

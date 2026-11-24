@@ -72,14 +72,14 @@ export const cues = {
       delaySteps: 2, hold: .11, pan: -.16, wet: .41 }),
     air(2050, 1120, { duration: .16, volume: .16 }),
   ],
-  won: () => [
-    stab(42, { type: 'round', cutoff: 920, sweep: 420, duration: 1.30,
+  won: (transpose = 0) => [
+    stab(42 + transpose, { type: 'round', cutoff: 920, sweep: 420, duration: 1.30,
       volume: .23, attack: .023, hold: .23 }),
-    ...wide(61, { cutoff: 1030, bloom: [3200, .19], sweep: 680,
+    ...wide(61 + transpose, { type: 'brass', cutoff: 1030, bloom: [3200, .19], sweep: 680,
       duration: 1.34, volume: .29, attack: .045, hold: .27, wet: .52 }),
-    stab(69, { cutoff: 2040, bloom: [3000, .22], sweep: 980, duration: 1.22,
+    stab(69 + transpose, { type: 'strings', cutoff: 2040, bloom: [3000, .22], sweep: 980, duration: 1.22,
       volume: .16, attack: .054, hold: .24, delaySteps: 2, pan: -.31, wet: .43 }),
-    stab(78, { cutoff: 2450, sweep: 860, duration: .89, volume: .108,
+    stab(78 + transpose, { type: 'pluck', cutoff: 2450, sweep: 860, duration: .89, volume: .108,
       delaySteps: 4, hold: .15, pan: .39, wet: .53 }),
   ],
   lost: () => [

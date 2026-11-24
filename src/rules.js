@@ -26,6 +26,10 @@ export const moveSpeed = p => T.speed * (p.haste > 0 ? 1.55 : 1);
 export const wrap = a => { const value = a % TAU; return value < 0 ? value + TAU : value; };
 export const delta = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 export const distance = (a, b) => Math.abs(delta(a, b));
+export function rushAngle(base, bend, radius) {
+  const progress = Math.max(0, Math.min(1, (radius - T.coreRadius) / (T.radius - T.coreRadius)));
+  return wrap(base + bend * progress ** 2 * (3 - 2 * progress));
+}
 export function cleanInput(input = {}) {
   if (!input || typeof input !== 'object') input = {};
   return { left: input.left === true, right: input.right === true, special: input.special === true,
@@ -34,8 +38,8 @@ export function cleanInput(input = {}) {
 export function makeMatch(seed = 1, options = {}) {
   const count = options.count === 2 ? 2 : 4;
   const timeScale = options.timeScale === 1 ? 1 : .5;
-  const { id, phases, spawns, endAt } = options.encounter ?? {};
-  const encounter = options.encounter && { id, phases, spawns, endAt, nextSpawn: 0, phaseIndex: 0 };
+  const { id, phases, spawns, endAt, cues } = options.encounter ?? {};
+  const encounter = options.encounter && { id, phases, spawns, endAt, cues, nextSpawn: 0, phaseIndex: 0 };
   return { status: 'playing', time: 0, elapsed: 0, timeScale, seed: seed >>> 0, rng: (seed >>> 0) || 1,
     nextId: 1, eventId: 0, score: 0, rescues: 0, phase: encounter?.phases[0].phase ?? 'INGRESS', finale: null,
     ...(encounter && { encounter }),
@@ -72,11 +76,12 @@ export function phaseAt(time) {
   if (time < T.finalSurgeAt) return 'BREATH'; if (time < T.duration) return 'FINAL SURGE';
   return 'BRING THEM BACK';
 }
-function spawnEnemy(s, angle, wing, leader) {
+function spawnEnemy(s, angle, wing, leader, bend) {
   const roll = random(s);
   const type = wing ? 'rush' : leader ?? (s.time < 5 || roll < .30 ? 'rush' : roll < .53 ? 'skimmer'
     : roll < .72 ? 'stalker' : s.time < 14 ? 'rush' : s.time < 30 || roll < .9 ? 'flank' : 'suppress');
   s.enemies.push({ id: s.nextId++, type, escort: wing, angle, base: angle, radius: 12, preview: .65,
+    ...(type === 'rush' && bend && { bend }),
     hp: type === 'suppress' ? 3 : type === 'flank' ? 2 : 1, age: 0,
     ring: type === 'skimmer' ? 1 : type === 'stalker' ? 0 : null, mode: 'approach',
     turn: random(s) < .5 ? -1 : 1, pulse: 1.2 });
@@ -86,17 +91,21 @@ function spawnSquad(s, pack) {
   const size = pack?.size ?? (s.time < 12 ? 3 : s.time < 40 ? 4 : 5);
   const desired = s.players.length === 2 ? Math.ceil(size * .6) : size;
   const count = Math.min(desired, capacity - s.enemies.length), center = pack?.angle ?? random(s) * TAU;
+  const spacing = pack?.spacing ?? .14;
   // One behavior leader and light escorts: clustered targets without multiplying beams.
   for (let i = 0; i < count; i++) {
-    spawnEnemy(s, wrap(center + (i - (count - 1) / 2) * .14), i !== Math.floor(count / 2), pack?.leader);
+    spawnEnemy(s, wrap(center + (i - (count - 1) / 2) * spacing), i !== Math.floor(count / 2), pack?.leader, pack?.bend);
   }
   if (count > 0 && s.phase === 'FINAL SURGE' && s.finale) s.finale.squadAt ??= s.elapsed;
 }
 function spawnWall(s, layout) {
   const angle = layout?.angle ?? random(s) * TAU, single = !layout && s.time > 40 && random(s) > .65;
   const width = layout?.width ?? (s.time < 28 ? 1.55 : s.time < 65 ? 1.3 : 1.1);
-  s.walls.push({ id: s.nextId++, radius: layout?.radius ?? 450,
-    speed: layout?.speed ?? (s.time > T.finalSurgeAt ? 155 : 128),
+  const radius = layout?.radius ?? 450;
+  // Choreographed walls reach the outer rail on the chart's arrival accent.
+  const speed = layout?.travelSeconds ? (radius - T.radius) / (layout.travelSeconds * s.timeScale)
+    : layout?.speed ?? (s.time > T.finalSurgeAt ? 155 : 128);
+  s.walls.push({ id: s.nextId++, radius, speed,
     gaps: single ? [{ angle, width: 2.25 }] : [{ angle, width }, { angle: wrap(angle + Math.PI), width }],
     hit: s.players.map(() => false) });
 }
@@ -203,7 +212,10 @@ function updateEnemy(s, e, dt) {
       }
     }
     if (e.age > 14) e.hp = 0;
-  } else e.radius += 86 * dt;
+  } else {
+    e.radius += 86 * dt;
+    if (e.bend) e.angle = rushAngle(e.base, e.bend, e.radius);
+  }
   if (e.radius > T.radius - 3) {
     if (!e.escort) s.zones.push({ id: s.nextId++, angle: e.angle, radius: T.radius, width: .34, age: 0, warn: .25, life: 1.35 });
     e.hp = 0;

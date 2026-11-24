@@ -17,11 +17,12 @@ once with `npm ci`.
 | `npm run playtest:rescue` | Self-hosted browser session: ordinary assisted rescue attempt, labeled constructed rescue, retry and interruption. |
 | `npm run balance:rescue` | Paired first-down rescue policies across fixed seeds and two/four-pilot profiles; prints JSON without changing tuning. |
 | `npm run test:ui` | Pointer room options, keyboard pilot selection, settings, paused input, outcomes and interruption at desktop and compact sizes. Requires a diagnostics-enabled server; defaults to port 5187. |
-| `npm run test:audio:browser` | Chromium room probe for 132 BPM at both paces, keyboard ability and depth audio, threat and readiness cues, the constructed maximum-chain/rescue overlap, mute, pause, and a constructed clear. |
+| `npm run test:audio:browser` | Chromium room probe for 132 BPM at both paces, keyboard ability and depth audio, threat and readiness cues, a constructed maximum-chain/rescue overlap, an isolated pilot dropout and rescue, mute, pause, and a constructed clear. |
 | `node scripts/audio-score-audition.mjs` | Renders and measures a constructed score-and-effects reel using the runtime audio graph. Writes the WAV and report under `artifacts/audio/`. |
 | `node scripts/audio-score-audition.mjs --feedback` | Renders a constructed finale with movement, warnings, a readiness cue, and interrupted and completed rescue phrases. |
 | `node scripts/audio-score-audition.mjs --pressure` | Renders both Pressure rehearsal mixes from the same seeded solo input sequence, including a wall warning, rescue, and bar-16 clear. |
 | `node scripts/audio-score-audition.mjs --sortie` | Renders the complete 99-bar mix from a scripted solo attempt through a rescue and the 3:00 clear. |
+| `node scripts/audio-score-audition.mjs --crew` | Renders four controlled solo instrument dropouts and returns across the Pressure arrangement. |
 | `npm run analytics:report -- LOG --build BUILD` | Validated, deduplicated local rescue counts for one build; the default study cohort excludes automated and diagnostic runs. |
 
 Start `npm run dev` in a separate terminal for the browser check. It needs local
@@ -37,7 +38,10 @@ run `node scripts/arcade-browser-check.mjs` to check an assembled Arcade site.
 The check accelerates the browser frame clock after the real-time input checks
 to reach the natural outcome. The local export check measures the Pressure
 rehearsal's first kick against the encounter transition at real speed and checks
-all eight phases of the three-minute solo run. Set `COLD_SIGNAL_REALTIME=1` to
+the first sweep's visual lead, reveal, and scheduled synth onset. It captures
+the cue in `artifacts/arcade/formation-preview.png` and
+`artifacts/arcade/formation-reveal.png`, then checks all eight phases of the
+three-minute solo run. Set `COLD_SIGNAL_REALTIME=1` to
 measure the three-minute run's drops against its phase transitions at real speed.
 See the [Arcade release record](release/pocket-studio-arcade.md).
 

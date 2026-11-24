@@ -1,4 +1,5 @@
 import { CREW } from './rules.js';
+import { pilotInstruments } from './audio-score.js';
 
 export const arenaKeys = { KeyA: 'left', ArrowLeft: 'left', KeyD: 'right', ArrowRight: 'right',
   Space: 'special', KeyW: 'inward', ArrowUp: 'inward', KeyS: 'outward', ArrowDown: 'outward' };
@@ -11,15 +12,16 @@ export const formatTime = seconds => {
 
 export function mountPilotPicker(list, onSelect) {
   for (const character of CREW) {
+    const instrument = pilotInstruments[character.id];
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'character-card';
     button.dataset.character = character.id;
     button.setAttribute('role', 'radio');
     button.setAttribute('aria-checked', 'false');
-    button.setAttribute('aria-label', `${character.name}, ${character.role}, ${character.ability}`);
+    button.setAttribute('aria-label', `${character.name}, ${character.role}, ${character.ability}, ${instrument}`);
     button.setAttribute('aria-describedby', `ability-description-${character.id}`);
-    button.innerHTML = `<span class="character-icon">${character.symbol}</span><strong>${character.name}</strong><span class="character-role">${character.role}</span><span class="character-power">${character.ability}</span><span id="ability-description-${character.id}" class="character-description">${character.description}</span><em>“${character.quote}”</em>`;
+    button.innerHTML = `<span class="character-icon">${character.symbol}</span><strong>${character.name}</strong><span class="character-role">${character.role} · ${instrument}</span><span class="character-power">${character.ability}</span><span id="ability-description-${character.id}" class="character-description">${character.description}</span><em>“${character.quote}”</em>`;
     button.onclick = () => onSelect(character);
     list.append(button);
   }

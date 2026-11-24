@@ -41,10 +41,10 @@ The last Breath begins at 70 seconds of simulation. The score strips back to
 strings and a short swell. The first squad actually revealed in Final Surge
 starts a fresh downbeat and brass pickup. The rules stamp that reveal in match
 elapsed time, and both paces keep 132 BPM. Half pace develops the harmony over
-more bars. A downed pilot reduces the drums and suspends the harmony. A rescue
-plays its cue immediately and restores the bass on the next available beat
-when the crew is back. In overtime a low pulse holds the suspended chord until
-the last rescue or a wipe. The final rescue cue precedes the resolution.
+more bars. The drum and formation cues keep their scheduled beats while
+individual parts follow the crew's condition. In overtime a low pulse holds
+the suspended chord until the last rescue or a wipe. The final rescue cue
+precedes the resolution.
 
 For a playable comparison, open the solo build with `?finale=synced` or
 `?finale=original`. Both start in the last Breath and use the same seed each
@@ -83,23 +83,58 @@ squads and walls that appear on it. The match uses elapsed time to reveal
 those threats, and the score schedules ahead on the Web Audio clock. Pause
 holds match time. The music rejoins the current beat after pause or mute.
 
-| Bars | Match time | Encounter and score |
-| --- | --- | --- |
-| 1–16 | 0:00–0:29 | Ingress starts with strings and widely spaced squads. The kick and bass arrive with the first wall. |
-| 17–32 | 0:29–0:58 | Crosscurrent alternates attack angles and wall gaps, with phrases that leave space for rail and kill cues. |
-| 33–36 | 0:58–1:05 | Breath lowers the score to pads. A two-beat swell announces Pressure. |
-| 37–56 | 1:05–1:42 | Pressure reprises the rehearsal, then develops the syncopated bass under overlapping patrols. |
-| 57–60 | 1:42–1:49 | A second Breath gives the crew room to recover. |
-| 61–76 | 1:49–2:18 | Convergence stacks beam lanes and wall gaps against a higher synth response. |
-| 77–80 | 2:18–2:25 | Final Breath holds the suspended harmony before the last reveal. |
-| 81–99 | 2:25–3:00 | Final Surge brings the opening motif back with a two-squad downbeat, building to a three-bar cadence. |
+| Bars | Match time | Key | Encounter and score |
+| --- | --- | --- | --- |
+| 1–16 | 0:00–0:29 | F♯ minor | Ingress starts with strings and widely spaced squads. The kick and bass arrive with the first wall. |
+| 17–32 | 0:29–0:58 | G minor | Crosscurrent introduces split-angle reinforcements and displaced hats. |
+| 33–36 | 0:58–1:05 | E♭ major | Breath leaves room for recovery with strings and a swell into Pressure. |
+| 37–56 | 1:05–1:42 | A♭ minor | Pressure overlaps patrols with a syncopated second bass voice. |
+| 57–60 | 1:42–1:49 | E major | A second Breath sets a low pulse under the strings. |
+| 61–76 | 1:49–2:18 | B♭ minor | Convergence stacks beam lanes and faster, tighter walls against a higher synth response. |
+| 77–80 | 2:18–2:25 | D♭ major | Final Breath keeps the low pulse on every beat and pivots to F♯ suspended for the last reveal. |
+| 81–99 | 2:25–3:00 | B minor | Final Surge brings back the opening motif above rolling percussion and the highest enemy density, then holds a three-bar cadence. |
 
-Pitched gameplay cues take their notes from the active chord. A downed pilot
-thins the groove, and the next available beat restores it after the crew
-recovers. At 3:00 an all-active crew gets the clear chord. Overtime holds a
-suspended pulse until the last rescue or a wipe. Run
+Pitched gameplay cues take their notes from the active chord. At 3:00 an
+all-active crew gets a B minor clear chord voiced by all four instruments. Overtime
+holds the suspended dominant until the last rescue or a wipe. Run
 `node scripts/audio-score-audition.mjs --sortie` to render a complete scripted
-solo attempt through the runtime mixer.
+solo attempt through the runtime mixer to `artifacts/audio/cold-signal-ensemble-run.wav`.
+
+### Pilot instruments
+
+| Pilot | Part |
+| --- | --- |
+| Mara | Pulse bass in the low register |
+| Ivo | Synth brass carrying the melody and answers |
+| Sana | Bowed synth strings carrying the chord |
+| Rook | Metallic plucks between the beats |
+
+A knockdown fades the assigned part and its reverb send. The room can carry
+the short tail of notes already played. Rescue fades the part in on the next
+beat, including when a note is already in progress. The drum groove,
+formation accents, and harmony run on the existing timeline. In a multiplayer
+room with duplicate pilots, the shared instrument's level follows the
+proportion of its pilots still active. In a two-player room the picked pilots
+provide the two crew parts.
+
+Run `node scripts/audio-score-audition.mjs --crew` for a constructed
+listening pass that drops each instrument in turn over the real Pressure
+arrangement.
+
+### Formation accents
+
+The chart uses one grid for enemy launches, gap previews, and synth accents.
+A sweep gets a sliding note panned to its launch angle. A pincer gets a paired
+horn hit. Staggered rail attacks climb through the chord as the stalker,
+skimmer, and suppressor arrive. Walls have an entrance tone and a second hit
+when their center crosses the outer rail. The personal hazard cue still
+responds to each pilot's actual position. These accents share beats with the
+score, leaving space in the lead and percussion at busy entrances.
+
+The reference is Beat Saber's use of beat subdivisions, directional arcs, and
+authored lighting. Cold Signal applies those ideas to its own tunnel, enemy
+paths, and original score. [Beat Saber note and arc editor](https://beatsaber.com/documentation/placing-notes/index.html)
+· [Group lighting documentation](https://beatsaber.com/documentation/the-group-lighting-event-system/index.html)
 
 ## Musical gameplay cues
 

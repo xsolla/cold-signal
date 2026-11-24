@@ -1,4 +1,5 @@
-import { T, RINGS, TAU, CREW, characterById, projectRadius, depthScale, pointAt, enemySize, ringName, safeInWall, distance } from './rules.js';
+import { T, RINGS, TAU, CREW, characterById, projectRadius, depthScale, pointAt, enemySize, ringName, safeInWall, distance, rushAngle } from './rules.js';
+import { STEP_SECONDS } from './audio-chart.js';
 import { PALETTE, Presentation, drawFork, noise } from './cold-signal.js';
 const { bg: ink, paper, signal: acid, danger, accent, line, muted, field } = PALETTE;
 export class Renderer {
@@ -90,6 +91,62 @@ export class Renderer {
       c.lineTo(Math.cos(a) * (radius + 10 * scale), Math.sin(a) * (radius + 10 * scale)); c.stroke();
     }
   }
+  formationCues(state, reduced) {
+    const c = this.ctx;
+    for (const cue of state.encounter?.cues ?? []) {
+      const lead = cue.kind === 'gate-crossing' ? 0 : 4 * STEP_SECONDS;
+      const remaining = cue.at - state.elapsed;
+      if (remaining > 4 * STEP_SECONDS) break;
+      if (remaining > lead || remaining < -.24) continue;
+      const reveal = remaining <= 1e-8;
+      const envelope = reveal ? 1 + remaining / .24 : 1 - remaining / lead;
+      c.save();
+      c.globalAlpha *= reduced ? .26 + .38 * envelope : .24 + .58 * envelope;
+      c.setLineDash(reveal ? [] : [4, 6]);
+      if (cue.wall) this.gapCue(cue, reveal);
+      for (const squad of cue.squads ?? []) {
+        c.setLineDash(reveal ? [] : [4, 6]);
+        this.squadCue(squad, cue.kind, reveal);
+      }
+      c.restore();
+    }
+  }
+  gapCue({ wall, kind }, reveal) {
+    const c = this.ctx;
+    const radius = kind === 'gate-crossing' ? T.radius : T.radius + 19;
+    c.strokeStyle = acid;
+    c.lineWidth = reveal ? 3 : 1.5;
+    for (const middle of [wall.angle, wall.angle + Math.PI]) {
+      const left = middle - wall.width / 2, right = middle + wall.width / 2;
+      c.beginPath(); c.arc(0, 0, radius, left, right); c.stroke();
+      for (const angle of [left, right]) {
+        const inner = pointAt(angle, radius - 13), outer = pointAt(angle, radius + 9);
+        c.beginPath(); c.moveTo(inner.x, inner.y); c.lineTo(outer.x, outer.y); c.stroke();
+      }
+    }
+  }
+  squadCue({ angle, bend, leader }, kind, reveal) {
+    const c = this.ctx;
+    const target = { stalker: RINGS[0], skimmer: RINGS[1], suppress: 156 }[leader] ?? 211;
+    const color = kind === 'pincer' ? accent : kind === 'ladder' ? danger : acid;
+    c.strokeStyle = color; c.lineWidth = reveal ? 2.4 : 1.4;
+    c.beginPath();
+    for (let index = 0; index <= 10; index++) {
+      const radius = T.coreRadius + 4 + (target - T.coreRadius - 4) * index / 10;
+      const point = pointAt(bend ? rushAngle(angle, bend, radius) : angle, radius);
+      if (index === 0) c.moveTo(point.x, point.y);
+      else c.lineTo(point.x, point.y);
+    }
+    c.stroke();
+    const direction = bend ? rushAngle(angle, bend, target) : angle;
+    const tip = pointAt(direction, target);
+    c.setLineDash([]);
+    this.polygon(tip.x, tip.y, reveal ? 9 : 6, kind === 'pincer' || kind === 'ladder' ? 4 : 3,
+      direction, reveal ? color : null, color, 1.6);
+    if (reveal) {
+      c.beginPath(); c.arc(0, 0, projectRadius(58), angle - .21, angle + .21); c.stroke();
+    }
+  }
   zone(z) {
     const c = this.ctx, warning = z.age < z.warn;
     const radii = z.minRadius !== undefined ? [z.minRadius, ...RINGS.filter(r => r > z.minRadius && r <= z.maxRadius)] : [z.radius ?? T.radius];
@@ -113,7 +170,8 @@ export class Renderer {
     c.save();
     if (preview) c.globalAlpha = .85;
     if (!preview && !this.reduced) {
-      const tail = pointAt(e.angle - (e.type === 'flank' ? .06 : 0), Math.max(T.coreRadius, e.radius - 22));
+      const radius = Math.max(T.coreRadius, e.radius - 22);
+      const tail = pointAt(e.bend ? rushAngle(e.base, e.bend, radius) : e.angle - (e.type === 'flank' ? .06 : 0), radius);
       c.save(); c.globalAlpha *= .22; c.strokeStyle = e.type === 'rush' ? paper : danger;
       c.lineWidth = Math.max(.5, scale * 2); c.beginPath(); c.moveTo(x, y); c.lineTo(tail.x, tail.y); c.stroke(); c.restore();
     }
@@ -359,6 +417,7 @@ export class Renderer {
     c.rotate(camera.rotation); c.scale(scale * camera.zoom, scale * camera.zoom);
     const time = reduced ? 0 : clock * .08;
     c.globalAlpha = joined ? 1 : .65; this.tunnel(state?.players[slot], reduced);
+    if (state?.status === 'playing') this.formationCues(state, reduced);
     const count = joined ? crewCount : 4;
     const players = state?.players || Array.from({ length: count }, (_, id) => ({ id,
       character: characterById(roster[id] || CREW[id].id).id, angle: -Math.PI / 2 + id * TAU / count + time,

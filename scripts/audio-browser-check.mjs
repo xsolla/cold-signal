@@ -6,7 +6,7 @@ import { setTimeout as wait } from 'node:timers/promises';
 import { chromium } from 'playwright-core';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server/index.mjs';
-import { RINGS, T } from '../src/rules.js';
+import { downPlayer, RINGS, T } from '../src/rules.js';
 import { baseline, cascade, chainRoll, seed } from './audio-fixture.mjs';
 import { BPM, CUE_STEP_SECONDS, hz, STEP_SECONDS } from '../public/audio-score.js';
 
@@ -62,6 +62,14 @@ try {
         if (message.type === 'state') snapshot = message;
       }));
       await page.goto(url);
+      if (!historical) await page.evaluate(async () => {
+        const { Sound } = await import('/audio.js');
+        const sync = Sound.prototype.syncPilotMix;
+        Sound.prototype.syncPilotMix = function (players, at) {
+          window.crewMixer = this;
+          return sync.call(this, players, at);
+        };
+      });
       await page.locator('#pace').selectOption(String(timeScale));
       await page.locator('#create').click();
       await page.waitForFunction(() => /^[A-F0-9]{6}$/.test(document.querySelector('#room-code').textContent));
@@ -174,6 +182,23 @@ try {
         await page.waitForFunction(step => window.audioProbe.some(first => !first.slide && window.audioProbe.some(second =>
           !second.slide && Math.abs(second.at - first.at - step) < 1e-6
           && [3, 4, 5].some(interval => Math.abs(second.frequency / first.frequency - 2 ** (interval / 12)) < 1e-9))), STEP_SECONDS);
+
+        const casualty = room.state.players[2];
+        assert.equal(casualty.character, 'sana');
+        for (const player of room.state.players) player.protection = 8;
+        casualty.protection = 0;
+        assert.ok(downPlayer(room.state, casualty.id));
+        const downAt = await page.evaluate(() => window.audioContextProbe.currentTime);
+        await page.waitForFunction(since => {
+          const strings = window.crewMixer.pilotParts.get('sana');
+          return strings.dry.gain.value < .04 && strings.wet.gain.value < .04
+            && window.crewMixer.pilotParts.get('ivo').dry.gain.value > .95
+            && window.audioProbe.some(note => note.frequency === 148 && note.at > since + .1);
+        }, downAt);
+        Object.assign(casualty, { angle: pilot.angle, ring: pilot.ring, radius: pilot.radius,
+          rescue: T.rescueSeconds - T.step * .25 });
+        await page.waitForFunction(() => window.crewMixer.pilotParts.get('sana').dry.gain.value > .95);
+        assert.equal(casualty.down, false);
 
         const verifySuspension = async (suspend, resume) => {
           await suspend();

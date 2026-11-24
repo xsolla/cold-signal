@@ -1,4 +1,4 @@
-import { RINGS, T, TAU, delta, depthScale, distance, enemySize, moveSpeed, projectRadius } from './rules.js';
+import { RINGS, T, TAU, delta, depthScale, distance, enemySize, moveSpeed, projectRadius, rushAngle } from './rules.js';
 
 const lookAhead = [.08, .22, .40, .62];
 const homeRings = [2, 2, 2, 1];
@@ -71,6 +71,7 @@ function threatsFor(state, pilot) {
       const speed = approachSpeed[enemy.type] ?? 86;
       const radius = Math.min(enemy.type === 'suppress' ? 156 : rail ?? T.radius, enemy.radius + speed * time);
       let angle = enemy.angle;
+      if (enemy.bend) angle = rushAngle(enemy.base, enemy.bend, radius);
       if (enemy.type === 'flank') angle = enemy.base + enemy.turn * .68 * Math.min(1, Math.max(0, (enemy.age + time - 1.2) / .7));
       if (enemy.type === 'skimmer' && radius === rail) angle += enemy.turn * .8 * time;
       if (enemy.type === 'suppress') angle += enemy.turn * .15 * time;

@@ -1,4 +1,4 @@
-import { cuePart, CUE_STEP_SECONDS, playFinaleStep, playChartStep, playScoreStep, STEP_SECONDS } from './audio-score.js';
+import { cuePart, CUE_STEP_SECONDS, pilotInstruments, playFinaleStep, playChartStep, playScoreStep, STEP_SECONDS } from './audio-score.js';
 import { pressureChart, sortieChart } from './audio-chart.js';
 import { abilities, cues, depthCue, holdCue, killHit, killTransient,
   readyCue, releaseCue, warningCue } from './audio-cues.js';
@@ -10,15 +10,19 @@ const NOISE_SEED = 0x2c4b19;
 const ROOM_SEEDS = [0x293918, 0x6d2b79];
 const ROOM_LEVEL = .85;
 const OUTPUT_LEVEL = .85;
+const BEAT_SECONDS = STEP_SECONDS * 4;
+const PILOTS = Object.keys(pilotInstruments);
 
 // Harmonic amplitudes for the original synth patches. Web Audio band-limits
 // these waves at playback pitch, including during glides.
 const harmonics = {
   round: [0, 1, .36, .21, .077, .045, .028, .012],
   horn: [0, .92, .78, .48, .26, .24, .11, .15, .068, .082, .046, .025, .023, .01],
+  brass: [0, 1, .31, .74, .22, .38, .12, .19, .06, .08, .04, .036, .02],
   strings: [0, .95, .58, .44, .29, .19, .14, .10, .067, .045, .039, .026, .017],
   strike: [0, .88, .82, .63, .46, .41, .31, .23, .22, .15, .13, .09, .077, .06, .038, .029, .022],
   steel: [0, .86, .62, .18, .49, .24, .065, .23, .095, .104, .05, .08, .037, .043, .02],
+  pluck: [0, 1, .11, .53, .065, .28, .035, .16, .025, .052],
 };
 
 function noiseFrom(seed) {
@@ -95,7 +99,8 @@ export class Sound {
     this.duckUntil = 0;
     this.rescueHold = null;
     this.voices = new Set();
-    this.playMusic = (patch, at) => this.play(patch, at, 'music');
+    this.pilotParts = new Map();
+    this.playMusic = (patch, at, pilot) => this.play(patch, at, 'music', pilot);
   }
 
   get active() { return this.enabled && !this.holding && this.context?.state === 'running'; }
@@ -150,10 +155,44 @@ export class Sound {
     return this[key].convolver;
   }
 
+  pilotPart(pilot) {
+    let part = this.pilotParts.get(pilot);
+    if (!part) {
+      const dry = this.context.createGain(), wet = this.context.createGain();
+      dry.connect(this.bus('music'));
+      part = { dry, wet, level: undefined };
+      this.pilotParts.set(pilot, part);
+    }
+    return part;
+  }
+
+  syncPilotMix(players, now) {
+    if (!players?.some(player => Object.hasOwn(pilotInstruments, player.character))) return false;
+    for (const pilot of PILOTS) {
+      const assigned = players.filter(player => player.character === pilot);
+      const level = assigned.length ? assigned.filter(player => !player.down).length / assigned.length : 0;
+      const part = this.pilotPart(pilot);
+      if (level === part.level) continue;
+      const returning = level > part.level;
+      const anchor = this.nextAt === null ? now : this.nextAt - (this.nextStep % 4) * STEP_SECONDS;
+      const at = returning ? Math.max(now, anchor + Math.ceil((now - anchor) / BEAT_SECONDS - 1e-8) * BEAT_SECONDS) : now;
+      for (const { gain } of [part.dry, part.wet]) {
+        if (part.level === undefined) gain.setValueAtTime(level, now);
+        else {
+          if (gain.cancelAndHoldAtTime) gain.cancelAndHoldAtTime(now);
+          else gain.cancelScheduledValues(now);
+          gain.setTargetAtTime(level, at, returning ? .024 : .014);
+        }
+      }
+      part.level = level;
+    }
+    return true;
+  }
+
   play({
     pitch, slide, slideTime, noise, offset = 0, type = 'sine', cutoff, bloom, sweep,
     resonance, drive = false, detune = 0, pan = 0, attack = .004, hold = 0, duration, volume, wet = 0, group,
-  }, at, bus = 'effects') {
+  }, at, bus = 'effects', pilot) {
     const context = this.context, end = at + duration;
     let source;
     if (noise) {
@@ -203,12 +242,17 @@ export class Sound {
       stereo.pan.value = pan;
       output = output.connect(stereo);
     }
-    output.connect(this.bus(bus));
+    const part = pilot && this.pilotPart(pilot);
+    output.connect(part ? part.dry : this.bus(bus));
     let send;
     if (wet) {
       send = context.createGain();
       send.gain.value = wet;
-      output.connect(send).connect(this.space(bus));
+      if (part && !part.wetConnected) {
+        part.wet.connect(this.space(bus));
+        part.wetConnected = true;
+      }
+      output.connect(send).connect(part ? part.wet : this.space(bus));
     }
 
     const voice = { source, envelope: envelope.gain, at, end, bus, group };
@@ -227,6 +271,7 @@ export class Sound {
     if (state?.status !== 'playing' || paused || !this.active) return;
     const now = this.context.currentTime;
     this.alignClock(state, now);
+    this.syncPilotMix(state.players, now);
     // Drop missed steps after a stalled frame instead of playing a burst of
     // overdue notes. The grid is based on audio time at either simulation pace.
     if (this.nextAt < now) {
@@ -236,15 +281,13 @@ export class Sound {
     }
     const finale = this.syncedFinale && state.finale;
     const chart = this.chartFor(state);
+    const crewDown = chart && state.players.some(player => player.down);
     while (this.nextAt < now + LOOKAHEAD) {
       let chord;
       if (chart) {
-        if (this.nextStep % 4 === 0) this.crewDown = state.players.some(player => player.down);
-        chord = playChartStep(this.playMusic, chart, this.nextStep, this.nextAt, this.crewDown);
+        chord = playChartStep(this.playMusic, chart, this.nextStep, this.nextAt, crewDown);
       } else if (finale) {
-        if (this.nextStep % 4 === 0) this.crewDown = state.players.some(player => player.down);
-        chord = playFinaleStep(this.playMusic, this.nextStep, this.nextAt, this.finaleSection, finale,
-          this.crewDown, state.timeScale);
+        chord = playFinaleStep(this.playMusic, this.nextStep, this.nextAt, this.finaleSection, finale, state.timeScale);
       } else {
         if (!this.phase || this.nextStep % 4 === 0) this.phase = state.phase;
         chord = playScoreStep(this.playMusic, this.nextStep, this.nextAt, this.phase);
@@ -258,7 +301,7 @@ export class Sound {
   alignClock(state, now) {
     if (state?.status !== 'playing') return;
     if (state.encounter) {
-      this.alignElapsedClock(state.elapsed, now, this.nextAt === null && this.nextStep === 0, state, .085);
+      this.alignElapsedClock(state.elapsed, now, this.nextAt === null && this.nextStep === 0, .085);
       return;
     }
     if (!this.syncedFinale || !state.finale) {
@@ -271,10 +314,10 @@ export class Sound {
     const elapsed = Math.max(0, state.elapsed - origin);
     const entering = section !== this.finaleSection;
     this.finaleSection = section;
-    this.alignElapsedClock(elapsed, now, entering, state, .24);
+    this.alignElapsedClock(elapsed, now, entering, .24);
   }
 
-  alignElapsedClock(elapsed, now, entering, state, driftLimit) {
+  alignElapsedClock(elapsed, now, entering, driftLimit) {
     const drift = this.nextAt === null ? 0 : this.nextAt - now - START_LEAD - (this.nextStep * STEP_SECONDS - elapsed);
     if (entering || Math.abs(drift) > driftLimit) {
       for (const voice of this.voices) if (voice.bus === 'music') this.stopVoice(voice, now, .045);
@@ -287,7 +330,6 @@ export class Sound {
       const fresh = entering && elapsed <= .12;
       this.nextStep = fresh ? 0 : Math.ceil(elapsed / STEP_SECONDS - 1e-6);
       this.nextAt = now + START_LEAD + Math.max(0, this.nextStep * STEP_SECONDS - elapsed);
-      this.crewDown = state.players.some(player => player.down);
     }
   }
 
@@ -359,15 +401,17 @@ export class Sound {
     if (outcome) {
       // Stop the score including lookahead notes before the outcome chord.
       this.stopVoices(.014);
-      const synced = this.chartFor(state) || (this.syncedFinale && (state?.finale || this.finaleSection));
+      const chart = this.chartFor(state);
+      const synced = chart || (this.syncedFinale && (state?.finale || this.finaleSection));
       if (outcome.type === 'won' && synced) {
         const rescued = events.some(event => event.type === 'rescue');
         if (rescued) this.playCue(cues.rescue(notes, answer), at);
-        this.playCue(cues.won(), rescued ? onset + 4 * CUE_STEP_SECONDS : at);
+        this.playCue(cues.won(chart?.clearTranspose), rescued ? onset + 4 * CUE_STEP_SECONDS : at);
       } else this.playCue(cues[outcome.type](), at);
       return;
     }
 
+    const pilotMix = this.syncPilotMix(state?.players, at);
     const played = new Set();
     const crewCue = events.some(event => event.type === 'rescue' || event.type === 'down');
     const abilityStack = events.filter(event => event.type === 'special').length > 1;
@@ -380,8 +424,8 @@ export class Sound {
       const cue = type === 'special' ? abilities[character] : cues[type];
       if (!cue || played.has(cue)) continue;
       played.add(cue);
-      if (type === 'rescue') this.duck(at, .32, .36);
-      else if (type === 'down') this.duck(at, .39, .25);
+      if (!pilotMix && type === 'rescue') this.duck(at, .32, .36);
+      else if (!pilotMix && type === 'down') this.duck(at, .39, .25);
       if (type === 'special') {
         const level = at < this.abilityUntil ? .34 : crewCue ? .67 : 1;
         this.abilityUntil = at + .16;
@@ -440,6 +484,13 @@ export class Sound {
     const gain = this.buses?.music.gain;
     gain?.cancelScheduledValues(at);
     gain?.setValueAtTime(1, at);
+    if (!fade) {
+      for (const { dry, wet } of this.pilotParts.values()) {
+        dry.disconnect();
+        wet.disconnect();
+      }
+      this.pilotParts.clear();
+    }
     if (this.room) {
       if (fade) {
         this.room.level.gain.setValueAtTime(ROOM_LEVEL, at);

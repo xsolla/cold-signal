@@ -56,9 +56,16 @@ try {
       createOscillator() {
         const voice = super.createOscillator();
         const set = voice.frequency.setValueAtTime.bind(voice.frequency);
+        const slide = voice.frequency.exponentialRampToValueAtTime.bind(voice.frequency);
+        let onset;
         voice.frequency.setValueAtTime = (value, at) => {
+          onset = at;
           if (value === 148) (window.arcadeTestKicks ??= []).push(at);
           return set(value, at);
+        };
+        voice.frequency.exponentialRampToValueAtTime = (value, at) => {
+          if (Math.abs(at - onset - .102) < 1e-6) (window.arcadeTestSweeps ??= []).push(onset);
+          return slide(value, at);
         };
         return voice;
       }
@@ -197,26 +204,45 @@ try {
 
     await frame.goto(`${origin}${gamePath}`);
     const realTime = process.env.COLD_SIGNAL_REALTIME === '1';
-    await frame.evaluate(() => {
+    await frame.evaluate(async () => {
       const phase = document.getElementById('phase');
       const clock = document.getElementById('clock');
       window.arcadeTestPhases = [];
       new MutationObserver(() => window.arcadeTestPhases.push({
         phase: phase.textContent, clock: clock.textContent, at: window.arcadeTestAudio?.currentTime,
       })).observe(phase, { childList: true });
+      const { Renderer } = await import(new URL('./renderer.js', location.href).href);
+      const draw = Renderer.prototype.squadCue;
+      window.arcadeTestFormation = {};
+      Renderer.prototype.squadCue = function (squad, kind, reveal) {
+        if (kind === 'sweep' && window.arcadeTestAudio) {
+          window.arcadeTestFormation[reveal ? 'reveal' : 'preview'] ??= window.arcadeTestAudio.currentTime;
+        }
+        return draw.call(this, squad, kind, reveal);
+      };
     });
     assert.equal(await game.locator('#pace').inputValue(), '0.5');
+    // Ivo's first seeded crew can recover in overtime even with idle input.
+    await game.getByRole('radio', { name: /Ivo/ }).click();
     await start.click();
     assert.equal(await game.locator('#duration').textContent(), '/ 03:00');
     assert.equal(await game.locator('#phase').textContent(), 'INGRESS');
+    await frame.waitForFunction(() => window.arcadeTestAudio?.currentTime - window.arcadeTestFormation.preview >= .18);
+    await game.locator('.stage').screenshot({ path: join(artifacts, 'formation-preview.png') });
+    await frame.waitForFunction(() => window.arcadeTestFormation.reveal != null && window.arcadeTestSweeps?.length);
+    const formation = await frame.evaluate(() => ({ ...window.arcadeTestFormation, accent: window.arcadeTestSweeps[0] }));
+    assert.ok(Math.abs(formation.reveal - formation.preview - 60 / BPM) < .09, JSON.stringify(formation));
+    assert.ok(Math.abs(formation.accent - formation.reveal) < .12, JSON.stringify(formation));
+    await game.locator('.stage').screenshot({ path: join(artifacts, 'formation-reveal.png') });
+    console.log(`First sweep previewed ${Math.round((formation.reveal - formation.preview) * 1000)} ms early; accent offset ${Math.round((formation.accent - formation.reveal) * 1000)} ms.`);
     if (!realTime) await canvas.evaluate(() => { window.arcadeTestRate = 7; });
-    await game.getByRole('button', { name: /^Retry as Mara/i }).waitFor({ timeout: realTime ? 215000 : 65000 });
+    await game.getByRole('button', { name: /^Retry as Ivo/i }).waitFor({ timeout: realTime ? 215000 : 65000 });
     const observed = await frame.evaluate(() => ({ phases: window.arcadeTestPhases, kicks: window.arcadeTestKicks }));
     const expected = sortieChart.phases.map(({ phase }) => phase);
     assert.deepEqual(observed.phases.slice(0, expected.length).map(({ phase }) => phase), expected);
     assert.match(await game.locator('#overlay-kicker').textContent(), /^TEAM CLEAR/);
     if (realTime) {
-      const dropOffsets = Object.fromEntries(['PRESSURE', 'CONVERGENCE', 'FINAL SURGE'].map(phase => {
+      const dropOffsets = Object.fromEntries(['CROSSCURRENT', 'PRESSURE', 'CONVERGENCE', 'FINAL SURGE'].map(phase => {
         const { at } = observed.phases.find(mark => mark.phase === phase);
         const nearest = observed.kicks.reduce((best, kick) => Math.abs(kick - at) < Math.abs(best - at) ? kick : best);
         assert.ok(Math.abs(nearest - at) < .12, JSON.stringify({ phase, at, nearest }));
