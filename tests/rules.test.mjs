@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { T, makeMatch, step, cleanInput, downPlayer, distance, safeInWall, controlledInput, useSpecial, moveSpeed, CREW, RINGS, projectRadius, depthScale, enemySize } from '../src/rules.js';
+import { T, makeMatch, step, cleanInput, downPlayer, distance, safeInWall, controlledInput, useSpecial, moveSpeed, CREW, characterById, RINGS, projectRadius, depthScale, enemySize, hullShielded, overdriveRemaining } from '../src/rules.js';
 const blank = () => [cleanInput(), cleanInput()];
+const fullCharge = pilot => characterById(pilot.character).powerKills;
 function fixture() { const s = makeMatch(123, { count: 2, timeScale: 1 }); s.enemyClock = 1e6; s.wallClock = 1e6; return s; }
 function advance(s, seconds, inputs = blank()) { for (let n = 0; n < Math.ceil(seconds / T.step); n++) step(s, inputs); return s; }
 
@@ -69,23 +70,19 @@ test('four pilots shoot automatically; downed pilots stop firing', () => {
 });
 test('global half-speed scales movement, projectiles, timers, and match duration', () => {
   const fast = makeMatch(7, { count: 4, timeScale: 1 }), slow = makeMatch(7);
-  fast.players[0].specialCooldown = slow.players[0].specialCooldown = 10;
+  fast.players[0].ward = slow.players[0].ward = 10;
   const start = fast.players[0].angle;
   step(fast, [{ right: true }]); step(slow, [{ right: true }]);
   assert.ok(Math.abs(distance(fast.players[0].angle, start) / distance(slow.players[0].angle, start) - 2) < 1e-9);
   assert.ok(Math.abs((T.radius - T.muzzleInset - fast.bullets[0].radius) / (T.radius - T.muzzleInset - slow.bullets[0].radius) - 2) < 1e-9);
   assert.equal(fast.time, slow.time * 2); assert.equal(fast.elapsed, slow.elapsed);
-  assert.ok(Math.abs((10 - fast.players[0].specialCooldown) / (10 - slow.players[0].specialCooldown) - 2) < 1e-9);
+  assert.ok(Math.abs((10 - fast.players[0].ward) / (10 - slow.players[0].ward) - 2) < 1e-9);
   assert.equal(T.duration / slow.timeScale, 180);
-});
-test('Space is edge-triggered and holding it does not recast after cooldown', () => {
-  const s = fixture(); step(s, [{ special: true }, {}]);
-  advance(s, 13, [{ special: true }, {}]); assert.equal(s.players[0].specialUses, 1);
-  step(s, blank()); step(s, [{ special: true }, {}]); assert.equal(s.players[0].specialUses, 2);
 });
 test('Mara wards nearby crew; one absorbed hit grants brief repeat-hit protection', () => {
   const s = fixture(); s.players[1].angle = s.players[0].angle + .5;
   s.players.forEach(p => { p.protection = 0; });
+  s.players[0].powerCharge = fullCharge(s.players[0]);
   assert.equal(useSpecial(s, s.players[0]), true);
   assert.ok(s.players.every(p => p.wardCharges === 1));
   assert.equal(downPlayer(s, 0), false); assert.equal(s.players[0].wardCharges, 0);
@@ -98,6 +95,7 @@ test('Ivo clears a sector of enemies and zones and opens a shared wall gap', () 
     { id: 2, type: 'suppress', angle: p.angle + 2, radius: 140, hp: 3 }];
   s.zones = [{ angle: p.angle }, { angle: p.angle + 2 }];
   s.walls = [{ radius: 300, gaps: [], hit: [false, false] }];
+  p.powerCharge = fullCharge(p);
   useSpecial(s, p);
   assert.equal(s.enemies[0].hp, 0); assert.equal(s.enemies[1].hp, 3);
   assert.equal(s.zones.length, 1); assert.equal(safeInWall(s.walls[0], p.angle), true);
@@ -107,7 +105,7 @@ test('any pilot can rescue any downed crew member; Sana accelerates it without a
   const plain = makeMatch(3, { count: 4, timeScale: 1 });
   plain.enemyClock = plain.wallClock = 100; plain.players[0].down = true;
   plain.players[3].angle = plain.players[0].angle; plain.players[3].character = 'sana';
-  const boosted = structuredClone(plain); useSpecial(boosted, boosted.players[3]);
+  const boosted = structuredClone(plain); boosted.players[3].powerCharge = fullCharge(boosted.players[3]); useSpecial(boosted, boosted.players[3]);
   advance(plain, 1.1, []); advance(boosted, 1.1, []);
   assert.equal(plain.players[0].down, true); assert.equal(boosted.players[0].down, false);
   advance(plain, .6, []); assert.equal(plain.players[0].down, false);
@@ -116,6 +114,7 @@ test('any pilot can rescue any downed crew member; Sana accelerates it without a
 test('Rook shares faster movement and brief cover with nearby crew', () => {
   const s = fixture(), p = s.players[0]; p.character = 'rook';
   s.players[1].angle = p.angle + .4; s.players.forEach(p => { p.protection = 0; });
+  p.powerCharge = fullCharge(p);
   useSpecial(s, p); assert.ok(s.players.every(other => moveSpeed(other) > T.speed && other.protection > 0));
 });
 test('four-player victory needs all four; the last survivor can keep a rescue alive', () => {
@@ -132,14 +131,95 @@ test('all four down loses and walls track collision independently for four slots
 });
 test('unknown characters fall back to a valid choice and downed pilots cannot cast', () => {
   const s = makeMatch(9, { characters: ['invalid'] }); assert.equal(s.players[0].character, CREW[0].id);
+  s.players[0].powerCharge = fullCharge(s.players[0]);
   s.players[0].down = true; assert.equal(useSpecial(s, s.players[0]), false);
-  assert.equal(s.players[0].specialCooldown, 0);
+  assert.equal(s.players[0].powerCharge, fullCharge(s.players[0]));
 });
 
 const place = (p, ring) => { p.ring = ring; p.radius = p.prevRadius = RINGS[ring]; };
 const enemy = (type, radius, angle, ring = null) => ({ id: 999, type, radius, angle, base: angle, ring,
   hp: 1, age: 0, turn: 1, pulse: 1, preview: 0, mode: 'approach' });
 const silence = s => s.players.forEach(p => { p.cooldown = 1000; });
+test('each pilot earns its own charge from kills and chains and needs a fresh Space press', () => {
+  for (const [id, needed] of [['rook', 25], ['mara', 28], ['sana', 30], ['ivo', 35]]) {
+    const s = fixture(), [p, ally] = s.players;
+    p.character = id;
+    silence(s);
+    const shootPack = count => {
+      s.enemies = Array.from({ length: count }, (_, i) => ({ ...enemy('rush', 150, i * .003), id: s.nextId++ }));
+      s.bullets = [{ id: s.nextId++, owner: p.id, radius: 159, angle: 0 }];
+      step(s, [{ special: true }]);
+    };
+    step(s, [{ special: true }]);
+    assert.equal(p.powerCharge, 0);
+    shootPack(needed - 1);
+    assert.equal(p.powerCharge, needed - 1);
+    assert.equal(useSpecial(s, p), false);
+    shootPack(2);
+    assert.equal(p.kills, needed + 1);
+    assert.equal(p.powerCharge, needed);
+    assert.equal(ally.powerCharge, 0);
+    step(s, [{ special: true }]);
+    assert.equal(p.specialUses, 0);
+    step(s, [{ special: false, taps: { special: true } }]);
+    assert.equal(p.specialUses, 1);
+    assert.equal(p.powerCharge, 0);
+    shootPack(2);
+    assert.equal(p.kills, needed + 3);
+    assert.equal(p.powerCharge, 0, 'kills during the drain cannot pre-charge another cast');
+    advance(s, T.overdriveSeconds, [{ special: true }]);
+    assert.equal(p.specialUses, 1);
+    assert.equal(p.powerCharge, 0);
+    shootPack(2);
+    assert.equal(p.powerCharge, 2);
+  }
+});
+test('outer breaches deal damage once, and zero hull takes priority over the final clear', () => {
+  const s = fixture(); silence(s);
+  s.enemies = [enemy('rush', 238, 0), enemy('flank', 239.5, .5)];
+  step(s);
+  assert.equal(s.hull, T.hullMax - 3);
+  assert.equal(s.enemies.length, 1);
+  step(s);
+  assert.equal(s.hull, T.hullMax - 4);
+  assert.deepEqual(s.events.map(event => [event.type, event.damage, event.hullAfter]),
+    [['breach', 3, 97], ['breach', 1, 96]]);
+  s.hull = 1; s.time = T.duration;
+  s.enemies = [enemy('flank', 239.5, .5)];
+  step(s);
+  assert.equal(s.hull, 0);
+  assert.equal(s.status, 'lost');
+  assert.ok(s.players.every(p => !p.down));
+  assert.equal(s.events.at(-1).type, 'lost');
+});
+test('Overdrive protects for three real-time seconds at both paces and overlapping casts keep their own deadlines', () => {
+  for (const timeScale of [.5, 1]) {
+    const s = makeMatch(2, { timeScale, count: 2 });
+    const [p, ally] = s.players;
+    s.enemyClock = s.wallClock = 100; s.hull = 1; silence(s);
+    p.powerCharge = fullCharge(p); ally.powerCharge = fullCharge(ally);
+    step(s, [{ special: true }]);
+    assert.ok(Math.abs(p.overdriveUntil - s.elapsed - 3) < 1e-8);
+    advance(s, 1);
+    assert.ok(overdriveRemaining(s, p) < T.overdriveSeconds - .9);
+    step(s, [{}, { special: true }]);
+    p.protection = p.wardCharges = 0; downPlayer(s, p.id);
+    const breach = () => { s.enemies = [enemy('rush', 239.9, .5)]; step(s); };
+    breach();
+    assert.equal(s.hull, 1, 'the shield survives the caster going down');
+    assert.equal(s.events.at(-1).damage, 0);
+    advance(s, p.overdriveUntil - s.elapsed + .02);
+    assert.equal(overdriveRemaining(s, p), 0);
+    breach();
+    assert.equal(s.hull, 1, 'the later cast still protects the hull');
+    advance(s, ally.overdriveUntil - s.elapsed - T.step);
+    breach();
+    assert.equal(hullShielded(s), false);
+    assert.equal(s.hull, 0);
+    assert.equal(s.status, 'lost');
+    assert.equal(ally.down, false);
+  }
+});
 test('depth keys hop one rail per press, clamp at both ends, and cancel opposing keys', () => {
   const s = fixture(), p = s.players[0];
   advance(s, .6, [{ inward: true }]); assert.equal(p.ring, 1); assert.equal(p.radius, RINGS[1]);
@@ -170,6 +250,7 @@ test('rescue requires matching depth and completes after reaching that rail', ()
 });
 test('support abilities reach an adjacent rail but not through two depths', () => {
   const s = makeMatch(1); s.players.forEach(p => { p.angle = 0; });
+  s.players[0].powerCharge = fullCharge(s.players[0]);
   place(s.players[1], 1); place(s.players[2], 0); useSpecial(s, s.players[0]);
   assert.equal(s.players[1].wardCharges, 1); assert.equal(s.players[2].wardCharges, 0);
 });
@@ -223,6 +304,7 @@ test('distant silhouettes have a narrower angular hit window than near targets',
 });
 test('bullseye absorbs every bullet, protects preview enemies from all attacks, and allows emergence', () => {
   const s = fixture(); silence(s); const p = s.players[0]; p.character = 'ivo'; p.angle = 0;
+  p.powerCharge = fullCharge(p);
   const e = enemy('rush', 20, 0); e.preview = 1; s.enemies = [e];
   s.bullets = [{ id: 1, owner: 0, radius: 50, angle: 0 }]; step(s, [], .05);
   assert.equal(s.bullets.length, 0); assert.equal(e.hp, 1); useSpecial(s, p); assert.equal(e.hp, 1);
@@ -238,9 +320,9 @@ test('a release and new press between ticks still jumps when the previous tick h
 });
 
 test('normal spawning previews all five enemy behaviors during the gauntlet', () => {
-  const s = makeMatch(123, { timeScale: 1 }); s.players.forEach(p => { p.protection = 1000; });
+  const s = makeMatch(123, { timeScale: 1 }); s.hull = 1000; s.players.forEach(p => { p.protection = 1000; });
   const seen = new Set(), previewed = new Set();
-  while (s.time < 60) {
+  while (s.status === 'playing' && s.time < 60) {
     step(s, []);
     for (const e of s.enemies) { seen.add(e.type); if (e.radius <= T.coreRadius && e.preview > 0) previewed.add(e.type); }
   }

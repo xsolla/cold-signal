@@ -1,6 +1,6 @@
-import { cuePart, CUE_STEP_SECONDS, pilotInstruments, playFinaleStep, playChartStep, playScoreStep, STEP_SECONDS } from './audio-score.js';
+import { cuePart, CUE_STEP_SECONDS, pilotInstruments, playFinaleStep, playChartStep, playOverdriveStep, playScoreStep, STEP_SECONDS } from './audio-score.js';
 import { pressureChart, sortieChart } from './audio-chart.js';
-import { abilities, cues, depthCue, holdCue, killHit, killTransient,
+import { abilities, breachCue, cues, depthCue, holdCue, killHit, killTransient,
   readyCue, releaseCue, warningCue } from './audio-cues.js';
 
 const LOOKAHEAD = .10;
@@ -9,7 +9,7 @@ const SILENCE = .0001;
 const NOISE_SEED = 0x2c4b19;
 const ROOM_SEEDS = [0x293918, 0x6d2b79];
 const ROOM_LEVEL = .85;
-const OUTPUT_LEVEL = .85;
+const OUTPUT_LEVEL = .74;
 const BEAT_SECONDS = STEP_SECONDS * 4;
 const PILOTS = Object.keys(pilotInstruments);
 
@@ -95,6 +95,7 @@ export class Sound {
     this.phase = null;
     this.finaleSection = null;
     this.killUntil = 0;
+    this.breachUntil = 0;
     this.abilityUntil = 0;
     this.duckUntil = 0;
     this.rescueHold = null;
@@ -282,6 +283,8 @@ export class Sound {
     const finale = this.syncedFinale && state.finale;
     const chart = this.chartFor(state);
     const crewDown = chart && state.players.some(player => player.down);
+    const drives = state.players?.filter(player => player.overdriveUntil > state.elapsed) ?? [];
+    const driveMix = 1 / Math.sqrt(Math.max(1, drives.length));
     while (this.nextAt < now + LOOKAHEAD) {
       let chord;
       if (chart) {
@@ -291,6 +294,12 @@ export class Sound {
       } else {
         if (!this.phase || this.nextStep % 4 === 0) this.phase = state.phase;
         chord = playScoreStep(this.playMusic, this.nextStep, this.nextAt, this.phase);
+      }
+      for (const pilot of drives) {
+        const duplicate = state.players.filter(player => player.id < pilot.id && player.character === pilot.character).length;
+        const pan = (2 * pilot.id / (state.players.length - 1) - 1) * .65;
+        const remaining = pilot.overdriveUntil - state.elapsed - (this.nextAt - now);
+        playOverdriveStep(this.playMusic, chord, this.nextStep, this.nextAt, remaining, pilot.character, pan, duplicate, driveMix);
       }
       this.scoreFeedback(chord, this.nextStep, this.nextAt);
       this.nextStep++;
@@ -415,6 +424,11 @@ export class Sound {
     const played = new Set();
     const crewCue = events.some(event => event.type === 'rescue' || event.type === 'down');
     const abilityStack = events.filter(event => event.type === 'special').length > 1;
+    const breaches = events.filter(event => event.type === 'breach');
+    if (breaches.length && at >= this.breachUntil) {
+      this.playCue(breachCue(notes[0], breaches.every(event => !event.damage)), at);
+      this.breachUntil = at + .18;
+    }
     let kills = 0;
     for (const { type, character } of events) {
       if (type === 'kill') {
@@ -508,6 +522,7 @@ export class Sound {
     }
     this.duckUntil = 0;
     this.killUntil = 0;
+    this.breachUntil = 0;
     this.abilityUntil = 0;
   }
 

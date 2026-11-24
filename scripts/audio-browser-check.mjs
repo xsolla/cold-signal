@@ -6,7 +6,7 @@ import { setTimeout as wait } from 'node:timers/promises';
 import { chromium } from 'playwright-core';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server/index.mjs';
-import { downPlayer, RINGS, T } from '../src/rules.js';
+import { characterById, downPlayer, RINGS, T } from '../src/rules.js';
 import { baseline, cascade, chainRoll, seed } from './audio-fixture.mjs';
 import { BPM, CUE_STEP_SECONDS, hz, STEP_SECONDS } from '../public/audio-score.js';
 
@@ -47,7 +47,8 @@ try {
         oscillator.frequency.exponentialRampToValueAtTime = (value, at) => { slide = value; return rampFrequency(value, at); };
         oscillator.start = (at = this.currentTime) => {
           start(at);
-          window.audioProbe.push({ frequency, slide, detune: oscillator.detune.value, at, state: this.state });
+          window.audioProbe.push({ frequency, slide, detune: oscillator.detune.value, at, state: this.state,
+            bus: window.audioProbeBus });
         };
         return oscillator;
       };
@@ -69,6 +70,14 @@ try {
           window.crewMixer = this;
           return sync.call(this, players, at);
         };
+        const play = Sound.prototype.play;
+        window.overdriveProbe = [];
+        Sound.prototype.play = function (patch, at, bus = 'effects', pilot) {
+          if (patch.group?.startsWith('overdrive-')) window.overdriveProbe.push({ group: patch.group, at, bus });
+          window.audioProbeBus = bus;
+          try { return play.call(this, patch, at, bus, pilot); }
+          finally { window.audioProbeBus = undefined; }
+        };
       });
       await page.locator('#pace').selectOption(String(timeScale));
       await page.locator('#create').click();
@@ -89,6 +98,8 @@ try {
       const room = game.rooms.get(code);
       assert.equal(room.state.seed, seed);
       assert.equal(room.state.timeScale, timeScale);
+      const powerKills = characterById(room.state.players[0].character).powerKills;
+      room.state.players[0].powerCharge = powerKills;
       await page.locator('canvas').focus();
       await page.keyboard.press('Space', { delay: 60 });
       const specialPitch = historical ? 82 : hz(37);
@@ -109,11 +120,26 @@ try {
         assert.ok(Math.abs(kickInterval - 60 / BPM) < 1e-6);
         const ability = await page.evaluate(pitch => window.audioProbe.find(note => Math.abs(note.frequency - pitch) < .001), specialPitch);
         assert.ok(onGrid(ability.at));
+        await page.waitForFunction(() => window.overdriveProbe.length > 0);
+        const layers = await page.evaluate(() => window.overdriveProbe);
+        assert.ok(layers.every(note => note.group === 'overdrive-ivo' && note.bus === 'music' && onGrid(note.at)));
+        const activation = room.state.events.find(event => event.type === 'special');
+        assert.ok(Math.abs(room.state.players[0].overdriveUntil - activation.time / timeScale - T.overdriveSeconds) < 1e-8);
+        room.state.hull = 1;
+        const breach = { id: room.state.nextId++, angle: 1.1, radius: T.radius - .05,
+          type: 'rush', hp: 1, escort: true, age: 0, preview: 0 };
+        room.state.enemies.push(breach);
+        await page.waitForFunction(() => document.querySelector('#hull-value').textContent === '1%'
+          && !document.querySelector('#hull-shield').hidden);
+        assert.equal(room.state.events.find(event => event.type === 'breach').damage, 0);
+        assert.equal(room.state.hull, 1);
+        room.state.hull = T.hullMax;
       }
 
       const killNotes = historical ? [440, 560, 700] : [54, 57, 61, 66, 69].map(hz);
       const rescueNotes = historical ? [330, 660] : [54, 57, 61, 69, 73].map(hz);
       const take = async (count, rescue) => {
+        if (!historical) await page.waitForFunction(() => window.crewMixer.context.currentTime >= window.crewMixer.killUntil);
         await page.evaluate(() => { window.audioProbe.length = 0; });
         const expected = cascade(room.state, count, rescue);
         const ids = new Set(expected.map(event => event.id));
@@ -135,10 +161,12 @@ try {
         assert.ok(notes.every(note => note.state === 'running'));
         const matching = (observed, expected) => observed.map(note =>
           expected.find(pitch => Math.abs(note.frequency - pitch) < .001)).filter(Number.isFinite);
-        const killPitches = matching(notes.filter(note => note.slide), killNotes);
-        const rescuePitches = matching(notes.filter(note => !note.slide), rescueNotes);
+        const effects = historical ? notes : notes.filter(note => note.bus === 'effects');
+        const chain = effects.filter(note => Math.abs(note.slide / note.frequency - 2 ** (-1 / 12)) < 1e-9);
+        const killPitches = historical ? matching(effects.filter(note => note.slide), killNotes) : chain.map(note => note.frequency);
+        const rescuePitches = historical ? matching(effects.filter(note => !note.slide), rescueNotes)
+          : effects.filter(note => !note.slide && rescue).map(note => note.frequency);
         if (!historical) {
-          const chain = notes.filter(note => note.slide && killNotes.some(pitch => Math.abs(note.frequency - pitch) < .001));
           assert.ok(chain.every(note => onGrid(note.at)));
           assert.ok(chain.slice(1).every((note, index) => Math.abs(note.at - chain[index].at - CUE_STEP_SECONDS) < 1e-6));
         }
@@ -154,9 +182,11 @@ try {
         assert.equal(isolated.killPitches.length, 1);
         assert.equal(crowded.killPitches.length, 3);
         assert.ok(crowded.killPitches.slice(1).every((pitch, i) => pitch > crowded.killPitches[i]));
-        const rescueVoicings = [[54, 61, 61, 69], [54, 57, 57, 73]].map(voicing => voicing.map(hz));
-        assert.ok(rescueVoicings.some(voicing => voicing.length === crowded.rescuePitches.length
-          && voicing.every((pitch, i) => pitch === crowded.rescuePitches[i])));
+        const intervals = crowded.rescuePitches.map(pitch => Math.round(12 * Math.log2(pitch / crowded.rescuePitches[0])));
+        assert.equal(intervals.length, 4);
+        assert.equal(intervals[1], intervals[2]);
+        assert.ok(intervals[1] === 7 ? [15, 16, 17, 19].includes(intervals[3])
+          : [3, 4, 5, 7].includes(intervals[1]) && intervals[3] === 19);
       }
       if (!historical) {
         await page.evaluate(() => { window.audioProbe.length = 0; });
@@ -175,10 +205,9 @@ try {
         await page.waitForFunction(step => window.audioProbe.some(first => !first.slide && window.audioProbe.some(second =>
           !second.slide && second.frequency === first.frequency && Math.abs(second.at - first.at - step) < 1e-6)), STEP_SECONDS);
         room.state.zones = [];
-        await page.waitForFunction(() => document.querySelector('#ability-state').textContent.endsWith('s'));
+        await page.waitForFunction(() => !document.querySelector('#ability-bar').classList.contains('overdrive'));
         await page.evaluate(() => { window.audioProbe.length = 0; });
-        // End the genuine cooldown early so the readiness edge is observable.
-        pilot.specialCooldown = .005;
+        pilot.powerCharge = powerKills;
         await page.waitForFunction(step => window.audioProbe.some(first => !first.slide && window.audioProbe.some(second =>
           !second.slide && Math.abs(second.at - first.at - step) < 1e-6
           && [3, 4, 5].some(interval => Math.abs(second.frequency / first.frequency - 2 ** (interval / 12)) < 1e-9))), STEP_SECONDS);
@@ -219,6 +248,18 @@ try {
         await page.locator('#overlay-kicker').filter({ hasText: /TEAM CLEAR/ }).waitFor();
         await page.waitForFunction(pitch => window.audioProbe.some(note => Math.abs(note.frequency - pitch) < .001), hz(78));
         assert.equal(await page.evaluate(() => window.audioContextProbe.state), 'running');
+
+        for (const partner of partners) partner.send('{"type":"ready"}');
+        await page.locator('#ready').click();
+        await page.locator('#ability-state').filter({ hasText: `0/${powerKills}` }).waitFor();
+        assert.equal(room.state.hull, T.hullMax);
+        assert.equal(room.state.players[0].overdriveUntil, 0);
+        assert.ok(room.state.players.every(player => !player.down));
+        room.state.hull = 1;
+        room.state.enemies.push({ id: room.state.nextId++, angle: 1.1, radius: T.radius - .05,
+          type: 'rush', hp: 1, escort: true, age: 0, preview: 0 });
+        await page.locator('#overlay-kicker').filter({ hasText: /HULL LOST/ }).waitFor();
+        assert.ok(room.state.players.every(player => !player.down));
       }
       assert.deepEqual(errors, []);
       report.variants[label] = { keyboardSpecialPitches: historical ? [82, 1200] : [specialPitch], kickInterval, isolated, crowded, errors };

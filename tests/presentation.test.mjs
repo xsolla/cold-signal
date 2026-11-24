@@ -77,3 +77,21 @@ test('camera stays completely locked during stacked kills and specials in both m
   for (let i = 0; i < 80; i++) fx.update(state, { now: 50016 + i * 16 });
   assert.equal(fx.camera(false).zoom, 1);
 });
+
+test('hull damage shakes briefly in full motion while blocked breaches and reduced motion stay still', () => {
+  const state = makeMatch(17), fx = new Presentation();
+  const still = { x: 0, y: 0, rotation: 0, zoom: 1 };
+  state.events = [{ id: 1, type: 'breach', angle: 0, damage: 0 }];
+  fx.update(state, { now: 0 });
+  assert.deepEqual(fx.camera(), still);
+  state.events.push({ id: 2, type: 'breach', angle: 0, damage: 3 }, { id: 3, type: 'breach', angle: Math.PI / 2, damage: 1 });
+  fx.update(state, { now: 16 });
+  const impact = fx.camera();
+  assert.ok(impact.x < -4 && Math.hypot(impact.x, impact.y) <= 5);
+  assert.equal(impact.rotation, 0); assert.equal(impact.zoom, 1);
+  assert.deepEqual(fx.camera(true), still);
+  fx.update(state, { now: 1200, paused: true });
+  assert.deepEqual(fx.camera(), impact);
+  for (let i = 1; i <= 13; i++) fx.update(state, { now: 1200 + i * 16 });
+  assert.deepEqual(fx.camera(), still);
+});

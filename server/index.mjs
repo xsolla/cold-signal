@@ -5,7 +5,7 @@ import { resolve, dirname, extname } from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { performance } from 'node:perf_hooks';
 import { WebSocketServer, WebSocket } from 'ws';
-import { makeMatch, step, cleanInput, T, downPlayer, CREW, RINGS } from '../src/rules.js';
+import { makeMatch, step, cleanInput, T, downPlayer, CREW, RINGS, characterById } from '../src/rules.js';
 import { localRescueAnalytics } from './playtest-analytics.mjs';
 
 const pulseKeys = ['special', 'inward', 'outward'];
@@ -151,6 +151,7 @@ export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep
           room.state.time = 89.5; room.state.elapsed = 89.5 / room.state.timeScale; room.state.enemies = []; room.state.walls = []; room.state.zones = [];
           room.state.enemyClock = 10; room.state.wallClock = 10;
         }
+        if (msg.action === 'charge') for (const p of room.state.players) p.powerCharge = characterById(p.character).powerKills;
         if (msg.action === 'wipe') for (const p of room.state.players) { p.protection = 0; p.ward = 0; p.wardCharges = 0; downPlayer(room.state, p.id); }
         observe?.(room.state, 'diagnostic');
       }

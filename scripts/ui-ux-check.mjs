@@ -201,6 +201,13 @@ try {
   if (mode === 'candidate') assert.deepEqual(await contextStates(a), ['suspended']);
   await a.keyboard.press('ArrowUp');
   await until(() => state().state.players[0].ring === 1, 'keyboard hop');
+  if (mode === 'candidate') {
+    await sel(a, 'devtools').evaluate(details => { details.open = true; });
+    await sel(a, 'charge').click();
+    await sel(a, 'ability-state').filter({ hasText: 'SPACE READY' }).waitFor();
+    await sel(a, 'arena').focus();
+    await sel(a, 'devtools').evaluate(details => { details.open = false; });
+  }
   await a.keyboard.press('Space');
   await until(() => state().state.players[0].specialUses === 1, 'keyboard ability');
   assert.equal(await sel(a, 'ability-name').textContent(), 'RALLY');

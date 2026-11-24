@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { WebSocket } from 'ws';
 import { createGameServer } from '../server/index.mjs';
-import { makeMatch, step } from '../src/rules.js';
+import { characterById, makeMatch, step } from '../src/rules.js';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function until(fn, timeout = 2500) { const end = Date.now() + timeout; while (Date.now() < end) { const value = fn(); if (value) return value; await sleep(10); } throw new Error('Condition timed out'); }
 async function client(url) {
@@ -84,11 +84,12 @@ test('a recorded live server input tape agrees with headless replay at every tic
   assert.ok(tape.length > 65);
   assert.ok(replay.nextId > 1, 'replay covers spawned enemies and projectiles');
   assert.equal(replay.players[0].ring, 1, 'replay includes a queued depth tap');
-  assert.equal(replay.players[1].specialUses, 1, 'replay includes a queued ability tap');
+  assert.ok(tape.some(record => record.inputs[1].taps.special), 'replay includes a queued ability tap');
+  assert.equal(replay.players[1].specialUses, 0, 'the uncharged tap cannot cast');
 });
 
 test('four sockets select characters, all ready, cast abilities, and reject a fifth pilot', async t => {
-  const { clients, url } = await setup(t, true, null, { count: 4, timeScale: .5 });
+  const { game, clients, url, code } = await setup(t, true, null, { count: 4, timeScale: .5 });
   const fifth = await client(url); fifth.send({ type: 'join', code: clients[0].latest().code });
   await until(() => fifth.messages.some(m => m.type === 'error' && /full/.test(m.text)));
   const choices = ['rook', 'sana', 'ivo', 'mara'];
@@ -99,10 +100,13 @@ test('four sockets select characters, all ready, cast abilities, and reject a fi
   clients[3].send({ type: 'ready' }); await until(() => clients.every(c => c.latest()?.state?.status === 'playing'));
   assert.deepEqual(clients[0].latest().state.players.map(p => p.character), choices);
   assert.equal(clients[0].latest().state.timeScale, .5);
-  clients[3].send({ type: 'input', input: { special: true, specialCooldown: 0, character: 'ivo' } });
+  const state = game.rooms.get(code).state;
+  state.players[3].powerCharge = characterById(state.players[3].character).powerKills;
+  clients[3].send({ type: 'input', input: { special: true, character: 'ivo' } });
   clients[3].send({ type: 'input', input: { special: false } });
   await until(() => clients.every(c => c.latest().state.players[3].specialUses === 1));
   assert.equal(clients[0].latest().state.players[3].character, 'mara');
+  assert.ok(clients.every(c => c.latest().state.players[3].overdriveUntil === state.players[3].overdriveUntil));
   clients[2].send({ type: 'pause', paused: true }); await until(() => clients[0].latest().paused[2]);
   const clock = clients[0].latest().state.time; await sleep(100); assert.equal(clients[3].latest().state.time, clock);
   clients[2].send({ type: 'pause', paused: false }); clients[2].ws.close();

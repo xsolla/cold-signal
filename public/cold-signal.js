@@ -64,7 +64,18 @@ export class Presentation {
     } else { this.origins.clear(); this.trails.clear(); }
     this.effects = this.effects.filter(e => this.time - e.born < 1.15).slice(-64);
   }
-  // Player-reported nausea: keep the view locked in every motion setting.
-  // Combat energy comes from trails, fragments and chain links, never the camera.
-  camera() { return { x: 0, y: 0, rotation: 0, zoom: 1 }; }
+  camera(reduced = false) {
+    let x = 0, y = 0, strongest = 0;
+    if (!reduced) for (const { type, damage, angle, born } of this.effects) {
+      const age = this.time - born;
+      if (type !== 'breach' || !damage || age >= .19) continue;
+      const strength = (2.6 + .8 * Math.min(damage, 3)) * (1 - age / .19) ** 2;
+      if (strength <= strongest) continue;
+      strongest = strength;
+      const kick = strength * Math.cos(age * Math.PI * 24);
+      x = -Math.cos(angle) * kick;
+      y = -Math.sin(angle) * kick;
+    }
+    return { x, y, rotation: 0, zoom: 1 };
+  }
 }

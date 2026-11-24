@@ -137,6 +137,29 @@ function pluck(play, at, position, chord, energy, answerBar) {
     attack: .007, hold: .022, pan: position < 8 ? .44 : -.38, wet: .40 }, at, 'rook');
 }
 
+const overdriveParts = {
+  mara: { pattern: { 2: 0, 6: 0, 9: 2, 10: 0, 14: 0 }, transpose: -12,
+    type: 'round', drive: true, cutoff: 1980, sweep: 510, duration: .21, volume: .23, attack: .010 },
+  ivo: { pattern: { 0: 2, 4: 1, 8: 2, 11: 1, 12: 2 }, transpose: 0,
+    type: 'brass', cutoff: 3150, sweep: 1050, duration: .32, volume: .225, attack: .028, wet: .15 },
+  sana: { pattern: { 0: 1, 4: 2, 8: 1, 12: 2 }, transpose: 0,
+    type: 'strings', cutoff: 2940, sweep: 1220, duration: .59, volume: .217, attack: .095, wet: .24 },
+  rook: { pattern: { 1: 0, 3: 2, 5: 1, 9: 2, 11: 1, 15: 0 }, transpose: 12,
+    type: 'pluck', cutoff: 4550, sweep: 1410, duration: .15, volume: .215, attack: .005, wet: .17 },
+};
+
+export function playOverdriveStep(play, chord, step, at, remaining, character, pan, duplicate, mix) {
+  const part = overdriveParts[character];
+  if (!part || remaining < .028) return;
+  const { pattern, transpose, ...patch } = part;
+  const degree = pattern[(step + BAR_STEPS - duplicate) % BAR_STEPS];
+  if (degree === undefined) return;
+  const note = cueNotes(chord)[degree] + transpose + [0, 12, -12, 0][duplicate];
+  const duration = Math.min(patch.duration, remaining);
+  play({ ...patch, pitch: hz(note), duration, attack: Math.min(patch.attack, duration / 3),
+    volume: patch.volume * mix, pan, group: `overdrive-${character}` }, at);
+}
+
 export function playScoreStep(play, step, at, phase) {
   const bar = Math.floor(step / BAR_STEPS);
   const position = step % BAR_STEPS;

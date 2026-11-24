@@ -29,7 +29,10 @@ when changing hooks, cohorts or report denominators.
 
 Presentation consumes server events by ID. Keep visual effects out of the
 simulation and use the shared projection when aligning silhouettes and
-collisions. The renderer keeps pilots and rescue progress above large effects.
+collisions. [Arena effects](../public/arena-effects.js) uses the presentation
+clock and event history for the full-motion WebGL lattice and particles. The
+renderer composites that layer below threats and pilots and uses its Canvas
+effects when WebGL is unavailable.
 The [art studies](../art-direction/) record earlier visual choices. Runtime
 assets live in [`public/`](../public/).
 

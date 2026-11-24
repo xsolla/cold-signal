@@ -4,7 +4,7 @@ import { Sound } from '../public/audio.js';
 import { CUE_STEP_SECONDS, hz, playChartStep, STEP_SECONDS } from '../public/audio-score.js';
 import { BAR_SECONDS, BAR_STEPS, pressureChart, sortieChart } from '../public/audio-chart.js';
 import { AudioFeedback } from '../src/audio-feedback.js';
-import { makeMatch, RINGS, step, T } from '../src/rules.js';
+import { characterById, makeMatch, RINGS, step, T } from '../src/rules.js';
 import { cascade, seed } from '../scripts/audio-fixture.mjs';
 
 function mixer() {
@@ -313,7 +313,7 @@ test('overtime holds the pulse and the final rescue sounds before the clear chor
   assert.ok(Math.abs(clear.at - effects[0].at - 4 * CUE_STEP_SECONDS) < 1e-9);
 });
 
-test('local feedback follows confirmed depth, cooldown and threats without duplicate warnings', () => {
+test('local feedback follows confirmed depth, power readiness and threats without duplicate warnings', () => {
   const state = makeMatch(seed, { timeScale: 1 });
   const feedback = new AudioFeedback();
   const own = state.players[1];
@@ -321,8 +321,7 @@ test('local feedback follows confirmed depth, cooldown and threats without dupli
   step(state, [{ inward: true }, { inward: true, special: true }]);
   assert.equal(feedback.update(state, own.id).depth, 1);
   assert.equal(feedback.update(state, own.id).depth, 0);
-  own.specialCooldown = .001;
-  step(state);
+  own.powerCharge = characterById(own.character).powerKills;
   assert.equal(feedback.update(state, own.id).ready, true);
   assert.equal(feedback.update(state, own.id).ready, false);
 
@@ -336,6 +335,26 @@ test('local feedback follows confirmed depth, cooldown and threats without dupli
   assert.equal(feedback.update(state, own.id).warning, undefined);
   state.zones = [{ id: 51, angle: own.angle, radius: own.radius, width: .3, age: .1, warn: .6 }];
   assert.equal(feedback.update(state, own.id).warning, 'zone');
+});
+
+test('four instrument layers follow Overdrive on the score grid and stop at their individual deadlines', () => {
+  const { sound, context, notes } = mixer();
+  const state = makeMatch(seed);
+  state.players.forEach((player, index) => { player.overdriveUntil = 1.5 + BAR_SECONDS * index; });
+  state.players[2].down = true;
+  for (let frame = 0; frame < 8 * 60; frame++) {
+    state.elapsed = frame / 60;
+    context.currentTime = 1 + state.elapsed;
+    sound.tick(state, false);
+  }
+  const anchor = notes.find(note => note.pitch === 148).at;
+  for (const [index, timbre] of ['round', 'brass', 'strings', 'pluck'].entries()) {
+    const player = state.players[index];
+    const layers = notes.filter(note => note.group === `overdrive-${player.character}`);
+    assert.ok(layers.length >= 2);
+    assert.ok(layers.every(note => note.type === timbre && note.bus === 'music' && onCueGrid(note.at, anchor)));
+    assert.ok(layers.every(note => note.at + note.duration <= 1 + player.overdriveUntil + 1e-8));
+  }
 });
 
 test('a player contributes a rescue phrase only while holding the live rescue', () => {

@@ -19,12 +19,13 @@
     </header>
     <main class="stage">
       <canvas id="arena" tabindex="0" inert
-        aria-label="Cold Signal arena. A/D or Left/Right to orbit, W/S or Up/Down to move one ring, Space for your ability, Escape to pause."></canvas>
+        aria-label="Cold Signal arena. A/D or Left/Right to orbit, W/S or Up/Down to move one ring, Space spends full power on your ability and a three-second hull shield, Escape to pause."></canvas>
       <div id="hud" class="hud" hidden>
         <div class="hud-left">
           <span class="small-label">SURVIVE THE SURGE</span>
           <span class="clock"><strong id="clock">00:00</strong><span id="duration"></span></span>
           <span id="phase" class="phase"></span>
+          <div id="hull" class="hull">HULL <strong id="hull-value">100%</strong><span id="hull-shield" hidden>◆ SHIELDED</span></div>
         </div>
         <div class="hud-right">
           <div id="crew" class="crew" aria-label="Crew"></div>
@@ -34,9 +35,10 @@
       <section id="overlay" class="overlay selecting" aria-labelledby="overlay-title">
         <span class="eyebrow" id="overlay-kicker">SOLO · 3 AI WINGMATES</span>
         <h1 id="overlay-title" tabindex="-1">CHOOSE YOUR PILOT.</h1>
-        <p id="overlay-copy">Match a downed pilot’s ring and stay close to rescue them. All four ships must make it through.</p>
+        <p id="overlay-copy">Stop enemies before they hit the hull. Match a downed pilot’s ring and stay close to rescue them.</p>
         <div id="selection">
           <div id="character-select" class="character-grid" role="radiogroup" aria-label="Choose your pilot"></div>
+          <p class="lobby-note">Kills charge your power meter. At full power, Space casts your ability and shields the hull for 3 seconds.</p>
           <div class="solo-start">
             <label>PACE<select id="pace"><option value="0.5">0.5× · 3-minute synced score</option><option value="1">1× · 90 seconds</option></select></label>
             <button id="start" class="primary" disabled><strong id="start-label">LAUNCH AS MARA</strong><span aria-hidden="true">→</span></button>
@@ -57,7 +59,7 @@
       </div>
       <div id="ability" class="ability" hidden>
         <span id="ability-name"></span><span id="ability-state"></span>
-        <div id="ability-bar" class="ability-bar" role="progressbar" aria-label="Ability charge"></div>
+        <div id="ability-bar" class="ability-bar" role="progressbar" aria-label="Power" aria-valuenow="0"></div>
       </div>
       <div class="footer-right">
         <span id="footer-status">DESKTOP KEYBOARD</span>

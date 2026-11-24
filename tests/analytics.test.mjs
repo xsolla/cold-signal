@@ -145,7 +145,7 @@ test('disabled analytics and sink failures leave WebSocket play identical to hea
       a.send({ type: 'diagnostic', action: 'wipe' });
       await until(() => room.state.players[0].ring === 1 && tape.length >= 20);
       assert.equal(room.state.status, 'playing');
-      assert.equal(room.state.players[0].specialUses, 1);
+      assert.equal(room.state.players[0].specialUses, 0, 'the early tap cannot spend empty power');
       assert.ok(room.state.players.every(pilot => !pilot.down));
       a.send({ type: 'pause', paused: true });
       await until(() => room.paused[0]);

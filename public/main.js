@@ -1,8 +1,8 @@
-import { T, ringName, characterById, moveSpeed, delta, wrap, cleanInput, controlledInput } from './rules.js';
+import { T, ringName, characterById, moveSpeed, delta, wrap, cleanInput, controlledInput, overdriveRemaining } from './rules.js';
 import { Renderer } from './renderer.js';
 import { Sound } from './audio.js';
 import { AudioFeedback } from './audio-feedback.js';
-import { arenaKeys, formatTime, mountPilotPicker, showSelectedPilot } from './pilot-ui.js';
+import { arenaKeys, formatTime, mountPilotPicker, showCombatMeters, showSelectedPilot } from './pilot-ui.js';
 const $ = id => document.getElementById(id);
 const canvas = $('arena'), characterSelect = $('character-select');
 const renderer = new Renderer(canvas), sound = new Sound();
@@ -122,6 +122,7 @@ function updateUI() {
   canvas.inert = !running;
   $('pause').hidden = !running;
   $('ability').hidden = selecting || view === 'interrupted';
+  $('hull').hidden = $('ability').hidden;
   $('leave').hidden = view === 'interrupted';
   $('clock').innerHTML = `${formatTime(time / scale)}<span> / ${formatTime(T.duration / scale)}</span>`;
   $('phase').textContent = `${snapshot?.phase || 'ASSEMBLING CREW'} · ${scale}×`;
@@ -130,14 +131,14 @@ function updateUI() {
     const crewStatus = !connected[id] ? '—' : selecting ? (ready[id] ? 'READY' : 'JOINED') : p.down ? `DOWN ${ringName(p.ring)}` : ringName(p.ring);
     chip.className = (!selecting && p?.down ? 'down ' : '') + (id === slot ? 'you' : '');
     chip.textContent = `${character.symbol} P${id + 1} ${id === slot ? 'YOU' : character.name.toUpperCase()} ${crewStatus}`;
+    if (!selecting && p && overdriveRemaining(snapshot, p)) {
+      chip.textContent += ' ◆';
+      chip.title = 'Overdrive active';
+    }
     return chip;
   }));
   const own = snapshot?.players[slot], picked = characterById(characters[slot]);
-  const currentCharacter = characterById(own?.character || picked.id);
-  $('ability-name').textContent = currentCharacter.ability.toUpperCase();
-  $('ability-state').textContent = own?.down ? 'DOWNED' : own?.specialCooldown > 0 ? `${Math.ceil(own.specialCooldown / scale)}s` : 'READY';
-  const charge = Math.round(100 * (1 - (own?.specialCooldown || 0) / currentCharacter.cooldown));
-  $('ability-bar').style.setProperty('--charge', `${charge}%`); $('ability-bar').setAttribute('aria-valuenow', String(charge));
+  if (own && !selecting) showCombatMeters(snapshot, slot);
   $('footer-status').textContent = controlled ? 'CONTROLLED TEST CLIENT' : selecting ? 'ASSEMBLING CREW' :
     view === 'interrupted' ? 'RUN INTERRUPTED' : own.down ? `DOWNED · ${ringName(own.ring)} RING` : `AUTO FIRE · ${ringName(own.ring)} RING`;
   $('arena-note').textContent = notice || (snapshot?.players.some(p => p.down) ? 'MATCH THEIR RING. STAY CLOSE TO RESCUE. FIRE IS AUTOMATIC.' : 'HIT A PACK TO START A CHAIN. THE BULLSEYE BLOCKS YOUR FIRE.');
@@ -157,13 +158,13 @@ function updateUI() {
     const joined = connected.filter(Boolean).length;
     const missing = config.count - joined;
     setOverlay(`ROOM ${code} · ${joined}/${config.count} PILOTS · ${scale}×`, 'CHOOSE YOUR PILOT.',
-      missing ? `Share the code. ${missing} more ${missing === 1 ? 'pilot' : 'pilots'} needed.` : 'Every pilot must finish. Match a downed pilot’s ring and stay close to rescue.');
+      missing ? `Share the code. ${missing} more ${missing === 1 ? 'pilot' : 'pilots'} needed.` : 'Defend the hull. Match a downed pilot’s ring and stay close to rescue.');
   } else if (view === 'won') {
     setOverlay(`TEAM CLEAR · ${snapshot.score.toLocaleString()} POINTS`, 'ALL THE WAY. ALL OF US.',
       `${snapshot.rescues} ${snapshot.rescues === 1 ? 'rescue' : 'rescues'}. Every ship made it through. Pick a pilot and ready up for another run.`);
   } else if (view === 'lost') {
-    setOverlay(`CREW LOST · ${Math.floor(time / scale)} SECONDS`, 'WE GO AGAIN.',
-      'The tunnel took the crew. Pick a pilot and ready up to try again.');
+    setOverlay(`${snapshot.hull === 0 ? 'HULL LOST' : 'CREW LOST'} · ${Math.floor(time / scale)} SECONDS`, 'WE GO AGAIN.',
+      'Pick a pilot and ready up to try again.');
   } else if (view === 'interrupted') {
     setOverlay('CONNECTION INTERRUPTED', 'REGROUP. TRY AGAIN.', notice || 'Leave this room and form a fresh crew.');
   } else if (!running) {
@@ -246,7 +247,7 @@ $('partner').onclick = () => {
   window.open(`./?room=${code}&controlled=1`, `delve-controlled-${code}-${++openedClients}`, 'width=800,height=800');
   window.scrollTo(0, 0);
 };
-for (const action of ['tunnel', 'drill', 'final', 'wipe']) $(action).onclick = () => {
+for (const action of ['tunnel', 'drill', 'final', 'wipe', 'charge']) $(action).onclick = () => {
   send({ type: 'diagnostic', action: action === 'drill' ? 'rescue' : action });
   canvas.focus({ preventScroll: true }); window.scrollTo(0, 0);
 };

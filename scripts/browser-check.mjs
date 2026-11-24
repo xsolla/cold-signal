@@ -1,7 +1,7 @@
 import { chromium } from 'playwright-core';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { distance } from '../src/rules.js';
+import { T, characterById, distance } from '../src/rules.js';
 const base = process.env.COLD_SIGNAL_URL || process.env.DELVE_URL || 'http://127.0.0.1:5176';
 const executablePath = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const artifacts = new URL('../artifacts/', import.meta.url);
@@ -26,7 +26,7 @@ try {
     page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
     page.on('websocket', ws => ws.on('framereceived', frame => {
       const message = JSON.parse(String(frame.payload));
-      if (message.type === 'state') { states[id] = message; histories[id].push(message); debug[id] = { time: message.state?.time, status: message.state?.status, players: message.state?.players.map(p => ({ id: p.id, character: p.character, down: p.down, ring: p.ring, radius: p.radius, inwardHeld: p.inwardHeld, specialUses: p.specialUses, cooldown: p.specialCooldown })) }; }
+      if (message.type === 'state') { states[id] = message; histories[id].push(message); debug[id] = { time: message.state?.time, status: message.state?.status, hull: message.state?.hull, players: message.state?.players.map(p => ({ id: p.id, character: p.character, down: p.down, ring: p.ring, radius: p.radius, inwardHeld: p.inwardHeld, specialUses: p.specialUses, power: p.powerCharge })) }; }
     }));
   });
   await Promise.all(pages.map(p => p.goto(base)));
@@ -48,6 +48,11 @@ try {
   await pages[3].locator('#ready').click();
   await until(() => states.every(s => s?.state?.status === 'playing'), 'all four playing');
   assert.deepEqual(states[0].state.players.map(p => p.character), choices);
+  await Promise.all(pages.map((page, id) => page.locator('#ability-state')
+    .filter({ hasText: `0/${characterById(choices[id]).powerKills}` }).waitFor()));
+  await a.keyboard.press('Space');
+  await until(() => states[0].state.elapsed > .2, 'early Space processed');
+  assert.equal(states[0].state.players[0].specialUses, 0);
   await until(() => new Set(states[0].state.bullets.map(b => b.owner)).size === 4, 'automatic fire from every pilot');
   result.steps.push('Four independent browser clients selected characters, all readied, and fired automatically without Space.');
   const startTime = states[0].state.time, wallStart = performance.now();
@@ -79,13 +84,21 @@ try {
   assert.match(await a.locator('#footer-status').textContent(), /MIDDLE RING/);
   await a.screenshot({ path: new URL('tunnel-patrols.png', artifacts).pathname });
   result.steps.push('W/Up and S/Down moved through all three depths on all four clients; holding hopped once, end stops clamped, and constructed core preview plus both rail patrols were visible.');
+  await a.locator('#charge').click();
+  await until(() => states.every(s => s.state.players.every(p => p.powerCharge === characterById(p.character).powerKills)),
+    'constructed full meters at each pilot’s threshold');
   for (const page of pages) { await page.locator('canvas').focus(); await page.keyboard.press('Space'); }
   await until(() => states.every(s => s.state.players.every(p => p.specialUses === 1)), 'four abilities authoritative');
   assert.equal(await a.locator('#ability-name').textContent(), 'SHOCKWAVE');
-  assert.notEqual(await a.locator('#ability-state').textContent(), 'READY');
-  result.steps.push('Space triggered the four selected abilities; usage and cooldown state agreed on every client.');
+  assert.equal(await a.locator('#ability-state').textContent(), 'OVERDRIVE');
+  await Promise.all(pages.map(page => page.locator('#hull-shield').waitFor()));
+  await a.screenshot({ path: new URL('four-player-overdrive.png', artifacts).pathname });
+  result.steps.push('After a constructed charge, Space triggered four Overdrives. All four clients showed the shared hull shield.');
   await a.locator('#pause').click(); await until(() => states[3].paused[0], 'shared pause');
-  await wait(80); const pausedTime = states[3].state.time; await wait(160); assert.equal(states[3].state.time, pausedTime);
+  await wait(80); const pausedTime = states[3].state.time;
+  const pausedPower = await a.locator('#ability-bar').getAttribute('aria-valuenow');
+  await wait(160); assert.equal(states[3].state.time, pausedTime);
+  assert.equal(await a.locator('#ability-bar').getAttribute('aria-valuenow'), pausedPower);
   await a.locator('#resume').click(); await until(() => !states[3].paused.some(Boolean), 'resume');
   await a.locator('#devtools').evaluate(el => { el.open = true; });
   await a.locator('#drill').click(); await until(() => states[0].state.players[1].down, 'constructed crew member down');
@@ -101,7 +114,8 @@ try {
   const shared = histories[0].find(x => x.state?.time > .2 && histories.slice(1).every(history => history.some(y => JSON.stringify(y.state) === JSON.stringify(x.state))));
   assert.ok(shared, 'All four clients received identical authoritative state.');
   for (const page of pages) await page.locator('#ready').click();
-  await until(() => states.every(s => s.state.status === 'playing' && s.state.players.every(p => p.specialUses === 0 && !p.down)), 'clean four-player retry');
+  await until(() => states.every(s => s.state.status === 'playing' && s.state.hull === T.hullMax
+    && s.state.players.every(p => p.specialUses === 0 && p.powerCharge === 0 && !p.down)), 'clean four-player retry');
   await a.locator('#wipe').click(); await until(() => states.every(s => s.state.status === 'lost'), 'whole crew loss');
   for (const page of pages) await page.locator('#ready').click();
   await until(() => states.every(s => s.state.status === 'playing'), 'second retry');

@@ -5,23 +5,27 @@ export const ringName = ring => ['INNER', 'MIDDLE', 'OUTER'][ring] || 'OUTER';
 export const T = Object.freeze({ radius: 240, coreRadius: 44, hopSpeed: 320, muzzleInset: 2,
   speed: 3.1, fireInterval: .065, bulletSpeed: 590, rescueSeconds: 1.65, rescueArc: .20,
   chainRadius: 52, maxEnemies: 48, protectionSeconds: .85, finalBreathAt: 70, finalSurgeAt: 74,
-  duration: 90, step: 1 / 60 });
+  duration: 90, step: 1 / 60, hullMax: 100, overdriveSeconds: 3 });
 // The vanishing point compresses distant rails. Foreground remains linear for readable wall warnings.
 export const projectRadius = r => r >= T.radius ? r : Math.max(0, r) / (1.8 - .8 * Math.max(0, r) / T.radius);
 export const depthScale = r => Math.max(.08, Math.min(2.4, (projectRadius(r) / T.radius) ** 1.18));
 export const pointAt = (angle, radius) => ({ x: Math.cos(angle) * projectRadius(radius), y: Math.sin(angle) * projectRadius(radius) });
 export const enemySize = e => e.type === 'suppress' ? 15 : ['skimmer', 'stalker'].includes(e.type) ? 12 : 10;
 export const CREW = Object.freeze([
-  { id: 'mara', name: 'Mara', role: 'Anchor', ability: 'Bulwark', symbol: '▲', sides: 3, cooldown: 12,
+  { id: 'mara', name: 'Mara', role: 'Anchor', ability: 'Bulwark', symbol: '▲', sides: 3, powerKills: 28,
     description: 'Shield nearby crew against a hit. Hold a rescue position.', quote: 'Stay with me.' },
-  { id: 'ivo', name: 'Ivo', role: 'Breaker', ability: 'Shockwave', symbol: '◇', sides: 4, cooldown: 14,
+  { id: 'ivo', name: 'Ivo', role: 'Breaker', ability: 'Shockwave', symbol: '◇', sides: 4, powerKills: 35,
     description: 'Blast a sector, clear marked danger, and open a wall gap.', quote: 'I can make a way.' },
-  { id: 'sana', name: 'Sana', role: 'Beacon', ability: 'Rally', symbol: '⬟', sides: 5, cooldown: 12,
+  { id: 'sana', name: 'Sana', role: 'Beacon', ability: 'Rally', symbol: '⬟', sides: 5, powerKills: 30,
     description: 'Boost nearby crew’s automatic fire and proximity rescue.', quote: 'We are still here.' },
-  { id: 'rook', name: 'Rook', role: 'Runner', ability: 'Slipstream', symbol: '⬡', sides: 6, cooldown: 10,
+  { id: 'rook', name: 'Rook', role: 'Runner', ability: 'Slipstream', symbol: '⬡', sides: 6, powerKills: 25,
     description: 'Give nearby crew faster movement and a moment of cover.', quote: 'On your left.' }
 ]);
 export const characterById = id => CREW.find(c => c.id === id) || CREW[0];
+export const overdriveRemaining = (state, pilot) => Math.max(0, (pilot.overdriveUntil ?? 0) - state.elapsed - 1e-8);
+export const hullShielded = state => state.players.some(pilot => overdriveRemaining(state, pilot) > 0);
+export const powerReady = (state, pilot) => !pilot.down && pilot.powerCharge >= characterById(pilot.character).powerKills
+  && !overdriveRemaining(state, pilot);
 export const moveSpeed = p => T.speed * (p.haste > 0 ? 1.55 : 1);
 export const wrap = a => { const value = a % TAU; return value < 0 ? value + TAU : value; };
 export const delta = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
@@ -41,13 +45,13 @@ export function makeMatch(seed = 1, options = {}) {
   const { id, phases, spawns, endAt, cues } = options.encounter ?? {};
   const encounter = options.encounter && { id, phases, spawns, endAt, cues, nextSpawn: 0, phaseIndex: 0 };
   return { status: 'playing', time: 0, elapsed: 0, timeScale, seed: seed >>> 0, rng: (seed >>> 0) || 1,
-    nextId: 1, eventId: 0, score: 0, rescues: 0, phase: encounter?.phases[0].phase ?? 'INGRESS', finale: null,
+    nextId: 1, eventId: 0, score: 0, rescues: 0, hull: T.hullMax, phase: encounter?.phases[0].phase ?? 'INGRESS', finale: null,
     ...(encounter && { encounter }),
     enemyClock: .35, wallClock: 5, players: Array.from({ length: count }, (_, id) => ({ id,
       character: characterById(options.characters?.[id] || CREW[id].id).id,
       angle: wrap(-Math.PI / 2 + id * TAU / count), ring: 2, radius: T.radius, prevRadius: T.radius,
       inwardHeld: false, outwardHeld: false, down: false, rescue: 0,
-      protection: 1.4, cooldown: 0, kills: 0, specialCooldown: 0, specialHeld: false,
+      protection: 1.4, cooldown: 0, kills: 0, powerCharge: 0, overdriveUntil: 0, specialHeld: false,
       specialUses: 0, ward: 0, wardCharges: 0, rally: 0, haste: 0 })),
     enemies: [], bullets: [], walls: [], zones: [], events: [] };
 }
@@ -142,6 +146,8 @@ export function canHelpRescue(helper, target) {
 }
 function hurtEnemy(s, e, amount, owner) {
   const hits = [{ enemy: e, damage: amount, depth: 0, source: null }];
+  const pilot = s.players[owner], { powerKills } = characterById(pilot.character);
+  const charging = !overdriveRemaining(s, pilot);
   // Process cascades iteratively. Mark each death before queuing neighbors, so
   // converging blasts never award a dead target twice or recurse indefinitely.
   for (let index = 0; index < hits.length; index++) {
@@ -151,7 +157,8 @@ function hurtEnemy(s, e, amount, owner) {
     target.hp -= damage;
     if (target.hp > 0) continue;
     s.score += target.type === 'rush' ? 100 : target.type === 'flank' ? 150 : target.type === 'suppress' ? 250 : 175;
-    s.players[owner].kills++;
+    pilot.kills++;
+    if (charging) pilot.powerCharge = Math.min(powerKills, pilot.powerCharge + 1);
     event(s, 'kill', { angle: target.angle, radius: target.radius, kind: target.type, chainDepth: depth,
       ...(source ? { fromAngle: source.angle, fromRadius: source.radius } : {}) });
     const origin = pointAt(target.angle, target.radius), reach = T.chainRadius * depthScale(target.radius);
@@ -164,9 +171,11 @@ function hurtEnemy(s, e, amount, owner) {
   }
 }
 export function useSpecial(s, p) {
-  if (s.status !== 'playing' || p.down || p.specialCooldown > 0) return false;
+  if (s.status !== 'playing' || !powerReady(s, p)) return false;
   const character = characterById(p.character);
-  p.specialCooldown = character.cooldown; p.specialUses++;
+  p.powerCharge = 0;
+  p.overdriveUntil = s.elapsed + T.overdriveSeconds;
+  p.specialUses++;
   const nearby = s.players.filter(other => distance(other.angle, p.angle) <= .72 && Math.abs(other.radius - p.radius) <= 68);
   if (character.id === 'mara') for (const other of nearby) { other.ward = 3; other.wardCharges = 1; }
   if (character.id === 'ivo') {
@@ -180,6 +189,7 @@ export function useSpecial(s, p) {
   return true;
 }
 function updateEnemy(s, e, dt) {
+  if (e.hp <= 0) return;
   if (e.preview > 0) { e.preview = Math.max(0, e.preview - dt); e.radius = Math.min(T.coreRadius - 6, e.radius + 22 * dt); return; }
   e.age += dt;
   if (e.type === 'skimmer' || e.type === 'stalker') {
@@ -216,7 +226,12 @@ function updateEnemy(s, e, dt) {
     e.radius += 86 * dt;
     if (e.bend) e.angle = rushAngle(e.base, e.bend, e.radius);
   }
-  if (e.radius > T.radius - 3) {
+  if (e.radius >= T.radius) {
+    if (s.hull > 0) {
+      const damage = hullShielded(s) ? 0 : Math.min(s.hull, e.type === 'flank' ? 3 : 1);
+      s.hull -= damage;
+      event(s, 'breach', { angle: e.angle, radius: T.radius, kind: e.type, damage, hullAfter: s.hull });
+    }
     if (!e.escort) s.zones.push({ id: s.nextId++, angle: e.angle, radius: T.radius, width: .34, age: 0, warn: .25, life: 1.35 });
     e.hp = 0;
   }
@@ -253,7 +268,7 @@ export function step(s, rawInputs = [], dt = T.step) {
   }
   for (const p of s.players) {
     p.prevRadius = p.radius;
-    for (const timer of ['protection', 'cooldown', 'specialCooldown', 'ward', 'rally', 'haste']) p[timer] = Math.max(0, p[timer] - dt);
+    for (const timer of ['protection', 'cooldown', 'ward', 'rally', 'haste']) p[timer] = Math.max(0, p[timer] - dt);
     // Transport captures edges even when release/repress happens between simulation ticks.
     const input = inputs[p.id], taps = rawInputs[p.id]?.taps;
     const special = (input.special && !p.specialHeld) || taps?.special === true;
@@ -319,7 +334,7 @@ export function step(s, rawInputs = [], dt = T.step) {
   s.bullets = s.bullets.filter(b => b.radius > T.coreRadius);
   s.enemies = s.enemies.filter(e => e.hp > 0); s.walls = s.walls.filter(w => w.radius > T.coreRadius);
   s.zones = s.zones.filter(z => z.age < z.warn + z.life);
-  if (s.players.every(p => p.down)) { s.status = 'lost'; event(s, 'lost'); }
+  if (s.hull === 0 || s.players.every(p => p.down)) { s.status = 'lost'; event(s, 'lost'); }
   else if (atDeadline && s.players.every(p => !p.down)) { s.status = 'won'; event(s, 'won'); }
   return s;
 }
@@ -336,5 +351,5 @@ export function controlledInput(s, id) {
     || (incoming && incoming.radius < p.radius + 80);
   return { left: direction < -.035, right: direction > .035,
     inward: targetRing < p.ring && !p.inwardHeld, outward: targetRing > p.ring && !p.outwardHeld,
-    special: !p.specialHeld && p.specialCooldown <= 0 && !!danger };
+    special: !p.specialHeld && powerReady(s, p) && !!danger };
 }

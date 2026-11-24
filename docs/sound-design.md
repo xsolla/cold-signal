@@ -19,6 +19,15 @@ at most three short taps. Each pilot’s ability has its own cue. Clear and wipe
 fade the room into a short ending, and pause and mute cut suspended tails.
 [Score](../public/audio-score.js) · [Mixer and cues](../public/audio.js).
 
+An active Overdrive brings the pilot's instrument forward for three seconds on
+the score grid. Mara adds a driven bass pulse, Ivo a bright brass answer, Sana
+sustained bowed notes, and Rook a sharp metallic arpeggio. The parts follow
+the current harmony, including after a pilot goes down. Duplicate picks
+are spaced in stereo and enter at different subdivisions. Hull impacts use a
+short low hit for damage and a metallic strike when the shield catches one.
+Run `node scripts/audio-score-audition.mjs --overdrive` for a constructed
+comparison in the full Final Surge mix, with each pilot alone and all four active.
+
 Run `node scripts/audio-score-audition.mjs` to render
 `artifacts/audio/expanded.wav` and its signal report from the runtime code in
 Chromium. The first mix is retained locally as `artifacts/audio/preview.wav`.
@@ -168,9 +177,8 @@ different voicings in the second bar. Warnings keep their recognizable pulse.
 
 Run `node scripts/audio-score-audition.mjs --feedback` for the constructed
 `artifacts/audio/cue-variations.wav` reel and signal report. It uses the runtime
-mixer and the same full-pace action tape as the previous
-`artifacts/audio/beat-aligned.wav` reel. The tape includes depth changes,
-a recharged ability, warnings, a broken rescue hold, and the overtime rescue.
+mixer with a constructed full-pace finale. The tape includes depth changes,
+a full meter and Overdrive, warnings, a broken rescue hold, and the overtime rescue.
 The browser probe checks keyboard input, hazard audio, and cue subdivisions
 against the live score in both paces.
 

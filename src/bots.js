@@ -1,4 +1,4 @@
-import { RINGS, T, TAU, delta, depthScale, distance, enemySize, moveSpeed, projectRadius, rushAngle } from './rules.js';
+import { RINGS, T, TAU, delta, depthScale, distance, enemySize, hullShielded, moveSpeed, powerReady, projectRadius, rushAngle } from './rules.js';
 
 const lookAhead = [.08, .22, .40, .62];
 const homeRings = [2, 2, 2, 1];
@@ -105,7 +105,10 @@ function flightRisk(pilot, direction, ring, goal, threats) {
 }
 
 function combatSpecial(state, pilot, rescue, risk) {
-  if (pilot.specialHeld || pilot.specialCooldown > T.step * state.timeScale) return false;
+  if (pilot.specialHeld || !powerReady(state, pilot)) return false;
+  if (state.hull <= T.hullMax * .3 && !hullShielded(state)
+    && state.enemies.some(enemy => enemy.radius > T.radius - 55 && (enemy.type === 'rush' || enemy.type === 'flank')))
+    return state.players.find(other => other.id !== 0 && !other.specialHeld && powerReady(state, other)) === pilot;
   const close = other => distance(other.angle, pilot.angle) <= .72 && Math.abs(other.radius - pilot.radius) <= 68;
   const covering = rescue && close(rescue);
   if (pilot.character === 'sana') return covering

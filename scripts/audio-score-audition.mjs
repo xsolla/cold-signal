@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import { BPM, pressureChart, sortieChart } from '../public/audio-chart.js';
 import { AudioFeedback } from '../src/audio-feedback.js';
-import { controlledInput, downPlayer, makeMatch, phaseAt, step, T } from '../src/rules.js';
+import { characterById, controlledInput, downPlayer, makeMatch, phaseAt, step, T, useSpecial } from '../src/rules.js';
 import { createSoloSession } from '../src/solo-session.js';
 import { cascade, seed } from './audio-fixture.mjs';
 
@@ -36,6 +36,7 @@ function finaleTape(withFeedback) {
   state.time = state.elapsed = T.finalBreathAt;
   state.phase = phaseAt(state.time);
   const [pilot, casualty] = state.players;
+  if (withFeedback) pilot.powerCharge = characterById(pilot.character).powerKills;
   const cues = withFeedback ? [
     [T.finalSurgeAt + 4, 'down'], [T.finalSurgeAt + 5.15, 'hold'],
     [T.finalSurgeAt + 5.80, 'release'], [T.finalSurgeAt + 6.1, 'hold'],
@@ -81,13 +82,17 @@ function finaleTape(withFeedback) {
     const feedback = observer && observer.update(state);
     if (feedback) for (const type of Object.keys(activations)) if (feedback[type]) activations[type]++;
     frames.push({ at, events, feedback, status: state.status, phase: state.phase, elapsed: state.elapsed,
-      timeScale: state.timeScale, finale: { ...state.finale }, players: state.players.map(({ character, down }) => ({ character, down })) });
+      timeScale: state.timeScale, finale: { ...state.finale }, players: scorePlayers(state) });
     if (state.status === 'won') sections.push({ at, name: 'RESCUE AND CLEAR' });
   }
   assert.ok(squad && overtime && state.status === 'won');
   assert.equal(state.rescues, 2);
   if (withFeedback) assert.ok(Object.values(activations).every(count => count > 0), JSON.stringify(activations));
   return { frames, sections, activations, seconds: Math.ceil(frames.at(-1).at + 2) };
+}
+
+function scorePlayers(state) {
+  return state.players.map(({ id, character, down, overdriveUntil }) => ({ id, character, down, overdriveUntil }));
 }
 
 // Replay an input sequence through the actual solo session for both mixes.
@@ -103,7 +108,7 @@ function soloTape(chart, steer, { pilot = 'mara', firstSeed } = {}) {
     const { elapsed, events, status, phase, timeScale } = state;
     const feedback = observer.update(state);
     frames.push({ at: elapsed, elapsed, status, phase, timeScale, encounter: { id: chart.id },
-      players: state.players.map(({ character, down }) => ({ character, down })), feedback,
+      players: scorePlayers(state), feedback,
       events: events.filter(event => event.id > lastEvent) });
     lastEvent = state.eventId;
     if (status !== 'playing') break;
@@ -146,14 +151,44 @@ function crewTape() {
   return { frames, sections, seconds: Math.ceil(frames.at(-1).at + 6) };
 }
 
+function overdriveTape() {
+  const state = makeMatch(seed);
+  state.phase = 'FINAL SURGE';
+  const sections = ['Full crew', 'Mara', 'Ivo', 'Sana', 'Rook', 'All four', 'Room tail']
+    .map((name, index) => ({ name, at: index * (T.overdriveSeconds + bar) }));
+  const frames = [];
+  let next = 1, lastEvent = 0;
+  for (let frame = 0; state.status === 'playing'; frame++) {
+    const at = frame / 60;
+    state.elapsed = at;
+    if (at >= sections[next].at) {
+      if (next === 6) {
+        state.status = 'won';
+        state.events.push({ id: ++state.eventId, type: 'won' });
+      } else for (const pilot of next === 5 ? state.players : [state.players[next - 1]]) {
+        pilot.powerCharge = characterById(pilot.character).powerKills;
+        useSpecial(state, pilot);
+      }
+      next++;
+    }
+    frames.push({ at, elapsed: at, phase: state.phase, status: state.status, players: scorePlayers(state),
+      events: state.events.filter(event => event.id > lastEvent) });
+    lastEvent = state.eventId;
+  }
+  return { frames, sections, seconds: Math.ceil(frames.at(-1).at + 4) };
+}
+
 const withFeedback = process.argv.includes('--feedback'), withPressure = process.argv.includes('--pressure');
 const withSortie = process.argv.includes('--sortie'), withCrew = process.argv.includes('--crew');
-const tape = withCrew ? crewTape()
+const withOverdrive = process.argv.includes('--overdrive');
+const tape = withOverdrive ? overdriveTape()
+  : withCrew ? crewTape()
   : withSortie ? soloTape(sortieChart, (state, frame) => frame % 4 === 0 ? controlledInput(state, 0) : null,
-  { pilot: 'mara', firstSeed: 31 })
+  { pilot: 'sana', firstSeed: 35 })
   : withPressure ? pressureTape()
   : withFeedback || process.argv.includes('--finale') ? finaleTape(withFeedback) : null;
-const takes = withCrew ? [{ name: 'cold-signal-pilot-parts', synced: true }]
+const takes = withOverdrive ? [{ name: 'cold-signal-overdrive', synced: true }]
+  : withCrew ? [{ name: 'cold-signal-pilot-parts', synced: true }]
   : withSortie ? [{ name: 'cold-signal-ensemble-run', synced: true }]
   : withPressure ? [{ name: 'pressure-original', synced: false }, { name: 'pressure-synced', synced: true }]
   : withFeedback ? [{ name: 'cue-variations', synced: true }]
@@ -233,14 +268,15 @@ try {
       const renderMs = performance.now() - start;
       const left = rendered.getChannelData(0), right = rendered.getChannelData(1);
       const samples = new Int16Array(left.length * 2);
-      let peak = 0, monoPeak = 0, largestSampleStep = 0;
+      let peak = 0, peakAt = 0, monoPeak = 0, largestSampleStep = 0;
       const sections = (tape?.sections ?? phases).map(phase => ({ ...phase, square: 0, frames: 0 }));
       let phase = 0;
       for (let i = 0; i < left.length; i++) {
         if (sections[phase + 1]?.at <= i / sampleRate) phase++;
         const l = left[i], r = right[i];
         if (!Number.isFinite(l) || !Number.isFinite(r)) throw Error('Non-finite sample');
-        peak = Math.max(peak, Math.abs(l), Math.abs(r));
+        const framePeak = Math.max(Math.abs(l), Math.abs(r));
+        if (framePeak > peak) { peak = framePeak; peakAt = i / sampleRate; }
         monoPeak = Math.max(monoPeak, Math.abs((l + r) / 2));
         if (i > 0) largestSampleStep = Math.max(largestSampleStep, Math.abs(l - left[i - 1]), Math.abs(r - right[i - 1]));
         samples[i * 2] = Math.round(Math.max(-1, Math.min(1, l)) * 32767);
@@ -251,11 +287,11 @@ try {
       const bytes = new Uint8Array(samples.buffer);
       let binary = '';
       for (let i = 0; i < bytes.length; i += 8192) binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
-      return { pcm: btoa(binary), renderMs, sampleRate, seconds, bpm, peak, monoPeak, largestSampleStep,
+      return { pcm: btoa(binary), renderMs, sampleRate, seconds, bpm, peak, peakAt, monoPeak, largestSampleStep,
         firstFrame: [left[0], right[0]], lastFrame: [left.at(-1), right.at(-1)],
         sections: sections.map(({ square, frames, ...phase }) => ({ ...phase, rms: Math.sqrt(square / frames) })) };
     }, { phases, cues, sampleRate, seconds: tape?.seconds ?? seconds, bpm: BPM, tape, synced });
-    assert.ok(report.peak > .1 && report.peak < .9, 'Preview should leave headroom at the runtime gain');
+    assert.ok(report.peak > .1 && report.peak < .9, `Preview peak ${report.peak.toFixed(3)} at ${report.peakAt.toFixed(3)} s`);
     assert.deepEqual(report.firstFrame, [0, 0]);
     assert.deepEqual(report.lastFrame, [0, 0]);
     const data = Buffer.from(pcm, 'base64');

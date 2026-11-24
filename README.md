@@ -10,18 +10,20 @@ A standalone cooperative vector arcade game, originally developed as Delve Toget
 
 Play solo with three AI wingmates or form a private multiplayer crew. Everyone fires automatically and can
 rescue any downed crew member. A/D or Left/Right orbits; W/Up jumps inward,
-S/Down jumps outward between three rings. Press Space for your
-character's special ability. Every pilot must be active at the final clear.
+S/Down jumps outward between three rings. Defend the shared hull along the
+outer rail. Kills charge your power. At full power, press Space to use your
+ability and shield the hull for three seconds. Every pilot must be active at the
+final clear.
 
 The visual direction combines Cold Front's navy/cyan/violet
 palette with Black Signal's forked ships, open rescue markers, radial instruments,
-and angular geometry. Streaming tunnel lines, projectile and movement trails,
-36-shard explosions, rescue bursts, and linked chain detonations respond to live play.
-The amplified effects use longer luminous trails and retain a readable burst size
-at inner depths. Pilots and rescue markers render above the large effects.
+and angular geometry. Full motion adds a polar lattice that ripples with hits,
+prismatic chains, and bursts for abilities, rescues, and hull impacts. The
+Overdrive glow follows the hull shield. Pilots and rescue markers render above
+the effects.
 The original motion studies remain in `art-direction/`.
-The [locked camera decision](docs/design.md#presentation) applies in both
-motion settings.
+The [hull impact effects](docs/design.md#presentation) include a short shake
+in full motion and a stationary cue in reduced motion.
 
 ## Develop with Pocket Studio
 
@@ -58,7 +60,7 @@ python3 -m http.server 5177 --bind 127.0.0.1 --directory dist/arcade
 Open [the solo build](http://127.0.0.1:5177). Pick a pilot and launch at
 half pace for the three-minute synced score or full pace for the 90-second run.
 The other three pilots are AI wingmates. Play with a desktop
-keyboard. Esc pauses, and a clear or wipe returns you to pilot selection for a
+keyboard. Esc pauses, and a clear or loss returns you to pilot selection for a
 retry. Reloading starts a fresh session. The game runs entirely in the browser.
 Solo starts with full effects. Use **Reduce motion** to turn down decorative effects.
 See [Pocket Studio Arcade packaging](docs/release/pocket-studio-arcade.md).
@@ -131,7 +133,7 @@ required local runtime. The running game needs no AGS, account, or cloud access.
    They choose their default characters and ready automatically.
 4. Ready up. Orbit with A/D or Left/Right. Tap W/Up to jump one ring inward
    or S/Down to jump one ring outward; holding does not keep jumping. Firing is automatic. Press and release Space to
-   activate your special when its cooldown is ready. Escape pauses.
+   activate your ability and shield the hull when your power meter is full. Escape pauses.
 5. To rescue, match the open circular crew marker’s ring, then stay close until its progress ring
    completes. Any active pilot can do this while continuing to fire.
 
@@ -184,21 +186,22 @@ verified; the four-client acceptance pass uses separate local browsers.
 All four share the same basic movement, gun, and proximity rescue. Duplicate
 character choices are allowed so no composition is mandatory.
 
-| Character | Space ability | How it helps the crew |
-| --- | --- | --- |
-| Mara / Anchor | Bulwark | Nearby crew gain a one-hit ward; absorbing a hit gives brief repeat-hit protection |
-| Ivo / Breaker | Shockwave | Damages a sector, clears marked danger, and opens a gap in incoming walls |
-| Sana / Beacon | Rally | Nearby crew gain faster automatic fire and faster proximity rescue |
-| Rook / Runner | Slipstream | Nearby crew gain faster movement and brief cover for repositioning |
+| Character | Space ability | Kills to charge | How it helps the crew |
+| --- | --- | ---: | --- |
+| Rook / Runner | Slipstream | 25 | Nearby crew gain faster movement and brief cover for repositioning |
+| Mara / Anchor | Bulwark | 28 | Nearby crew gain a one-hit ward and brief protection after it absorbs a hit |
+| Sana / Beacon | Rally | 30 | Nearby crew gain faster automatic fire and faster proximity rescue |
+| Ivo / Breaker | Shockwave | 35 | Damages a sector, clears marked danger, and opens a gap in incoming walls |
 
-These are initial experimental abilities and timings. The selection cards
-show each pilot's name, role, ability, personality line, and ship symbol. The
-HUD shows all crew, the current ability, and its remaining cooldown.
+The power meter starts empty and tracks each pilot's credited kills, including
+chain kills. When activated, it drains over three seconds while the crew's hull is
+shielded. You can start charging again when Overdrive ends. Each pilot adds a
+distinct part to the music during their Overdrive.
 
 **Half speed scales the whole simulation:** ships, enemies, shots, hazards,
-warning periods, fire rate, rescue progress, protection, buffs, cooldowns, and
+warning periods, fire rate, rescue progress, protection, buffs, and
 pacing. The 90-second simulation gauntlet takes about **three minutes of active
-real time** at 0.5×. The clock and cooldown HUD show real seconds. Input sampling
+real time** at 0.5×. The score stays at 132 BPM and Overdrive lasts three seconds at both paces. Input sampling
 and network updates continue at their normal rate. A quick Space, W, or S tap is queued
 until the next authoritative tick; holding Space does not repeatedly cast and holding W/S does not chain jumps.
 
@@ -240,6 +243,7 @@ for that build’s identity and scope. These image aliases exist on this host on
 ## Local diagnostics and operations
 
 **Rescue scenario** constructs one exposed downing and resets current threats.
+**Fill crew power meters** makes a Space cast available to each active pilot.
 **Final-clear check** advances to the last moment; **Team-wipe check** forces
 loss. These fixtures and the controlled clients are development tools rather
 than natural play or human acceptance evidence. The controlled pilots read

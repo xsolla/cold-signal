@@ -1,7 +1,10 @@
-import { T, RINGS, TAU, CREW, characterById, projectRadius, depthScale, pointAt, enemySize, ringName, safeInWall, distance, rushAngle } from './rules.js';
+import { T, RINGS, TAU, CREW, characterById, projectRadius, depthScale, pointAt, enemySize, ringName, safeInWall, distance, rushAngle, hullShielded } from './rules.js';
 import { STEP_SECONDS } from './audio-chart.js';
 import { PALETTE, Presentation, drawFork, noise } from './cold-signal.js';
+import { ArenaEffects, arenaSpan } from './arena-effects.js';
 const { bg: ink, paper, signal: acid, danger, accent, line, muted, field } = PALETTE;
+const hullStart = -Math.PI / 2 + .045, hullSweep = TAU - .09;
+const hullAngle = health => hullStart + hullSweep * health / T.hullMax;
 export class Renderer {
   constructor(canvas) {
     this.canvas = canvas; this.ctx = canvas.getContext('2d'); this.presentation = new Presentation();
@@ -33,12 +36,16 @@ export class Renderer {
     c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha *= alpha; c.fillStyle = glow;
     c.fillRect(x - radius, y - radius, radius * 2, radius * 2); c.restore();
   }
-  tunnel(own, reduced) {
+  tunnel(own, reduced, hasHull, light) {
     const c = this.ctx, core = projectRadius(T.coreRadius);
     const fog = c.createRadialGradient(0, 0, core, 0, 0, 330);
     fog.addColorStop(0, field); fog.addColorStop(.75, ink); fog.addColorStop(1, ink);
     c.fillStyle = fog; c.beginPath(); c.arc(0, 0, 330, 0, TAU); c.fill();
-    for (let i = 0; i < 32; i++) {
+    if (light) {
+      c.save(); c.globalCompositeOperation = 'lighter';
+      c.drawImage(light, -arenaSpan / 2, -arenaSpan / 2, arenaSpan, arenaSpan); c.restore();
+    }
+    if (!light) for (let i = 0; i < 32; i++) {
       const a = i * TAU / 32, b = (i + 1) * TAU / 32;
       if (i % 2 === 0) {
         c.fillStyle = '#eef7ff04'; c.beginPath(); c.moveTo(Math.cos(a) * core, Math.sin(a) * core);
@@ -51,11 +58,11 @@ export class Renderer {
       c.beginPath(); c.moveTo(Math.cos(a) * core, Math.sin(a) * core); c.lineTo(Math.cos(a) * 300, Math.sin(a) * 300); c.stroke();
     }
     // Fine depth rings stream outward; rails and all gameplay geometry stay fixed.
-    for (let i = 0; i < 12; i++) {
+    if (!light) for (let i = 0; i < 12; i++) {
       const t = ((i / 12 + (reduced ? 0 : this.presentation.time * .65)) % 1);
       this.circle(projectRadius(T.coreRadius + t * (T.radius - T.coreRadius)), '#33467880', .55);
     }
-    if (!reduced) for (let i = 0; i < 28; i++) {
+    if (!reduced && !light) for (let i = 0; i < 28; i++) {
       const t = (noise(i + 1) + this.presentation.time * (1.2 + noise(i + 30) * .4)) % 1;
       const a = noise(i + 80) * TAU, r = 45 + t * 210;
       c.strokeStyle = i % 4 ? '#8d85ff70' : '#79e5ff90'; c.lineWidth = .7 + t;
@@ -64,9 +71,10 @@ export class Renderer {
     }
     RINGS.forEach((r, ring) => {
       const selected = own?.ring === ring, pr = projectRadius(r);
-      this.circle(pr, selected ? acid : muted, (selected ? 2 : 1) * Math.max(.6, depthScale(r)));
-      c.fillStyle = selected ? acid : muted; c.font = '8px monospace'; c.textAlign = 'left';
-      c.fillText(`${3 - ring} / ${ringName(ring)}`, Math.cos(-.45) * (pr + 6), Math.sin(-.45) * (pr + 6) - 4);
+      if (ring !== 2 || !hasHull) this.circle(pr, selected ? acid : muted, (selected ? 2 : 1) * Math.max(.6, depthScale(r)));
+      const labelRadius = pr + (ring === 2 ? -9 : 6);
+      c.fillStyle = selected ? acid : muted; c.font = '8px monospace'; c.textAlign = ring === 2 ? 'right' : 'left';
+      c.fillText(`${3 - ring} / ${ringName(ring)}`, Math.cos(-.45) * labelRadius, Math.sin(-.45) * labelRadius - 4);
     });
     this.circle(268, line, .8);
     for (let i = 0; i < 60; i++) {
@@ -76,6 +84,44 @@ export class Renderer {
       c.lineTo(Math.cos(a) * (i % 5 === 0 ? 276 : 271), Math.sin(a) * (i % 5 === 0 ? 276 : 271)); c.stroke();
     }
     c.fillStyle = ink; c.beginPath(); c.arc(0, 0, core, 0, TAU); c.fill();
+  }
+  hull(state) {
+    const c = this.ctx;
+    const shielded = state.status === 'playing' && hullShielded(state);
+    c.save(); c.lineCap = 'butt';
+    this.circle(T.radius, line, 7);
+    if (state.hull > 0) {
+      c.strokeStyle = shielded ? paper : state.hull <= T.hullMax * .25 ? danger : acid;
+      c.beginPath(); c.arc(0, 0, T.radius, hullStart, hullAngle(state.hull)); c.stroke();
+    }
+    c.restore();
+  }
+  hullImpacts(reduced) {
+    const c = this.ctx;
+    c.save();
+    c.lineCap = 'butt';
+    for (const impact of this.presentation.effects) {
+      if (impact.type !== 'breach') continue;
+      const age = this.presentation.time - impact.born;
+      if (age < .2) {
+        c.globalAlpha = .8 * (1 - age / .2);
+        c.strokeStyle = impact.damage ? danger : paper;
+        const width = impact.kind === 'flank' ? .085 : .045;
+        c.lineWidth = 3;
+        c.beginPath(); c.arc(0, 0, T.radius + 6, impact.angle - width, impact.angle + width); c.stroke();
+      }
+      const life = reduced ? .25 : .56;
+      if (!impact.damage || age >= life) continue;
+      const progress = age / life;
+      const radius = T.radius + (reduced ? 0 : 30 * (1 - (1 - progress) ** 2));
+      c.beginPath();
+      c.arc(0, 0, radius, hullAngle(impact.hullAfter), hullAngle(impact.hullAfter + impact.damage));
+      c.strokeStyle = danger; c.lineWidth = 12; c.globalAlpha = .52 * (1 - progress);
+      c.stroke();
+      c.strokeStyle = paper; c.lineWidth = 6; c.globalAlpha = 1 - progress;
+      c.stroke();
+    }
+    c.restore();
   }
   wall(wall) {
     const c = this.ctx, radius = projectRadius(wall.radius), scale = depthScale(wall.radius);
@@ -290,7 +336,7 @@ export class Renderer {
     c.lineWidth = Math.max(reduced ? .5 : .9, (reduced ? 2 : 2.5) * ds);
     c.beginPath(); c.moveTo(head.x, head.y); c.lineTo(from.x, from.y); c.stroke(); c.restore();
   }
-  explosion(e, pos, age, ds, reduced) {
+  explosion(e, pos, age, ds, reduced, enhanced) {
     const c = this.ctx;
     if (reduced) {
       if (age >= .48) return;
@@ -301,15 +347,21 @@ export class Renderer {
     // FX retain depth but do not collapse to collider size near the vanishing point.
     const scale = Math.max(.6, Math.sqrt(ds)), t = age / .72, fade = (1 - t) ** 1.6;
     c.translate(pos.x, pos.y); c.globalCompositeOperation = 'lighter'; c.globalAlpha = fade;
-    this.bloom(0, 0, (22 + t * 65) * scale, acid, .5);
-    this.circle((8 + t * 112) * scale, acid, (3.5 * (1 - t) + .6) * scale);
-    c.beginPath(); c.arc(0, 0, (4 + t * 80) * scale, e.id, e.id + TAU * .77);
-    c.strokeStyle = accent; c.lineWidth = 2 * scale; c.stroke();
+    if (enhanced) {
+      c.globalAlpha *= .72;
+      this.circle((5 + t * 54) * scale, e.chainDepth > 0 ? accent : acid, (1.5 * (1 - t) + .5) * scale);
+    } else {
+      this.bloom(0, 0, (22 + t * 65) * scale, acid, .5);
+      this.circle((8 + t * 112) * scale, acid, (3.5 * (1 - t) + .6) * scale);
+      c.beginPath(); c.arc(0, 0, (4 + t * 80) * scale, e.id, e.id + TAU * .77);
+      c.strokeStyle = accent; c.lineWidth = 2 * scale; c.stroke();
+    }
     if (age < .09) {
       c.globalAlpha = 1 - age / .09; c.strokeStyle = paper; c.lineWidth = 3 * scale;
       c.beginPath(); c.moveTo(-26 * scale, 0); c.lineTo(26 * scale, 0);
       c.moveTo(0, -26 * scale); c.lineTo(0, 26 * scale); c.stroke();
     }
+    if (enhanced) return;
     for (let i = 0; i < 36; i++) {
       const a = noise(e.id * 23 + i) * TAU, speed = 90 + noise(i + e.id) * 240;
       const distance = (6 + age * speed) * scale, length = (3 + (1 - t) * 20) * scale;
@@ -323,7 +375,7 @@ export class Renderer {
       }
     }
   }
-  effects(reduced) {
+  effects(reduced, enhanced) {
     const c = this.ctx, time = this.presentation.time;
     for (const e of this.presentation.effects) {
       const age = time - e.born, radius = e.radius ?? T.radius, ds = depthScale(radius);
@@ -336,7 +388,7 @@ export class Renderer {
           c.strokeStyle = accent; c.lineWidth = 2;
           c.beginPath(); c.moveTo(from.x, from.y); c.lineTo(pos.x, pos.y); c.stroke();
         }
-        this.explosion(e, pos, age, ds, reduced);
+        this.explosion(e, pos, age, ds, reduced, enhanced);
       }
       if (e.type === 'special' && age < .65) {
         const t = Math.min(1, age / .4); c.globalAlpha = 1 - age / .65;
@@ -390,7 +442,7 @@ export class Renderer {
         const scale = reduced ? ds : Math.max(.6, Math.sqrt(ds)), color = e.type === 'down' ? danger : acid;
         c.globalAlpha = 1 - age / .7; c.strokeStyle = color; c.lineWidth = (reduced ? 2 : 3) * scale;
         c.beginPath(); c.arc(pos.x, pos.y, (20 + (reduced ? 0 : age * 145)) * scale, 0, TAU); c.stroke();
-        if (!reduced) {
+        if (!reduced && !enhanced) {
           this.bloom(pos.x, pos.y, (25 + age * 70) * scale, color, .3);
           c.globalCompositeOperation = 'lighter';
           for (let i = 0; i < 16; i++) {
@@ -411,12 +463,17 @@ export class Renderer {
     const c = this.ctx, w = this.width, h = this.height;
     this.presentation.update(state, { now, paused, reduced, slot, predicted }); this.reduced = reduced;
     c.clearRect(0, 0, w, h); c.fillStyle = ink; c.fillRect(0, 0, w, h);
-    const scale = Math.min(joined ? w : w * .78, h) / 690;
-    const camera = this.presentation.camera(reduced), clock = this.presentation.time, motionScale = Math.min(1, h / 680);
+    const scale = Math.min(joined ? w : w * .78, h) / arenaSpan;
+    const camera = this.presentation.camera(reduced || paused), clock = this.presentation.time, motionScale = Math.min(1, h / 680);
     c.save(); c.translate((joined ? w / 2 : w * .79) + camera.x * motionScale, h * .53 + camera.y * motionScale);
     c.rotate(camera.rotation); c.scale(scale * camera.zoom, scale * camera.zoom);
     const time = reduced ? 0 : clock * .08;
-    c.globalAlpha = joined ? 1 : .65; this.tunnel(state?.players[slot], reduced);
+    let light = null;
+    if (state && !reduced && scale > 0) {
+      this.arenaEffects ??= new ArenaEffects();
+      light = this.arenaEffects.draw(state, this.presentation, arenaSpan * scale, slot);
+    }
+    c.globalAlpha = joined ? 1 : .65; this.tunnel(state?.players[slot], reduced, !!state, light);
     if (state?.status === 'playing') this.formationCues(state, reduced);
     const count = joined ? crewCount : 4;
     const players = state?.players || Array.from({ length: count }, (_, id) => ({ id,
@@ -457,7 +514,11 @@ export class Renderer {
       entities.push({ radius, draw: () => this.enemy({ radius, angle, type: ['rush', 'skimmer', 'stalker', 'flank'][i % 4] }) });
     }
     entities.sort((a, b) => a.radius - b.radius).forEach(e => e.draw());
-    if (state) this.effects(reduced);
+    if (state) {
+      this.effects(reduced, !!light);
+      this.hull(state);
+      this.hullImpacts(reduced);
+    }
     // Pilot silhouettes, rescue progress and the sanctuary stay above large FX.
     const crewByDepth = [...players].sort((a, b) => a.radius - b.radius);
     crewByDepth.forEach(p => this.player(p, slot, predicted));

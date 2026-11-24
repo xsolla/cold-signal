@@ -91,6 +91,11 @@ export const cues = {
   ],
 };
 
+export const breachCue = (root, blocked) => blocked
+  ? [stab(root + 12, { type: 'steel', cutoff: 2450, sweep: 790, duration: .18, hold: .016, volume: .077, wet: .22 })]
+  : [air(560, 210, { duration: .15, attack: .023, volume: .10 }),
+    stab(root - 24, { type: 'round', cutoff: 390, sweep: 135, duration: .18, attack: .021, hold: .018, volume: .14 })];
+
 export const killHit = (note, index, upbeat) => stab(note - 12, {
   type: upbeat ? 'steel' : 'strike', slide: hz(note - 13), slideTime: .024,
   cutoff: (upbeat ? 2160 : 2520) + index * 450, sweep: 640 + index * 210,

@@ -20,11 +20,21 @@ of death blasts through nearby enemies and clear room to move. The initiating
 pilot gets the kill credit, and crew are safe from the blasts.
 
 A/D or Left/Right orbits. Tap W/Up for one rail inward or S/Down for one rail
-outward. Active pilots fire inward automatically. Space casts the selected
-pilot's ability when ready. Mara's Bulwark wards nearby crew against a hit.
-Ivo's Shockwave clears threats in a sector and opens a wall gap. Sana's Rally
-speeds up fire and rescue. Rook's Slipstream gives nearby crew speed and
-brief cover. All pilots can rescue, and duplicate picks are allowed.
+outward. Active pilots fire inward automatically. The outer rail itself shows
+the team's 100-point hull. A rush that reaches the rail costs
+one hull point. A flanker costs three. Rail patrols and suppressors threaten
+pilots from inside the hull.
+
+Each pilot starts with an empty power meter. Credited kills fill it, including
+enemies destroyed in a chain. Space spends a full meter on that pilot's ability
+and starts Overdrive. Rook charges in 25 kills and gives nearby crew speed and
+brief cover. Mara charges in 28 and wards nearby crew against a hit. Sana charges
+in 30 and speeds up fire and rescue. Ivo charges in 35 and can clear threats in a
+sector and open a wall gap. Overdrive shields the hull for three seconds of active play at
+either pace. The meter drains over that window and can earn
+power again once it empties. A cast persists if its pilot is downed. Overlapping
+casts run on their own timers, so spacing them out can protect the hull longer.
+All pilots can rescue, and duplicate picks are allowed.
 
 When a crew member goes down on the middle rail just ahead of a warning arc,
 you can leave your firing line and try to reach them while another pilot
@@ -35,15 +45,17 @@ missed window can leave the crew with two pilots down.
 
 The gauntlet builds through waves, lulls, and a final surge. At the time limit,
 the crew clears only if everyone is active. Any remaining downed pilot sends
-the team into overtime, and a full crew wipe ends the attempt. After a clear
-or wipe, choose pilots and ready up again. The default room is four pilots
+the team into overtime. A hull breach that exhausts the shared health pool or a
+full crew wipe ends the attempt. A retry restores the hull and empties all power
+meters. The default room is four pilots
 at 0.5× simulation pace. Two-pilot and 1× rooms are available. Shared pause
 freezes the run, and a disconnect interrupts it. Solo supports both paces, pauses
-when the game loses focus, and offers a fresh attempt after each clear or wipe.
+when the game loses focus, and offers a fresh attempt after each clear or loss.
 
 Each pilot has a part in the score. Their instrument drops out when they fall
-and returns on the next beat after a rescue. The same beat still drives the
-enemy waves, so the crew can hear who is missing while the run continues.
+and returns on the next beat after a rescue. During Overdrive, the pilot's
+instrument adds a distinct phrase to the score. The same beat still drives
+the enemy waves, so the crew can hear who is missing or shielding the hull.
 
 The [three-minute solo chart](sound-design.md#three-minute-synced-run) adds
 reinforcements on separate beats and attack angles so covering one lane leaves
@@ -62,13 +74,15 @@ those phrases across neighboring bars.
 
 ## Presentation
 
-Keep the camera locked in both motion settings, with zero translation and
-roll and a zoom of 1. The decision followed [reports of nausea with the
-earlier camera response](../evidence/cold-signal-pacing/README.md). Full motion
-uses streaming lines, trails, fragments, and links between chained kills.
-Reduced motion suppresses decorative effects. Both settings keep warning,
-ability, and rescue cues, with pilots and rescue progress above the large
-effects.
+Hull damage gives the full-motion camera a short directional shake. The exact
+lost segment detaches from the outer rail, drifts outward, and fades. Reduced
+motion keeps the camera stationary and flashes the segment in place, following
+[earlier feedback about motion comfort](../evidence/cold-signal-pacing/README.md).
+The remaining hull turns white during Overdrive in either setting. In full
+motion, kills, abilities, rescues, and hull impacts launch colored debris and
+send ripples through a polar lattice. Chains build up the distortion, and
+Overdrive sends a rotating glow around the hull. Both settings keep warning,
+ability, and rescue cues above the decorative shader layer.
 
 The chart shows each formation's route or wall gaps a beat ahead. Dashed
 previews become solid on the reveal and subside behind the combat silhouettes.

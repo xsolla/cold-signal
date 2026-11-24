@@ -80,6 +80,9 @@ try {
   await start.waitFor();
   assert.match(await game.locator('#overlay-kicker').textContent(), /3 AI WINGMATES/);
   assert.equal(await game.getByRole('radio').count(), 4);
+  for (const [pilot, kills] of [['Mara', 28], ['Ivo', 35], ['Sana', 30], ['Rook', 25]]) {
+    assert.match(await game.getByRole('radio', { name: new RegExp(pilot) }).textContent(), new RegExp(`${kills} kills`));
+  }
   const mara = game.getByRole('radio', { name: /Mara/ });
   await mara.press('ArrowRight');
   assert.equal(await game.getByRole('radio', { name: /Ivo/ }).getAttribute('aria-checked'), 'true');
@@ -99,7 +102,7 @@ try {
   assert.match(await game.locator('#crew .you').textContent(), /MIDDLE/);
   await page.keyboard.up('KeyW');
   await page.keyboard.press('Space');
-  await game.locator('#ability-state').filter({ hasText: /\d+s/ }).waitFor();
+  assert.notEqual(await game.locator('#ability-state').textContent(), 'OVERDRIVE');
   await page.keyboard.press('KeyS');
   await game.locator('#crew .you').filter({ hasText: /OUTER/ }).waitFor();
   await motion.click();
@@ -135,7 +138,8 @@ try {
   await canvas.evaluate(() => { window.arcadeTestRate = 1; });
   await start.click();
   assert.match(await game.locator('#clock').textContent(), /^00:00$/);
-  assert.equal(await game.locator('#ability-state').textContent(), 'READY');
+  assert.equal(await game.locator('#ability-state').textContent(), '0/28');
+  assert.equal(await game.locator('#hull-value').textContent(), '100%');
   assert.ok((await game.locator('#crew').textContent()).includes('OUTER'));
   await page.keyboard.press('Escape');
   await game.getByRole('button', { name: /Return to pilot select/i }).click();
@@ -212,7 +216,17 @@ try {
         phase: phase.textContent, clock: clock.textContent, at: window.arcadeTestAudio?.currentTime,
       })).observe(phase, { childList: true });
       const { Renderer } = await import(new URL('./renderer.js', location.href).href);
+      const { T } = await import(new URL('./rules.js', location.href).href);
       const draw = Renderer.prototype.squadCue;
+      const render = Renderer.prototype.render;
+      Renderer.prototype.render = function (state, options) {
+        // Keep the crew alive for chart coverage. Kills and power still come from combat.
+        if (window.arcadeTestChartCoverage && state?.status === 'playing') {
+          if (state.hull <= 12) state.hull = T.hullMax;
+          for (const pilot of state.players) pilot.protection = 10;
+        }
+        return render.call(this, state, options);
+      };
       window.arcadeTestFormation = {};
       Renderer.prototype.squadCue = function (squad, kind, reveal) {
         if (kind === 'sweep' && window.arcadeTestAudio) {
@@ -222,8 +236,6 @@ try {
       };
     });
     assert.equal(await game.locator('#pace').inputValue(), '0.5');
-    // Ivo's first seeded crew can recover in overtime even with idle input.
-    await game.getByRole('radio', { name: /Ivo/ }).click();
     await start.click();
     assert.equal(await game.locator('#duration').textContent(), '/ 03:00');
     assert.equal(await game.locator('#phase').textContent(), 'INGRESS');
@@ -235,8 +247,16 @@ try {
     assert.ok(Math.abs(formation.accent - formation.reveal) < .12, JSON.stringify(formation));
     await game.locator('.stage').screenshot({ path: join(artifacts, 'formation-reveal.png') });
     console.log(`First sweep previewed ${Math.round((formation.reveal - formation.preview) * 1000)} ms early; accent offset ${Math.round((formation.accent - formation.reveal) * 1000)} ms.`);
-    if (!realTime) await canvas.evaluate(() => { window.arcadeTestRate = 7; });
-    await game.getByRole('button', { name: /^Retry as Ivo/i }).waitFor({ timeout: realTime ? 215000 : 65000 });
+    await frame.evaluate(realTime => {
+      window.arcadeTestChartCoverage = true;
+      if (!realTime) window.arcadeTestRate = 7;
+    }, realTime);
+    await game.locator('#ability-state').filter({ hasText: 'SPACE READY' }).waitFor({ timeout: realTime ? 190000 : 48000 });
+    await page.keyboard.press('Space');
+    await game.locator('#ability-state').filter({ hasText: 'OVERDRIVE' }).waitFor();
+    await game.locator('#hull-shield').waitFor();
+    await game.locator('.stage').screenshot({ path: join(artifacts, 'overdrive.png') });
+    await game.getByRole('button', { name: /^Retry as Mara/i }).waitFor({ timeout: realTime ? 215000 : 65000 });
     const observed = await frame.evaluate(() => ({ phases: window.arcadeTestPhases, kicks: window.arcadeTestKicks }));
     const expected = sortieChart.phases.map(({ phase }) => phase);
     assert.deepEqual(observed.phases.slice(0, expected.length).map(({ phase }) => phase), expected);
@@ -250,11 +270,11 @@ try {
       }));
       console.log('Real-time three-minute transitions, kick offsets in ms', dropOffsets);
     }
-    await canvas.evaluate(() => { window.arcadeTestRate = 1; });
+    await frame.evaluate(() => { window.arcadeTestChartCoverage = false; window.arcadeTestRate = 1; });
     await start.click();
     assert.equal(await game.locator('#clock').textContent(), '00:00');
     assert.equal(await game.locator('#phase').textContent(), 'INGRESS');
-    console.log(`Three-minute solo score passed at ${realTime ? 'real-time' : 'accelerated'} pace with all eight phases, clear and retry.`);
+    console.log(`Three-minute chart fixture passed at ${realTime ? 'real-time' : 'accelerated'} pace with all eight phases, earned Overdrive, clear and retry.`);
   }
   assert.deepEqual(sockets, []);
   assert.deepEqual(unexpected, []);

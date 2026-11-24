@@ -80,8 +80,9 @@ test('a full population cascade terminates without duplicate rewards or lost kil
 
 test('escaped escorts do not multiply lingering danger zones; leaders keep their warning', () => {
   const state = fixture(); state.players.forEach(p => { p.cooldown = 1000; });
-  state.enemies = [rush(1, 0, 238), { ...rush(2, .14, 238), escort: true }, { ...rush(3, -.14, 238), escort: true }];
+  state.enemies = [rush(1, 0, 239), { ...rush(2, .14, 239), escort: true }, { ...rush(3, -.14, 239), escort: true }];
   step(state, []);
   assert.equal(state.enemies.length, 0); assert.equal(state.zones.length, 1);
   assert.equal(state.zones[0].angle, 0); assert.ok(state.zones[0].warn > 0);
+  assert.equal(state.hull, T.hullMax - 3);
 });

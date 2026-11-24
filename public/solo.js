@@ -1,6 +1,6 @@
-import { CREW, T, characterById, ringName } from './rules.js';
+import { CREW, T, characterById, ringName, overdriveRemaining } from './rules.js';
 import { createSoloSession, soloRoster } from './solo-session.js';
-import { arenaKeys, formatTime, mountPilotPicker, showSelectedPilot } from './pilot-ui.js';
+import { arenaKeys, formatTime, mountPilotPicker, showCombatMeters, showSelectedPilot } from './pilot-ui.js';
 import { Renderer } from './renderer.js';
 import { Sound } from './audio.js';
 import { pressureChart, sortieChart } from './audio-chart.js';
@@ -19,6 +19,7 @@ const audioFeedback = new AudioFeedback();
 const keys = new Set();
 const crew = CREW.map(() => $('crew').appendChild(document.createElement('span')));
 let pilot = CREW[0], view = 'select', lastFrame, lastEvent = 0;
+let hullLoss = null;
 let roster = soloRoster(pilot.id);
 let wantsSound = true, reduced = false;
 
@@ -53,13 +54,15 @@ function heading(kicker, title, copy) {
 }
 
 function selectPilot(result) {
+  hullLoss = result?.hull === 0 ? result : null;
   setView('select');
   text('footer-status', 'DESKTOP KEYBOARD');
   if (result?.status === 'won') {
     heading(`TEAM CLEAR · ${result.score.toLocaleString()} POINTS`, 'ALL THE WAY. ALL OF US.',
       `${result.rescues} ${result.rescues === 1 ? 'rescue' : 'rescues'}. Every ship made it through.`);
   } else if (result?.status === 'lost') {
-    heading(`CREW LOST · ${formatTime(result.elapsed)}`, 'WE GO AGAIN.', 'Pick a pilot and launch another run.');
+    heading(`${result.hull === 0 ? 'HULL LOST' : 'CREW LOST'} · ${formatTime(result.elapsed)}`, 'WE GO AGAIN.',
+      'Pick a pilot and launch another run.');
   } else if (pressure) {
     heading(`BREATH INTO PRESSURE · ${pressureMix === 'synced' ? 'SYNCED' : 'ORIGINAL'} SCORE`, 'CHOOSE YOUR PILOT.',
       'Four bars of Breath, then twelve bars of Pressure. Fly with three AI wingmates. Retries use the same enemy seed.');
@@ -68,7 +71,7 @@ function selectPilot(result) {
       'Start in the last Breath with three AI wingmates. Retries use the same enemy seed.');
   } else {
     heading('SOLO · 3 AI WINGMATES', 'CHOOSE YOUR PILOT.',
-      'Match a downed pilot’s ring and stay close to rescue them. All four ships must make it through.');
+      'Stop enemies before they hit the hull. Match a downed pilot’s ring and stay close to rescue them.');
   }
   showPilot();
   $('overlay-title').focus({ preventScroll: true });
@@ -108,18 +111,13 @@ function updateHud(state) {
     const chip = crew[ally.id], ring = ringName(ally.ring);
     chip.classList.toggle('down', ally.down);
     chip.classList.toggle('you', ally.id === 0);
-    const label = `${character.symbol} ${ally.id === 0 ? 'YOU' : character.name.toUpperCase()} ${ally.down ? 'DOWN · ' : ''}${ring}`;
+    const overdrive = overdriveRemaining(state, ally) > 0;
+    const label = `${character.symbol} ${ally.id === 0 ? 'YOU' : character.name.toUpperCase()} ${ally.down ? 'DOWN · ' : ''}${ring}${overdrive ? ' ◆' : ''}`;
     if (chip.textContent !== label) chip.textContent = label;
+    chip.title = overdrive ? 'Overdrive active' : '';
   }
   const own = state.players[0];
-  const remaining = Math.ceil(own.specialCooldown / state.timeScale);
-  const charge = String(Math.round(100 * (1 - own.specialCooldown / pilot.cooldown)));
-  text('ability-state', own.down ? 'DOWNED' : remaining ? `${remaining}s` : 'READY');
-  const bar = $('ability-bar');
-  if (bar.getAttribute('aria-valuenow') !== charge) {
-    bar.style.setProperty('--charge', `${charge}%`);
-    bar.setAttribute('aria-valuenow', charge);
-  }
+  showCombatMeters(state, 0);
   text('arena-note', own.down ? 'YOUR CREW CAN RESCUE YOU.' : state.players.some(ally => ally.down)
     ? 'MATCH THEIR RING AND STAY CLOSE TO RESCUE.' : 'FIRE IS AUTOMATIC. HIT A PACK TO START A CHAIN.');
 }
@@ -135,7 +133,6 @@ function start() {
   lastEvent = 0;
   lastFrame = undefined;
   text('duration', `/ ${formatTime(session.state.encounter?.endAt ?? T.duration / session.state.timeScale)}`);
-  text('ability-name', pilot.ability.toUpperCase());
   text('footer-status', '');
   updateHud(session.state);
   setView('run');
@@ -190,7 +187,7 @@ function frame(now) {
     if (state.status !== 'playing') selectPilot(state);
   }
   lastFrame = now;
-  const state = view === 'select' ? null : session.state;
+  const state = view === 'select' ? hullLoss : session.state;
   renderer.render(state, { joined: true, reduced, paused: view === 'pause', now, roster });
   requestAnimationFrame(frame);
 }

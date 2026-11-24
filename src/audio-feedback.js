@@ -1,4 +1,4 @@
-import { T, canHelpRescue, insideZone, safeInWall } from './rules.js';
+import { T, canHelpRescue, insideZone, powerReady, safeInWall } from './rules.js';
 
 const WARNING_WINDOW = .94;
 const WARNING_SPACING = .34;
@@ -8,7 +8,7 @@ export class AudioFeedback {
 
   reset() {
     this.ring = null;
-    this.cooldown = 0;
+    this.ready = false;
     this.rescue = null;
     this.warned = new Set();
     this.warningUntil = 0;
@@ -17,9 +17,10 @@ export class AudioFeedback {
   update(state, slot = 0) {
     const own = state.players[slot];
     const depth = !own.down && this.ring !== null ? Math.sign(this.ring - own.ring) : 0;
-    const ready = !own.down && own.specialCooldown === 0 && this.cooldown > 0;
+    const charged = powerReady(state, own);
+    const ready = charged && !this.ready;
     this.ring = own.ring;
-    this.cooldown = own.specialCooldown;
+    this.ready = charged;
 
     const target = state.players.reduce((best, pilot) => {
       if (!pilot.down || !pilot.rescue || !canHelpRescue(own, pilot)) return best;

@@ -3,7 +3,7 @@ import test from 'node:test';
 import { botInputs } from '../src/bots.js';
 import { BAR_SECONDS, pressureChart, sortieChart } from '../public/audio-chart.js';
 import { createSoloSession } from '../src/solo-session.js';
-import { RINGS, T, distance, downPlayer, makeMatch, rushAngle, step } from '../src/rules.js';
+import { RINGS, T, characterById, distance, downPlayer, makeMatch, rushAngle, step } from '../src/rules.js';
 
 test('the three-minute chart drives every phase, the finale reveal and both deadline outcomes', () => {
   const { bars, phases, endAt, spawns } = sortieChart;
@@ -25,10 +25,11 @@ test('the three-minute chart drives every phase, the finale reveal and both dead
   }
 
   const state = makeMatch(17321, { encounter: sortieChart });
+  state.hull = 1000;
   for (const pilot of state.players) pilot.protection = 999;
   const entered = [{ phase: state.phase, at: state.elapsed }];
   const surgeAt = phases.at(-1).at;
-  while (state.elapsed < endAt - .5) {
+  while (state.status === 'playing' && state.elapsed < endAt - .5) {
     const phase = state.phase;
     step(state);
     if (phase === state.phase) continue;
@@ -54,7 +55,7 @@ test('the three-minute chart drives every phase, the finale reveal and both dead
   const [helper, casualty] = overtime.players;
   Object.assign(casualty, { protection: 0, angle: helper.angle, radius: helper.radius, ring: helper.ring });
   assert.ok(downPlayer(overtime, casualty.id));
-  while (overtime.phase !== 'BRING THEM BACK' && overtime.elapsed < endAt + 1) step(overtime);
+  while (overtime.status === 'playing' && overtime.phase !== 'BRING THEM BACK' && overtime.elapsed < endAt + 1) step(overtime);
   assert.equal(overtime.status, 'playing');
   assert.equal(overtime.phase, 'BRING THEM BACK');
   assert.ok(casualty.down);
@@ -101,21 +102,22 @@ test('charted curves and wall crossings follow their shared cues in the simulati
   assert.ok(Math.abs(crossing.at - gate.at - gate.wall.travelSeconds) < 1e-8);
   for (const timeScale of [.5, 1]) {
     const state = makeMatch(17, { timeScale, encounter: sortieChart });
+    state.hull = 1000;
     for (const pilot of state.players) {
       pilot.protection = 99;
       pilot.cooldown = 99;
     }
-    while (state.elapsed < sweep.at) step(state);
+    while (state.status === 'playing' && state.elapsed < sweep.at) step(state);
     const leader = state.enemies.find(enemy => !enemy.escort);
     assert.ok(leader && leader.bend === sweep.squads[0].bend);
     assert.ok(state.elapsed - sweep.at < T.step);
-    while (leader.radius < RINGS[0]) step(state);
+    while (state.status === 'playing' && leader.radius < RINGS[0]) step(state);
     assert.equal(leader.angle, rushAngle(leader.base, leader.bend, leader.radius));
     assert.ok(distance(leader.angle, leader.base) > .1);
-    while (state.elapsed < gate.at) step(state);
+    while (state.status === 'playing' && state.elapsed < gate.at) step(state);
     const wall = state.walls.find(wall => wall.gaps[0].angle === gate.wall.angle && wall.gaps[0].width === gate.wall.width);
     assert.ok(wall);
-    while (wall.radius > T.radius) step(state);
+    while (state.status === 'playing' && wall.radius > T.radius) step(state);
     assert.ok(Math.abs(state.elapsed - crossing.at) <= T.step + 1e-8);
     assert.equal(state.walls.includes(wall), true);
   }
@@ -147,6 +149,7 @@ test('solo places the selected pilot first and consumes brief taps once across f
   game.start('ivo', 1);
   const state = game.state, player = state.players[0];
   assert.deepEqual(state.players.map(pilot => pilot.character), ['ivo', 'mara', 'sana', 'rook']);
+  player.powerCharge = characterById(player.character).powerKills;
   game.setInput({ inward: true, special: true });
   game.setInput({});
   game.advance(T.step / 2);
@@ -224,6 +227,8 @@ test('solo resolves a wipe and retry resets the match before an all-active clear
   assert.equal(game.state.seed, 18);
   assert.equal(game.state.time, 0);
   assert.equal(game.state.score, 0);
+  assert.equal(game.state.hull, T.hullMax);
+  assert.ok(game.state.players.every(pilot => pilot.powerCharge === 0 && pilot.overdriveUntil === 0));
   assert.deepEqual(game.state.events, []);
   assert.ok(game.state.players.every(pilot => !pilot.down && pilot.radius === RINGS[2]));
   assert.equal(game.state.players[0].character, 'sana');

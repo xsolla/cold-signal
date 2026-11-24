@@ -5,10 +5,10 @@ It includes four pilots, the three-minute synced score, a 90-second pace,
 rescue, pause, clear and wipe outcomes, and retry. Reloading starts a fresh
 session.
 
-The v0.6.0 candidate raises the pressure across the three-minute run and
-pairs new enemy formations with timed visual and musical cues. Each pilot
-plays a distinct part that fades on knockdown and returns on the beat after
-rescue.
+The v0.7.0 release adds shared hull defense, kill-charged Overdrive with distinct
+pilot instrument parts, and a reactive polar lattice. Full motion adds debris
+and ripples for chain kills, abilities, rescues, and hull impacts. Reduced
+motion keeps the combat cues and uses the simpler Canvas effects.
 
 Pocket Studio Arcade is private. The public source is
 [xsolla/cold-signal](https://github.com/xsolla/cold-signal). The gallery
@@ -32,11 +32,10 @@ and the Pocket Studio history notice.
 
 | Check | Status | Evidence |
 | --- | --- | --- |
-| Game and rules | Pass locally | All 91 Node tests passed, including formation timings, the chart's 3:00 deadline, and overtime rescue. |
-| Three-minute run in a nested iframe | Pass locally | Chromium 158 verified a one-beat preview and timed synth accent for the first sweep, then played all eight phases at accelerated speed, cleared, and retried. |
+| Game and rules | Pass locally | All 95 Node tests passed, including hull damage, Overdrive timing, the chart's 3:00 deadline, and overtime rescue. |
 | Focus, settings, and compact layout | Pass locally | The Arcade browser check exercised pause on focus loss, keyboard recovery, audio, reduced motion, and a 390 px layout. |
-| Pilot instruments | Pass locally | A Chromium room check verified that knocking Sana down removed her strings while Ivo's brass and the kick stayed active. Rescue restored the strings. |
-| Full runtime mix | Pass locally | A scripted solo attempt cleared at 3:00. The stereo render peaked at −1.09 dBFS. |
+| Multiplayer | Pass locally | Four Chromium clients verified shared hull shielding, crew rescue, pause, and retry. |
+| Pilot instruments and hull audio | Pass locally | Chromium checked both paces, shielded and lethal hull impacts, pilot dropout and rescue, and a constructed 48-kill chain. |
 
 ## Publish an update
 

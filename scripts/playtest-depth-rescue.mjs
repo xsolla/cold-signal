@@ -4,7 +4,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { setTimeout as delay } from 'node:timers/promises';
 import { chromium } from 'playwright-core';
 import { createGameServer } from '../server/index.mjs';
-import { RINGS, T, delta, distance, ringName } from '../src/rules.js';
+import { RINGS, T, characterById, delta, distance, ringName } from '../src/rules.js';
 
 const executablePath = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const port = Number(process.env.PORT || 5183);
@@ -149,16 +149,21 @@ try {
   await until(() => first().status !== 'playing' || first().time >= stopAt, 'natural outcome or horizon', stopAt * 2500);
   log('Ended natural attempt', lead(), { stop: first().status === 'playing' ? 'bounded-horizon' : first().status,
     ...(first().status === 'playing' ? {} : { outcomeLabel: await lead().page.locator('#overlay-kicker').textContent() }) });
-  for (const { page } of crew) await page.locator('#leave').click();
+  for (const { page } of crew) await page.locator('#leave:visible, #leave-interrupted:visible').click();
 
   stage = 'constructed-rescue';
   await makeRoom();
   await ready();
   await changeDepth(lead(), 0, 1);
   await lead().page.getByText('Local test tools', { exact: true }).click();
+  await lead().page.getByRole('button', { name: 'Fill crew power meters', exact: true }).click();
+  await until(() => {
+    const pilot = first().players[0];
+    return pilot.powerCharge === characterById(pilot.character).powerKills;
+  }, 'constructed full power');
   await lead().page.getByRole('button', { name: 'Rescue scenario', exact: true }).click();
   await until(() => first().players[1].down, 'constructed middle-ring down');
-  log('Used Rescue scenario to down P2, clear live threats, delay natural spawns and add a warning zone');
+  log('Filled crew power meters, then used Rescue scenario to down P2, clear live threats, delay spawns and add a warning zone');
   await changeDepth(lead(), 0, 2);
   await approach(lead(), 0, 1);
   const alignedAt = first().time;
@@ -197,7 +202,7 @@ try {
   assert.equal(await lead().page.locator('#ready').isVisible(), false);
   log('Closed P3 client during the active retry; peers received interruption and leave instructions', lead(), {
     outcomeLabel: await lead().page.locator('#overlay-kicker').textContent(), prompt: await lead().page.locator('#overlay-copy').textContent() });
-  await lead().page.locator('#leave').click();
+  await lead().page.locator('#leave-interrupted').click();
   await lead().page.locator('#create').waitFor();
   lead().latest = null;
   log('Returned to room entry using Leave', lead(), { entryVisible: true });

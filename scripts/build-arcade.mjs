@@ -12,6 +12,7 @@ const files = {
   'rules.js': 'src/rules.js',
   'pilot-ui.js': 'public/pilot-ui.js',
   'renderer.js': 'public/renderer.js',
+  'arena-effects.js': 'public/arena-effects.js',
   'cold-signal.js': 'public/cold-signal.js',
   'audio.js': 'public/audio.js',
   'audio-cues.js': 'public/audio-cues.js',
