@@ -8,7 +8,7 @@ A standalone cooperative vector arcade game, originally developed as Delve Toget
 [Development history](docs/project-overview.md) · [Repository migration](docs/migration/README.md) ·
 [Credits](CREDITS.md)
 
-Four-player real-time cooperative PvE. Everyone fires automatically and can
+Play solo with three AI wingmates or form a private multiplayer crew. Everyone fires automatically and can
 rescue any downed crew member. A/D or Left/Right orbits; W/Up jumps inward,
 S/Down jumps outward between three rings. Press Space for your
 character's special ability. Every pilot must be active at the final clear.
@@ -45,7 +45,25 @@ Setup needs Git, Python 3.9+ and network access; using the installed skills need
 no Python environment. See [the contribution workflow](docs/pocket-studio.md)
 for skill requests, trial records, branches, upstream PRs and pin updates.
 
-## Play without Docker
+## Play solo
+
+Choose **Play with bots** on a running Cold Signal instance, or build the
+static Arcade edition and preview it with a local file host:
+
+```sh
+npm run build:arcade
+python3 -m http.server 5177 --bind 127.0.0.1 --directory dist/arcade
+```
+
+Open [the solo build](http://127.0.0.1:5177). Pick a pilot and launch at
+half pace for the three-minute synced score or full pace for the 90-second run.
+The other three pilots are AI wingmates. Play with a desktop
+keyboard. Esc pauses, and a clear or wipe returns you to pilot selection for a
+retry. Reloading starts a fresh session. The game runs entirely in the browser.
+Solo starts with full effects. Use **Reduce motion** to turn down decorative effects.
+See [Pocket Studio Arcade packaging](docs/release/pocket-studio-arcade.md).
+
+## Play multiplayer without Docker
 
 Clone the standalone game, install the pinned dependencies, and start development mode:
 
@@ -56,9 +74,8 @@ npm ci
 npm run dev
 ```
 
-Open [Cold Signal](http://localhost:5176). For one human,
-create a room, open **Local test tools**, add three controlled crew members,
-and ready up. Keep their tabs open. **Reduce motion** removes streaming depth,
+Open [Cold Signal](http://localhost:5176). Create or join a room, choose a pilot,
+and ready up. **Reduce motion** removes streaming depth,
 speed lines, luminous trails, movement ghosts, and fragmentation while retaining
 ability, warning, and rescue feedback. The initial setting respects the OS preference;
 click **Motion reduced** to enable the full arcade effects.

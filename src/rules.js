@@ -4,7 +4,8 @@ export const RINGS = Object.freeze([112, 176, 240]);
 export const ringName = ring => ['INNER', 'MIDDLE', 'OUTER'][ring] || 'OUTER';
 export const T = Object.freeze({ radius: 240, coreRadius: 44, hopSpeed: 320, muzzleInset: 2,
   speed: 3.1, fireInterval: .065, bulletSpeed: 590, rescueSeconds: 1.65, rescueArc: .20,
-  chainRadius: 52, maxEnemies: 48, protectionSeconds: .85, duration: 90, step: 1 / 60 });
+  chainRadius: 52, maxEnemies: 48, protectionSeconds: .85, finalBreathAt: 70, finalSurgeAt: 74,
+  duration: 90, step: 1 / 60 });
 // The vanishing point compresses distant rails. Foreground remains linear for readable wall warnings.
 export const projectRadius = r => r >= T.radius ? r : Math.max(0, r) / (1.8 - .8 * Math.max(0, r) / T.radius);
 export const depthScale = r => Math.max(.08, Math.min(2.4, (projectRadius(r) / T.radius) ** 1.18));
@@ -33,8 +34,11 @@ export function cleanInput(input = {}) {
 export function makeMatch(seed = 1, options = {}) {
   const count = options.count === 2 ? 2 : 4;
   const timeScale = options.timeScale === 1 ? 1 : .5;
+  const { id, phases, spawns, endAt } = options.encounter ?? {};
+  const encounter = options.encounter && { id, phases, spawns, endAt, nextSpawn: 0, phaseIndex: 0 };
   return { status: 'playing', time: 0, elapsed: 0, timeScale, seed: seed >>> 0, rng: (seed >>> 0) || 1,
-    nextId: 1, eventId: 0, score: 0, rescues: 0, phase: 'INGRESS',
+    nextId: 1, eventId: 0, score: 0, rescues: 0, phase: encounter?.phases[0].phase ?? 'INGRESS', finale: null,
+    ...(encounter && { encounter }),
     enemyClock: .35, wallClock: 5, players: Array.from({ length: count }, (_, id) => ({ id,
       character: characterById(options.characters?.[id] || CREW[id].id).id,
       angle: wrap(-Math.PI / 2 + id * TAU / count), ring: 2, radius: T.radius, prevRadius: T.radius,
@@ -64,36 +68,68 @@ export function downPlayer(s, id) {
 export function phaseAt(time) {
   if (time < 12) return 'INGRESS'; if (time < 26) return 'CROSSCURRENT';
   if (time < 31) return 'BREATH'; if (time < 49) return 'PRESSURE';
-  if (time < 54) return 'BREATH'; if (time < 70) return 'CONVERGENCE';
-  if (time < 74) return 'BREATH'; if (time < 90) return 'FINAL SURGE';
+  if (time < 54) return 'BREATH'; if (time < T.finalBreathAt) return 'CONVERGENCE';
+  if (time < T.finalSurgeAt) return 'BREATH'; if (time < T.duration) return 'FINAL SURGE';
   return 'BRING THEM BACK';
 }
-function spawnEnemy(s, angle, wing = false) {
+function spawnEnemy(s, angle, wing, leader) {
   const roll = random(s);
-  const type = wing || s.time < 5 ? 'rush' : roll < .30 ? 'rush' : roll < .53 ? 'skimmer'
-    : roll < .72 ? 'stalker' : s.time < 14 ? 'rush' : s.time < 30 || roll < .9 ? 'flank' : 'suppress';
+  const type = wing ? 'rush' : leader ?? (s.time < 5 || roll < .30 ? 'rush' : roll < .53 ? 'skimmer'
+    : roll < .72 ? 'stalker' : s.time < 14 ? 'rush' : s.time < 30 || roll < .9 ? 'flank' : 'suppress');
   s.enemies.push({ id: s.nextId++, type, escort: wing, angle, base: angle, radius: 12, preview: .65,
     hp: type === 'suppress' ? 3 : type === 'flank' ? 2 : 1, age: 0,
     ring: type === 'skimmer' ? 1 : type === 'stalker' ? 0 : null, mode: 'approach',
     turn: random(s) < .5 ? -1 : 1, pulse: 1.2 });
 }
-function spawnSquad(s) {
+function spawnSquad(s, pack) {
   const capacity = s.players.length === 2 ? T.maxEnemies / 2 : T.maxEnemies;
-  const size = s.time < 12 ? 3 : s.time < 40 ? 4 : 5;
+  const size = pack?.size ?? (s.time < 12 ? 3 : s.time < 40 ? 4 : 5);
   const desired = s.players.length === 2 ? Math.ceil(size * .6) : size;
-  const count = Math.min(desired, capacity - s.enemies.length), center = random(s) * TAU;
+  const count = Math.min(desired, capacity - s.enemies.length), center = pack?.angle ?? random(s) * TAU;
   // One behavior leader and light escorts: clustered targets without multiplying beams.
-  for (let i = 0; i < count; i++) spawnEnemy(s, wrap(center + (i - (count - 1) / 2) * .14), i !== Math.floor(count / 2));
+  for (let i = 0; i < count; i++) {
+    spawnEnemy(s, wrap(center + (i - (count - 1) / 2) * .14), i !== Math.floor(count / 2), pack?.leader);
+  }
+  if (count > 0 && s.phase === 'FINAL SURGE' && s.finale) s.finale.squadAt ??= s.elapsed;
 }
-function spawnWall(s) {
-  const angle = random(s) * TAU, single = s.time > 40 && random(s) > .65;
-  const width = s.time < 28 ? 1.55 : s.time < 65 ? 1.3 : 1.1;
-  s.walls.push({ id: s.nextId++, radius: 450, speed: s.time > 74 ? 155 : 128,
+function spawnWall(s, layout) {
+  const angle = layout?.angle ?? random(s) * TAU, single = !layout && s.time > 40 && random(s) > .65;
+  const width = layout?.width ?? (s.time < 28 ? 1.55 : s.time < 65 ? 1.3 : 1.1);
+  s.walls.push({ id: s.nextId++, radius: layout?.radius ?? 450,
+    speed: layout?.speed ?? (s.time > T.finalSurgeAt ? 155 : 128),
     gaps: single ? [{ angle, width: 2.25 }] : [{ angle, width }, { angle: wrap(angle + Math.PI), width }],
     hit: s.players.map(() => false) });
 }
+function spawnThreats(s, dt) {
+  if (s.encounter) {
+    const { spawns } = s.encounter;
+    while (spawns[s.encounter.nextSpawn]?.at <= s.elapsed + 1e-8) {
+      const { squad, wall } = spawns[s.encounter.nextSpawn++];
+      if (squad) spawnSquad(s, squad);
+      if (wall) spawnWall(s, wall);
+    }
+    return;
+  }
+  const lull = s.phase === 'BREATH'; s.enemyClock -= dt;
+  if (s.enemyClock <= 0) {
+    if (!lull) spawnSquad(s);
+    s.enemyClock = lull ? 1.4 : s.time < 12 ? .9 : s.time < 40 ? .85 : s.time < T.finalSurgeAt ? .8 : .75;
+  }
+  s.wallClock -= dt;
+  if (s.wallClock <= 0) { if (!lull) spawnWall(s); s.wallClock = s.time < 26 ? 4.2 : s.time < T.finalSurgeAt ? 3.4 : 2.7; }
+}
 export function safeInWall(wall, angle) {
   return wall.gaps.some(g => distance(angle, g.angle) < g.width / 2);
+}
+export function insideZone(zone, pilot) {
+  const onDepth = zone.minRadius !== undefined
+    ? pilot.radius >= zone.minRadius - 10 && pilot.radius <= zone.maxRadius + 10
+    : Math.abs(pilot.radius - (zone.radius ?? T.radius)) < 13;
+  return onDepth && distance(pilot.angle, zone.angle) < zone.width / 2;
+}
+export function canHelpRescue(helper, target) {
+  return helper.id !== target.id && !helper.down && helper.ring === target.ring
+    && Math.abs(helper.radius - target.radius) <= 18 && distance(helper.angle, target.angle) <= T.rescueArc;
 }
 function hurtEnemy(s, e, amount, owner) {
   const hits = [{ enemy: e, damage: amount, depth: 0, source: null }];
@@ -185,7 +221,24 @@ export function step(s, rawInputs = [], dt = T.step) {
   if (s.status !== 'playing') return s;
   dt = Math.max(0, Math.min(dt, .05)); s.elapsed += dt; dt *= s.timeScale;
   const inputs = s.players.map((_, i) => cleanInput(rawInputs[i]));
-  s.time += dt; s.phase = phaseAt(s.time);
+  s.time += dt;
+  const encounterTime = s.elapsed + 1e-8;
+  const atDeadline = s.encounter ? encounterTime >= s.encounter.endAt : s.time >= T.duration;
+  if (s.encounter) {
+    const { phases } = s.encounter;
+    while (phases[s.encounter.phaseIndex + 1]?.at <= encounterTime) s.encounter.phaseIndex++;
+    s.phase = atDeadline ? 'BRING THEM BACK' : phases[s.encounter.phaseIndex].phase;
+  } else {
+    s.phase = phaseAt(s.time);
+  }
+  if (!s.encounter && s.time >= T.finalBreathAt && !s.finale) {
+    s.finale = {
+      breathAt: T.finalBreathAt / s.timeScale,
+      surgeAt: T.finalSurgeAt / s.timeScale,
+      deadlineAt: T.duration / s.timeScale,
+      squadAt: null,
+    };
+  }
   for (const p of s.players) {
     p.prevRadius = p.radius;
     for (const timer of ['protection', 'cooldown', 'specialCooldown', 'ward', 'rally', 'haste']) p[timer] = Math.max(0, p[timer] - dt);
@@ -209,13 +262,7 @@ export function step(s, rawInputs = [], dt = T.step) {
       p.cooldown = T.fireInterval * (p.rally > 0 ? .65 : 1);
     }
   }
-  const lull = s.phase === 'BREATH'; s.enemyClock -= dt;
-  if (s.enemyClock <= 0) {
-    if (!lull) spawnSquad(s);
-    s.enemyClock = lull ? 1.4 : s.time < 12 ? .9 : s.time < 40 ? .85 : s.time < 74 ? .8 : .75;
-  }
-  s.wallClock -= dt;
-  if (s.wallClock <= 0) { if (!lull) spawnWall(s); s.wallClock = s.time < 26 ? 4.2 : s.time < 74 ? 3.4 : 2.7; }
+  spawnThreats(s, dt);
   for (const e of s.enemies) updateEnemy(s, e, dt);
   for (const b of s.bullets) {
     const previous = b.radius; b.radius = Math.max(T.coreRadius, b.radius - T.bulletSpeed * dt);
@@ -243,15 +290,12 @@ export function step(s, rawInputs = [], dt = T.step) {
   for (const z of s.zones) {
     z.age += dt;
     if (z.age >= z.warn && z.age < z.warn + z.life) for (const p of s.players) {
-      const onDepth = z.minRadius !== undefined ? p.radius >= z.minRadius - 10 && p.radius <= z.maxRadius + 10
-        : Math.abs(p.radius - (z.radius ?? T.radius)) < 13;
-      if (onDepth && distance(p.angle, z.angle) < z.width / 2) downPlayer(s, p.id);
+      if (insideZone(z, p)) downPlayer(s, p.id);
     }
   }
   for (const p of s.players) {
     if (!p.down) continue;
-    const helpers = s.players.filter(other => other.id !== p.id && !other.down && other.ring === p.ring
-      && Math.abs(other.radius - p.radius) <= 18 && distance(p.angle, other.angle) <= T.rescueArc);
+    const helpers = s.players.filter(other => canHelpRescue(other, p));
     if (helpers.length) {
       const boosted = p.rally > 0 || helpers.some(other => other.rally > 0); p.rescue += dt * (boosted ? 1.6 : 1);
       if (p.rescue + 1e-8 >= T.rescueSeconds) {
@@ -264,7 +308,7 @@ export function step(s, rawInputs = [], dt = T.step) {
   s.enemies = s.enemies.filter(e => e.hp > 0); s.walls = s.walls.filter(w => w.radius > T.coreRadius);
   s.zones = s.zones.filter(z => z.age < z.warn + z.life);
   if (s.players.every(p => p.down)) { s.status = 'lost'; event(s, 'lost'); }
-  else if (s.time >= T.duration && s.players.every(p => !p.down)) { s.status = 'won'; event(s, 'won'); }
+  else if (atDeadline && s.players.every(p => !p.down)) { s.status = 'won'; event(s, 'won'); }
   return s;
 }
 export function controlledInput(s, id) {

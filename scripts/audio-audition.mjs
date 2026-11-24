@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright-core';
 import { makeMatch } from '../src/rules.js';
-import { baseline, cascade, seed } from './audio-fixture.mjs';
+import { baseline, cascade, chainRoll, seed } from './audio-fixture.mjs';
 
 const evidence = new URL('../evidence/skill-trials/sound/', import.meta.url);
 const recipe = JSON.parse(await readFile(new URL('recipe.json', evidence), 'utf8'));
@@ -19,7 +19,9 @@ for (let beat = 0; recipe.pulseStart + beat * recipe.pulseSeconds < recipe.secon
   track.push({ at: recipe.pulseStart + beat * recipe.pulseSeconds, beat });
 }
 const sources = { A: execFileSync('git', ['show', `${baseline}:public/audio.js`], { encoding: 'utf8' }) };
-if (!process.argv.includes('--baseline-only')) sources.B = await readFile(new URL('../public/audio.js', import.meta.url), 'utf8');
+if (!process.argv.includes('--baseline-only')) {
+  sources.B = execFileSync('git', ['show', `${chainRoll}:public/audio.js`], { encoding: 'utf8' });
+}
 
 const browser = await chromium.launch({
   executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',

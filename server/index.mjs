@@ -10,6 +10,7 @@ import { localRescueAnalytics } from './playtest-analytics.mjs';
 
 const pulseKeys = ['special', 'inward', 'outward'];
 const clearPending = room => room.pending.forEach(input => pulseKeys.forEach(key => { input[key] = false; }));
+const sharedModules = new Set(['/rules.js', '/bots.js', '/solo-session.js', '/audio-feedback.js']);
 
 export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep = null, analytics = null } = {}) {
   let observe = analytics && ((state, transition) => {
@@ -29,9 +30,10 @@ export function createGameServer({ diagnostics = false, idleMs = 300_000, onStep
     // Convenient native start; Docker serves the same assets from the web container.
     try {
       const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
-      const path = pathname === '/rules.js' ? resolve(webRoot, '../src/rules.js')
+      const shared = sharedModules.has(pathname);
+      const path = shared ? resolve(webRoot, '../src' + pathname)
         : resolve(webRoot, '.' + (pathname === '/' ? '/index.html' : pathname));
-      if (pathname !== '/rules.js' && !path.startsWith(webRoot + '/')) throw new Error('not found');
+      if (!shared && !path.startsWith(webRoot + '/')) throw new Error('not found');
       const body = await readFile(path);
       const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
       res.writeHead(200, { 'Content-Type': types[extname(path)] || 'application/octet-stream', 'Cache-Control': 'no-store' });

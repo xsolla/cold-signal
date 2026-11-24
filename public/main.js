@@ -1,9 +1,12 @@
-import { T, ringName, CREW, characterById, moveSpeed, delta, wrap, cleanInput, controlledInput } from './rules.js';
+import { T, ringName, characterById, moveSpeed, delta, wrap, cleanInput, controlledInput } from './rules.js';
 import { Renderer } from './renderer.js';
 import { Sound } from './audio.js';
+import { AudioFeedback } from './audio-feedback.js';
+import { arenaKeys, formatTime, mountPilotPicker, showSelectedPilot } from './pilot-ui.js';
 const $ = id => document.getElementById(id);
 const canvas = $('arena'), characterSelect = $('character-select');
 const renderer = new Renderer(canvas), sound = new Sound();
+const audioFeedback = new AudioFeedback();
 let socket, code = '', slot = 0, snapshot = null, ready = [], connected = [], characters = [];
 let config = { count: 4, timeScale: .5 }, pauses = [], diagnostics = false, controlled = false, userPaused = false;
 let view = 'entry', soundPreference = null;
@@ -23,7 +26,6 @@ async function unlockAudio() {
   } catch { status('Audio unavailable. You can still play.'); }
 }
 function setInput(next) { input = cleanInput(next); send({ type: 'input', input }); }
-const formatTime = value => `${String(Math.floor(value / 60)).padStart(2, '0')}:${String(Math.floor(value % 60)).padStart(2, '0')}`;
 function entryOptions() {
   const scale = Number($('pace').value), count = Number($('crew-count').value);
   $('duration-label').textContent = `${scale === .5 ? '3 MIN' : '90 SEC'} · ${scale}×`;
@@ -31,6 +33,9 @@ function entryOptions() {
 }
 function resetRoom() {
   renderer.resetEffects();
+  sound.reset();
+  audioFeedback.reset();
+  void sound.suspend();
   code = ''; snapshot = null; predicted = null; ready = []; connected = []; characters = [];
   lastEvent = 0; pauses = []; userPaused = false; input = cleanInput(); controlled = false; openedClients = 0; notice = '';
   document.body.classList.remove('in-room'); $('entry').hidden = false; $('hud').hidden = true;
@@ -59,10 +64,17 @@ function connect() {
     if (msg.type === 'state') {
       if (snapshot?.status !== 'playing' && msg.state?.status === 'playing') {
         renderer.resetEffects();
+        sound.reset();
+        audioFeedback.reset();
         predicted = null; lastEvent = 0; userPaused = false;
       }
       snapshot = msg.state; ready = msg.ready; connected = msg.connected; pauses = msg.paused;
       config = msg.config; characters = msg.characters;
+      const playing = snapshot?.status === 'playing';
+      const finished = snapshot?.status === 'won' || snapshot?.status === 'lost';
+      const silent = pauses.some(Boolean) || (document.hidden && !controlled);
+      if (silent || (!playing && !finished)) void sound.suspend();
+      else if (playing) void sound.resume();
       if (snapshot) {
         const a = snapshot.players[slot].angle;
         if (predicted === null || Math.abs(delta(a, predicted)) > .35 || snapshot.players[slot].down) predicted = a;
@@ -70,12 +82,10 @@ function connect() {
         const events = snapshot.events.filter(event => event.id > lastEvent);
         if (events.length) {
           lastEvent = events.at(-1).id;
-          if (!pauses.some(Boolean)) sound.events(events);
+          if (!silent && (playing || finished)) sound.events(events, snapshot);
         }
       }
       if (controlled && diagnostics && connected[slot] && !ready[slot] && snapshot?.status !== 'playing') send({ type: 'ready' });
-      if (pauses.some(Boolean) || snapshot?.status !== 'playing') sound.suspend();
-      else if (!document.hidden || controlled) sound.resume();
       updateUI();
     }
   });
@@ -87,25 +97,9 @@ function connect() {
   });
   socket.addEventListener('error', () => status('Cannot reach the local room server.', true));
 }
-for (const character of CREW) {
-  const button = document.createElement('button'); button.type = 'button'; button.className = 'character-card';
-  button.dataset.character = character.id; button.setAttribute('role', 'radio'); button.setAttribute('aria-checked', 'false');
-  button.setAttribute('aria-label', `${character.name}, ${character.role}, ${character.ability}`);
-  button.setAttribute('aria-describedby', `ability-description-${character.id}`);
-  button.innerHTML = `<span class="character-icon">${character.symbol}</span><strong>${character.name}</strong><span class="character-role">${character.role}</span><span class="character-power">${character.ability}</span><span id="ability-description-${character.id}" class="character-description">${character.description}</span><em>“${character.quote}”</em>`;
-  button.onclick = () => { $('lobby-error').textContent = ''; send({ type: 'character', character: character.id }); };
-  characterSelect.append(button);
-}
-characterSelect.addEventListener('keydown', event => {
-  const direction = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[event.key];
-  if (!direction) return;
-  const cards = [...characterSelect.children];
-  const index = cards.indexOf(event.target);
-  if (index < 0) return;
-  event.preventDefault();
-  const next = cards[(index + direction + cards.length) % cards.length];
-  next.focus({ preventScroll: true });
-  next.click();
+mountPilotPicker(characterSelect, character => {
+  $('lobby-error').textContent = '';
+  send({ type: 'character', character: character.id });
 });
 function setOverlay(kicker, title, copy) {
   for (const [id, value] of [['overlay-kicker', kicker], ['overlay-title', title], ['overlay-copy', copy]]) {
@@ -147,13 +141,7 @@ function updateUI() {
   $('footer-status').textContent = controlled ? 'CONTROLLED TEST CLIENT' : selecting ? 'ASSEMBLING CREW' :
     view === 'interrupted' ? 'RUN INTERRUPTED' : own.down ? `DOWNED · ${ringName(own.ring)} RING` : `AUTO FIRE · ${ringName(own.ring)} RING`;
   $('arena-note').textContent = notice || (snapshot?.players.some(p => p.down) ? 'MATCH THEIR RING. STAY CLOSE TO RESCUE. FIRE IS AUTOMATIC.' : 'HIT A PACK TO START A CHAIN. THE BULLSEYE BLOCKS YOUR FIRE.');
-  let pickedButton;
-  for (const button of characterSelect.children) {
-    const checked = button.dataset.character === picked.id;
-    button.setAttribute('aria-checked', String(checked));
-    button.tabIndex = checked ? 0 : -1;
-    if (checked) pickedButton = button;
-  }
+  const pickedButton = showSelectedPilot(characterSelect, picked.id);
   characterSelect.hidden = !selecting; $('lobby-note').hidden = !selecting;
   $('overlay').classList.toggle('selecting', selecting);
   $('overlay').hidden = running;
@@ -236,7 +224,7 @@ function key(event, down) {
     pauseSession(view === 'run');
     return;
   }
-  const name = { KeyA: 'left', ArrowLeft: 'left', KeyD: 'right', ArrowRight: 'right', Space: 'special', KeyW: 'inward', ArrowUp: 'inward', KeyS: 'outward', ArrowDown: 'outward' }[event.code];
+  const name = arenaKeys[event.code];
   if (!name || (down && !inArena)) return;
   if (inArena) event.preventDefault();
   if (input[name] !== down) setInput({ ...input, [name]: down });
@@ -270,6 +258,7 @@ function frame(now) {
   const dt = Math.min((now - lastFrame) / 1000, .05); lastFrame = now;
   if (snapshot?.status === 'playing' && !pauses.some(Boolean)) {
     if (predicted !== null && !snapshot.players[slot].down) predicted = wrap(predicted + ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * moveSpeed(snapshot.players[slot]) * snapshot.timeScale * dt);
+    sound.feedback(audioFeedback.update(snapshot, slot), snapshot);
     sound.tick(snapshot, false);
   }
   renderer.render(snapshot, { joined: !!code, slot, reduced, paused: pauses.some(Boolean), now, predicted, roster: characters, crewCount: config.count }); requestAnimationFrame(frame);

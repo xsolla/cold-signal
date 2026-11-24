@@ -7,7 +7,10 @@ member, but reaching the marker is only the first part of the rescue.
 
 ## One run
 
-Create or join a private room by code, choose a pilot, and ready up together.
+In multiplayer, create or join a private room by code, choose a pilot, and ready
+up together. In solo, choose a pilot and pace, then launch with the other
+three pilots as AI wingmates. Wingmates spread out, aim at nearby enemy packs,
+and choose a rescuer for fallen crew. Everyone uses the same combat and rescue rules.
 Start on the outer rail. Read emerging squads and incoming wall gaps, split
 coverage, then orbit or change depth when an opening appears. An inner rail
 shortens the shot path and puts different threats in reach, while enemies
@@ -35,7 +38,8 @@ the crew clears only if everyone is active. Any remaining downed pilot sends
 the team into overtime, and a full crew wipe ends the attempt. After a clear
 or wipe, choose pilots and ready up again. The default room is four pilots
 at 0.5× simulation pace. Two-pilot and 1× rooms are available. Shared pause
-freezes the run, and a disconnect interrupts it.
+freezes the run, and a disconnect interrupts it. Solo supports both paces, pauses
+when the game loses focus, and offers a fresh attempt after each clear or wipe.
 
 ## Presentation
 

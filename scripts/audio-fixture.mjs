@@ -1,6 +1,7 @@
 import { RINGS, step, T, wrap } from '../src/rules.js';
 
 export const baseline = '24fd042e63691ef93a5c5013b080ee6eb8bcc4c5';
+export const chainRoll = 'f93091ff1f01e51653053bb962572f1dbdfae134';
 export const seed = 17321;
 
 // Construct a reachable co-occurrence: one shot clears a connected squad while

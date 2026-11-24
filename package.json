@@ -8,7 +8,9 @@
   },
   "scripts": {
     "start": "node server/index.mjs",
+    "build:arcade": "node scripts/build-arcade.mjs",
     "test": "node --test tests/*.test.mjs",
+    "test:arcade": "npm run build:arcade && node scripts/arcade-browser-check.mjs",
     "test:browser": "node scripts/browser-check.mjs",
     "balance": "node scripts/balance.mjs",
     "dev": "node server/index.mjs --dev-tools",
