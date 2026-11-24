@@ -2,7 +2,7 @@ import { T, ringName, characterById, moveSpeed, delta, wrap, cleanInput, control
 import { Renderer } from './renderer.js';
 import { Sound } from './audio.js';
 import { AudioFeedback } from './audio-feedback.js';
-import { arenaKeys, formatTime, mountPilotPicker, showCombatMeters, showSelectedPilot } from './pilot-ui.js';
+import { arenaKeys, formatTime, mountCrewReadout, mountPilotPicker, showCombatMeters, showCrewSignal, showSelectedPilot } from './pilot-ui.js';
 const $ = id => document.getElementById(id);
 const canvas = $('arena'), characterSelect = $('character-select');
 const renderer = new Renderer(canvas), sound = new Sound();
@@ -10,6 +10,7 @@ const audioFeedback = new AudioFeedback();
 let socket, code = '', slot = 0, snapshot = null, ready = [], connected = [], characters = [];
 let config = { count: 4, timeScale: .5 }, pauses = [], diagnostics = false, controlled = false, userPaused = false;
 let view = 'entry', soundPreference = null;
+let crew = [];
 let input = cleanInput(), reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let predicted = null, lastFrame = performance.now(), lastEvent = 0, notice = '', connectionAttempts = 0, openedClients = 0;
 const params = new URLSearchParams(location.search);
@@ -38,10 +39,10 @@ function resetRoom() {
   void sound.suspend();
   code = ''; snapshot = null; predicted = null; ready = []; connected = []; characters = [];
   lastEvent = 0; pauses = []; userPaused = false; input = cleanInput(); controlled = false; openedClients = 0; notice = '';
-  document.body.classList.remove('in-room'); $('entry').hidden = false; $('hud').hidden = true;
+  document.body.classList.remove('in-room', 'in-flight'); $('entry').hidden = false; $('hud').hidden = true;
   view = 'entry'; canvas.inert = true;
   $('overlay').hidden = true; $('pause').hidden = true; $('ability').hidden = true; $('leave').hidden = false;
-  $('lobby-error').textContent = ''; $('footer-status').textContent = 'AUTO FIRE · COOPERATIVE PVE';
+  $('lobby-error').textContent = ''; $('arena-note').hidden = true; $('footer-status').textContent = 'AUTOMATIC FIRE';
 }
 function connect() {
   socket = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws`);
@@ -119,29 +120,34 @@ function updateUI() {
   const running = view === 'run';
 
   if (!running && previousView === 'run') setInput({});
+  document.body.classList.toggle('in-flight', running);
   canvas.inert = !running;
   $('pause').hidden = !running;
   $('ability').hidden = selecting || view === 'interrupted';
   $('hull').hidden = $('ability').hidden;
+  $('clock').hidden = selecting;
+  $('phase').hidden = selecting;
+  $('score').parentElement.hidden = selecting;
   $('leave').hidden = view === 'interrupted';
   $('clock').innerHTML = `${formatTime(time / scale)}<span> / ${formatTime(T.duration / scale)}</span>`;
   $('phase').textContent = `${snapshot?.phase || 'ASSEMBLING CREW'} · ${scale}×`;
-  $('crew').replaceChildren(...Array.from({ length: config.count }, (_, id) => {
-    const chip = document.createElement('span'), p = snapshot?.players[id], character = characterById(selecting ? characters[id] : p?.character);
-    const crewStatus = !connected[id] ? '—' : selecting ? (ready[id] ? 'READY' : 'JOINED') : p.down ? `DOWN ${ringName(p.ring)}` : ringName(p.ring);
-    chip.className = (!selecting && p?.down ? 'down ' : '') + (id === slot ? 'you' : '');
-    chip.textContent = `${character.symbol} P${id + 1} ${id === slot ? 'YOU' : character.name.toUpperCase()} ${crewStatus}`;
-    if (!selecting && p && overdriveRemaining(snapshot, p)) {
-      chip.textContent += ' ◆';
-      chip.title = 'Overdrive active';
-    }
-    return chip;
-  }));
+  if (crew.length !== config.count) crew = mountCrewReadout($('crew'), config.count);
+  crew.forEach((chip, id) => {
+    const pilot = snapshot?.players[id], character = characterById(selecting ? characters[id] : pilot?.character);
+    const local = id === slot, offline = !connected[id], down = !selecting && !!pilot?.down;
+    const overdrive = !selecting && !!pilot && overdriveRemaining(snapshot, pilot) > 0;
+    const name = offline ? `P${id + 1}` : `${character.symbol} P${id + 1} ${local ? 'YOU' : character.name.toUpperCase()}`;
+    const crewStatus = offline ? (selecting ? 'OPEN' : 'OFFLINE') : selecting ? (ready[id] ? 'READY' : 'JOINED') :
+      `${down ? 'DOWN · ' : ''}${ringName(pilot.ring)}${overdrive ? ' ◆' : ''}`;
+    showCrewSignal(chip, name, crewStatus, { local, down, overdrive, offline });
+  });
   const own = snapshot?.players[slot], picked = characterById(characters[slot]);
   if (own && !selecting) showCombatMeters(snapshot, slot);
-  $('footer-status').textContent = controlled ? 'CONTROLLED TEST CLIENT' : selecting ? 'ASSEMBLING CREW' :
-    view === 'interrupted' ? 'RUN INTERRUPTED' : own.down ? `DOWNED · ${ringName(own.ring)} RING` : `AUTO FIRE · ${ringName(own.ring)} RING`;
-  $('arena-note').textContent = notice || (snapshot?.players.some(p => p.down) ? 'MATCH THEIR RING. STAY CLOSE TO RESCUE. FIRE IS AUTOMATIC.' : 'HIT A PACK TO START A CHAIN. THE BULLSEYE BLOCKS YOUR FIRE.');
+  $('footer-status').textContent = controlled ? 'CONTROLLED TEST CLIENT' : !own || selecting || view === 'interrupted' ? 'AUTOMATIC FIRE' :
+    `${own.down ? 'DOWNED · ' : ''}${ringName(own.ring)} RING`;
+  const rescue = own?.down ? 'YOUR CREW CAN RESCUE YOU.' : snapshot?.players.some(p => p.down) ? 'MATCH THEIR RING AND STAY CLOSE TO RESCUE.' : '';
+  $('arena-note').textContent = notice || rescue;
+  $('arena-note').hidden = !running || !(notice || rescue);
   const pickedButton = showSelectedPilot(characterSelect, picked.id);
   characterSelect.hidden = !selecting; $('lobby-note').hidden = !selecting;
   $('overlay').classList.toggle('selecting', selecting);
@@ -157,7 +163,7 @@ function updateUI() {
   if (view === 'lobby') {
     const joined = connected.filter(Boolean).length;
     const missing = config.count - joined;
-    setOverlay(`ROOM ${code} · ${joined}/${config.count} PILOTS · ${scale}×`, 'CHOOSE YOUR PILOT.',
+    setOverlay(`${joined}/${config.count} PILOTS · ${scale}×`, 'CHOOSE YOUR PILOT.',
       missing ? `Share the code. ${missing} more ${missing === 1 ? 'pilot' : 'pilots'} needed.` : 'Defend the hull. Match a downed pilot’s ring and stay close to rescue.');
   } else if (view === 'won') {
     setOverlay(`TEAM CLEAR · ${snapshot.score.toLocaleString()} POINTS`, 'ALL THE WAY. ALL OF US.',

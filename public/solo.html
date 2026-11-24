@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101a3a">
+  <meta name="theme-color" content="#080e20">
   <title>Cold Signal · Solo</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./style.css">
@@ -22,9 +22,8 @@
         aria-label="Cold Signal arena. A/D or Left/Right to orbit, W/S or Up/Down to move one ring, Space spends full power on your ability and a three-second hull shield, Escape to pause."></canvas>
       <div id="hud" class="hud" hidden>
         <div class="hud-left">
-          <span class="small-label">SURVIVE THE SURGE</span>
-          <span class="clock"><strong id="clock">00:00</strong><span id="duration"></span></span>
           <span id="phase" class="phase"></span>
+          <span class="clock"><strong id="clock">00:00</strong><span id="duration"></span></span>
           <div id="hull" class="hull">HULL <strong id="hull-value">100%</strong><span id="hull-shield" hidden>◆ SHIELDED</span></div>
         </div>
         <div class="hud-right">
@@ -50,20 +49,20 @@
           <button id="stop" class="quiet">RETURN TO PILOT SELECT</button>
         </div>
       </section>
-      <div id="arena-note" class="axis-label axis-bottom" hidden></div>
+      <p id="arena-note" class="arena-note" hidden></p>
     </main>
     <footer class="footer">
-      <div class="key-guide">
+      <div class="key-guide" aria-label="Controls">
         <span><kbd>A</kbd><kbd>D</kbd> ORBIT</span><span><kbd>W</kbd><kbd>S</kbd> TAP DEPTH</span>
-        <span><kbd>SPACE</kbd> ABILITY</span><span class="rescue-guide">◈ SAME RING TO RESCUE</span>
+        <span><kbd>SPACE</kbd> ABILITY</span><span><kbd>ESC</kbd> PAUSE</span>
       </div>
       <div id="ability" class="ability" hidden>
         <span id="ability-name"></span><span id="ability-state"></span>
         <div id="ability-bar" class="ability-bar" role="progressbar" aria-label="Power" aria-valuenow="0"></div>
       </div>
       <div class="footer-right">
-        <span id="footer-status">DESKTOP KEYBOARD</span>
-        <button id="pause" class="quiet" hidden>PAUSE</button>
+        <span id="footer-status">AUTOMATIC FIRE</span>
+        <button id="pause" class="quiet" title="Pause (Esc)" hidden>PAUSE <span aria-hidden="true">Ⅱ</span></button>
       </div>
     </footer>
   </div>

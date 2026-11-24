@@ -1,6 +1,6 @@
 import { CREW, T, characterById, ringName, overdriveRemaining } from './rules.js';
 import { createSoloSession, soloRoster } from './solo-session.js';
-import { arenaKeys, formatTime, mountPilotPicker, showCombatMeters, showSelectedPilot } from './pilot-ui.js';
+import { arenaKeys, formatTime, mountCrewReadout, mountPilotPicker, showCombatMeters, showCrewSignal, showSelectedPilot } from './pilot-ui.js';
 import { Renderer } from './renderer.js';
 import { Sound } from './audio.js';
 import { pressureChart, sortieChart } from './audio-chart.js';
@@ -17,7 +17,7 @@ const renderer = new Renderer(canvas), session = createSoloSession();
 const sound = new Sound(null, { syncedFinale: finaleMix !== 'original', syncedPressure: pressureMix !== 'original' });
 const audioFeedback = new AudioFeedback();
 const keys = new Set();
-const crew = CREW.map(() => $('crew').appendChild(document.createElement('span')));
+const crew = mountCrewReadout($('crew'), CREW.length);
 let pilot = CREW[0], view = 'select', lastFrame, lastEvent = 0;
 let hullLoss = null;
 let roster = soloRoster(pilot.id);
@@ -36,13 +36,14 @@ function showPilot() {
 function setView(next) {
   view = next;
   const choosing = next === 'select', running = next === 'run';
+  document.body.classList.toggle('in-flight', running);
   overlay.hidden = running;
   overlay.classList.toggle('selecting', choosing);
   $('selection').hidden = !choosing;
   $('paused-actions').hidden = next !== 'pause';
   $('hud').hidden = choosing;
   $('ability').hidden = choosing;
-  $('arena-note').hidden = choosing;
+  $('arena-note').hidden = !running || !$('arena-note').textContent;
   $('pause').hidden = !running;
   canvas.inert = !running;
 }
@@ -56,7 +57,7 @@ function heading(kicker, title, copy) {
 function selectPilot(result) {
   hullLoss = result?.hull === 0 ? result : null;
   setView('select');
-  text('footer-status', 'DESKTOP KEYBOARD');
+  text('footer-status', 'AUTOMATIC FIRE');
   if (result?.status === 'won') {
     heading(`TEAM CLEAR · ${result.score.toLocaleString()} POINTS`, 'ALL THE WAY. ALL OF US.',
       `${result.rescues} ${result.rescues === 1 ? 'rescue' : 'rescues'}. Every ship made it through.`);
@@ -108,18 +109,17 @@ function updateHud(state) {
   text('score', String(state.score).padStart(6, '0'));
   for (const ally of state.players) {
     const character = characterById(ally.character);
-    const chip = crew[ally.id], ring = ringName(ally.ring);
-    chip.classList.toggle('down', ally.down);
-    chip.classList.toggle('you', ally.id === 0);
+    const local = ally.id === 0, ring = ringName(ally.ring);
     const overdrive = overdriveRemaining(state, ally) > 0;
-    const label = `${character.symbol} ${ally.id === 0 ? 'YOU' : character.name.toUpperCase()} ${ally.down ? 'DOWN · ' : ''}${ring}${overdrive ? ' ◆' : ''}`;
-    if (chip.textContent !== label) chip.textContent = label;
-    chip.title = overdrive ? 'Overdrive active' : '';
+    showCrewSignal(crew[ally.id], `${character.symbol} ${local ? 'YOU' : character.name.toUpperCase()}`,
+      `${ally.down ? 'DOWN · ' : ''}${ring}${overdrive ? ' ◆' : ''}`, { local, down: ally.down, overdrive, offline: false });
   }
   const own = state.players[0];
   showCombatMeters(state, 0);
   text('arena-note', own.down ? 'YOUR CREW CAN RESCUE YOU.' : state.players.some(ally => ally.down)
-    ? 'MATCH THEIR RING AND STAY CLOSE TO RESCUE.' : 'FIRE IS AUTOMATIC. HIT A PACK TO START A CHAIN.');
+    ? 'MATCH THEIR RING AND STAY CLOSE TO RESCUE.' : '');
+  $('arena-note').hidden = !$('arena-note').textContent;
+  text('footer-status', `${own.down ? 'DOWNED · ' : ''}${ringName(own.ring)} RING`);
 }
 
 function start() {
@@ -133,7 +133,6 @@ function start() {
   lastEvent = 0;
   lastFrame = undefined;
   text('duration', `/ ${formatTime(session.state.encounter?.endAt ?? T.duration / session.state.timeScale)}`);
-  text('footer-status', '');
   updateHud(session.state);
   setView('run');
   canvas.focus({ preventScroll: true });

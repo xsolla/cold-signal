@@ -14,6 +14,7 @@ export class Renderer {
   resize() {
     const r = this.canvas.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
     this.width = r.width; this.height = r.height;
+    this.apertureMode = undefined;
     this.canvas.width = Math.round(r.width * d); this.canvas.height = Math.round(r.height * d);
     this.ctx.setTransform(d, 0, 0, d, 0, 0);
   }
@@ -36,11 +37,52 @@ export class Renderer {
     c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha *= alpha; c.fillStyle = glow;
     c.fillRect(x - radius, y - radius, radius * 2, radius * 2); c.restore();
   }
+  aperture(scale, showcase) {
+    if (this.apertureMode === showcase) return;
+    this.apertureMode = showcase;
+    const buffer = document.createElement('canvas');
+    buffer.width = this.canvas.width;
+    buffer.height = this.canvas.height;
+    const c = buffer.getContext('2d');
+    c.scale(buffer.width / this.width, buffer.height / this.height);
+    c.translate(this.width * (showcase ? .72 : .5), this.height / 2);
+    c.scale(scale, scale);
+    this.paintAperture(c, showcase);
+    this.canvas.style.backgroundImage = `url(${buffer.toDataURL()})`;
+  }
+  paintAperture(c, showcase) {
+    const halo = c.createRadialGradient(0, 0, 215, 0, 0, 460);
+    halo.addColorStop(0, '#172c5100');
+    halo.addColorStop(.33, showcase ? '#31559a91' : '#25447270');
+    halo.addColorStop(1, '#182a5100');
+    c.fillStyle = halo;
+    c.fillRect(-460, -460, 920, 920);
+
+    // Fixed structure outside the combat rails, beneath every live cue.
+    for (const [radius, color, width] of [[284, '#719aca52', .8], [312, '#152642', 17], [322, '#719aca54', 1], [327, '#45638a66', .7]]) {
+      c.strokeStyle = color; c.lineWidth = width;
+      c.beginPath(); c.arc(0, 0, radius, 0, TAU); c.stroke();
+    }
+    for (let i = 0; i < 8; i++) {
+      const angle = i * TAU / 8;
+      c.save();
+      c.rotate(angle);
+      c.strokeStyle = '#607ca84f'; c.lineWidth = .9;
+      c.beginPath(); c.moveTo(287, 0); c.lineTo(299, 0); c.lineTo(310, 12);
+      c.lineTo(338, 12); c.lineTo(367, 39); c.lineTo(410, 39); c.stroke();
+      c.beginPath(); c.arc(0, 0, 312, .10, .65);
+      c.strokeStyle = i % 2 ? '#8d85ff36' : '#79e5ff50';
+      c.lineWidth = 2; c.stroke();
+      c.fillStyle = i % 2 ? '#6877a180' : '#79e5ff96';
+      c.fillRect(297, -1, 6, 2); c.fillRect(354, 12, 3, 2); c.fillRect(360, 12, 3, 2);
+      c.restore();
+    }
+  }
   tunnel(own, reduced, hasHull, light) {
     const c = this.ctx, core = projectRadius(T.coreRadius);
-    const fog = c.createRadialGradient(0, 0, core, 0, 0, 330);
-    fog.addColorStop(0, field); fog.addColorStop(.75, ink); fog.addColorStop(1, ink);
-    c.fillStyle = fog; c.beginPath(); c.arc(0, 0, 330, 0, TAU); c.fill();
+    const fog = c.createRadialGradient(0, 0, core, 0, 0, 283);
+    fog.addColorStop(0, field); fog.addColorStop(.82, ink); fog.addColorStop(1, `${ink}00`);
+    c.fillStyle = fog; c.beginPath(); c.arc(0, 0, 283, 0, TAU); c.fill();
     if (light) {
       c.save(); c.globalCompositeOperation = 'lighter';
       c.drawImage(light, -arenaSpan / 2, -arenaSpan / 2, arenaSpan, arenaSpan); c.restore();
@@ -462,18 +504,22 @@ export class Renderer {
   render(state, { joined = false, slot = 0, reduced = false, paused = false, now = 0, predicted = null, roster = [], crewCount = 4 } = {}) {
     const c = this.ctx, w = this.width, h = this.height;
     this.presentation.update(state, { now, paused, reduced, slot, predicted }); this.reduced = reduced;
-    c.clearRect(0, 0, w, h); c.fillStyle = ink; c.fillRect(0, 0, w, h);
-    const scale = Math.min(joined ? w : w * .78, h) / arenaSpan;
+    c.clearRect(0, 0, w, h);
+    const scale = joined ? Math.min(w / 590, h / 625) : Math.min(w * .75, h * 1.15) / 625;
+    if (scale <= 0) return;
     const camera = this.presentation.camera(reduced || paused), clock = this.presentation.time, motionScale = Math.min(1, h / 680);
-    c.save(); c.translate((joined ? w / 2 : w * .79) + camera.x * motionScale, h * .53 + camera.y * motionScale);
-    c.rotate(camera.rotation); c.scale(scale * camera.zoom, scale * camera.zoom);
+    this.aperture(scale, !joined);
+    c.save(); c.translate(joined ? w / 2 : w * .72, h / 2); c.scale(scale, scale);
+    c.translate(camera.x * motionScale / scale, camera.y * motionScale / scale);
+    c.rotate(camera.rotation); c.scale(camera.zoom, camera.zoom);
     const time = reduced ? 0 : clock * .08;
     let light = null;
-    if (state && !reduced && scale > 0) {
+    if (state && !reduced) {
       this.arenaEffects ??= new ArenaEffects();
-      light = this.arenaEffects.draw(state, this.presentation, arenaSpan * scale, slot);
+      // The shader stays soft behind the larger, crisp foreground silhouettes.
+      light = this.arenaEffects.draw(state, this.presentation, Math.min(600, arenaSpan * scale), slot);
     }
-    c.globalAlpha = joined ? 1 : .65; this.tunnel(state?.players[slot], reduced, !!state, light);
+    c.globalAlpha = joined ? 1 : .85; this.tunnel(state?.players[slot], reduced, !!state, light);
     if (state?.status === 'playing') this.formationCues(state, reduced);
     const count = joined ? crewCount : 4;
     const players = state?.players || Array.from({ length: count }, (_, id) => ({ id,
@@ -509,9 +555,25 @@ export class Renderer {
       for (const wall of state.walls) entities.push({ radius: wall.radius, draw: () => this.wall(wall) });
       for (const e of state.enemies) entities.push({ radius: e.radius, draw: () => this.enemy(e) });
       for (const b of state.bullets) entities.push({ radius: b.radius, draw: () => this.bullet(b, slot, reduced) });
-    } else for (let i = 0; i < 8; i++) {
-      const radius = 18 + i * 25, angle = i * TAU / 8 + time * .5;
-      entities.push({ radius, draw: () => this.enemy({ radius, angle, type: ['rush', 'skimmer', 'stalker', 'flank'][i % 4] }) });
+    } else if (!joined) {
+      const wall = { radius: 157, gaps: [{ angle: -.75 + time, width: 1 }, { angle: Math.PI - .75 + time, width: 1 }] };
+      entities.push({ radius: wall.radius, draw: () => this.wall(wall) });
+      for (const heading of [-.5, 1.7, 3.6]) for (let i = 0; i < 6; i++) {
+        const radius = 75 + i * 19, angle = heading + i * .11 + time * .6;
+        const type = i === 5 ? 'flank' : 'rush';
+        entities.push({ radius, draw: () => this.enemy({ radius, angle, type, escort: i % 3 === 0 }) });
+      }
+      for (const player of players) {
+        for (const gap of [22, 49, 78]) {
+          const radius = player.radius - gap;
+          entities.push({ radius, draw: () => this.bullet({ angle: player.angle, radius, owner: player.id }, slot, reduced) });
+        }
+      }
+    } else {
+      for (let i = 0; i < 8; i++) {
+        const radius = 18 + i * 25, angle = i * TAU / 8 + time * .5;
+        entities.push({ radius, draw: () => this.enemy({ radius, angle, type: ['rush', 'skimmer', 'stalker', 'flank'][i % 4] }) });
+      }
     }
     entities.sort((a, b) => a.radius - b.radius).forEach(e => e.draw());
     if (state) {
@@ -522,7 +584,7 @@ export class Renderer {
     // Pilot silhouettes, rescue progress and the sanctuary stay above large FX.
     const crewByDepth = [...players].sort((a, b) => a.radius - b.radius);
     crewByDepth.forEach(p => this.player(p, slot, predicted));
-    if (joined && scale > 0) this.crewLabels(crewByDepth, slot, predicted, scale);
+    if (joined && state) this.crewLabels(crewByDepth, slot, predicted, scale);
     this.circle(projectRadius(T.coreRadius), muted, 1);
     this.circle(projectRadius(T.coreRadius) - 4, line, .7);
     this.circle(3, danger, .8); c.fillStyle = danger; c.fillRect(-.7, -.7, 1.4, 1.4);

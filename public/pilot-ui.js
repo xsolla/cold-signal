@@ -1,5 +1,6 @@
 import { CREW, T, characterById, hullShielded, overdriveRemaining, powerReady } from './rules.js';
 import { pilotInstruments } from './audio-score.js';
+import { drawFork, PALETTE } from './cold-signal.js';
 
 export const arenaKeys = { KeyA: 'left', ArrowLeft: 'left', KeyD: 'right', ArrowRight: 'right',
   Space: 'special', KeyW: 'inward', ArrowUp: 'inward', KeyS: 'outward', ArrowDown: 'outward' };
@@ -31,12 +32,35 @@ export function showCombatMeters(state, slot) {
   const powerText = remaining ? `${power}% · Overdrive active`
     : `${pilot.powerCharge} of ${character.powerKills} kills${ready ? ' · Press Space' : ''}`;
   if (bar.getAttribute('aria-valuetext') !== powerText) bar.setAttribute('aria-valuetext', powerText);
-  bar.classList.toggle('overdrive', !!remaining);
+  const meter = document.getElementById('ability');
+  const meterState = remaining ? 'overdrive' : pilot.down ? 'down' : ready ? 'ready' : 'charging';
+  if (meter.dataset.state !== meterState) meter.dataset.state = meterState;
 
   const hull = document.getElementById('hull');
   hull.classList.toggle('critical', state.hull <= T.hullMax * .25);
   setText('hull-value', `${Math.ceil(100 * state.hull / T.hullMax)}%`);
   document.getElementById('hull-shield').hidden = !hullShielded(state);
+}
+
+export function mountCrewReadout(list, count) {
+  const chips = Array.from({ length: count }, () => {
+    const chip = document.createElement('span');
+    chip.append(document.createElement('strong'), ' ', document.createElement('small'));
+    return chip;
+  });
+  list.replaceChildren(...chips);
+  return chips;
+}
+
+export function showCrewSignal(chip, name, status, { local, down, overdrive, offline }) {
+  const identity = chip.firstElementChild, detail = chip.lastElementChild;
+  if (identity.textContent !== name) identity.textContent = name;
+  if (detail.textContent !== status) detail.textContent = status;
+  chip.title = overdrive ? 'Overdrive active' : '';
+  chip.classList.toggle('you', local);
+  chip.classList.toggle('down', down);
+  chip.classList.toggle('offline', offline);
+  chip.classList.toggle('overdrive', overdrive);
 }
 
 export function mountPilotPicker(list, onSelect) {
@@ -50,7 +74,15 @@ export function mountPilotPicker(list, onSelect) {
     button.setAttribute('aria-checked', 'false');
     button.setAttribute('aria-label', `${character.name}, ${character.role}, ${character.ability}, ${instrument}, ${character.powerKills} kills to charge`);
     button.setAttribute('aria-describedby', `ability-description-${character.id}`);
-    button.innerHTML = `<span class="character-icon">${character.symbol}</span><strong>${character.name}</strong><span class="character-role">${character.role} · ${instrument}</span><span class="character-power">${character.ability} · ${character.powerKills} kills</span><span id="ability-description-${character.id}" class="character-description">${character.description}</span><em>“${character.quote}”</em>`;
+    button.innerHTML = `<span class="character-art" aria-hidden="true"><img alt="" width="72" height="56"></span><span class="character-icon" aria-hidden="true">${character.symbol}</span><strong>${character.name}</strong><span class="character-role">${character.role} · ${instrument}</span><span class="character-power">${character.ability} · ${character.powerKills} kills</span><span id="ability-description-${character.id}" class="character-description">${character.description}</span>`;
+    const portrait = document.createElement('canvas');
+    portrait.width = 144;
+    portrait.height = 112;
+    const art = portrait.getContext('2d');
+    art.translate(72, 56);
+    art.scale(3, 3);
+    drawFork(art, character.id === 'sana' ? PALETTE.accent : PALETTE.signal, PALETTE.paper, character.sides);
+    button.querySelector('img').src = portrait.toDataURL();
     button.onclick = () => onSelect(character);
     list.append(button);
   }
