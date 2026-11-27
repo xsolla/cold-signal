@@ -26,10 +26,11 @@ with `git clone --recurse-submodules` to initialize it during cloning instead.
 Git access to Pocket Studio is required wherever setup runs, including CI.
 
 Use `npm run skills:status` to read the recorded pin and the checked-out
-revision. The November 22 update selects upstream `main` at `c5dbe95`, with
-eighteen skills. `.gitmodules` tracks `main` as the update target; ordinary setup
-uses Cold Signal's exact recorded commit. This revision is fetchable from
-upstream and needs no recovery bundle. The [migration record](skill-trials/2026-11-22-pocket-studio-update.md)
+revision. The [November 27 update](skill-trials/2026-11-27-pocket-studio-update.md)
+selects upstream `main` at `0775494`, with eighteen skills.
+`.gitmodules` tracks `main` as the update target. Ordinary setup uses Cold
+Signal's exact recorded commit, which is fetchable from upstream. The
+[November 22 migration record](skill-trials/2026-11-22-pocket-studio-update.md)
 maps the retired skill names to their replacements. Cold Signal's root
 `art-direction/` folder contains game art studies and evidence.
 
